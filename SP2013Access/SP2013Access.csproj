@@ -1,0 +1,315 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{579A830D-B64E-44BF-ABC0-99E56D275E8D}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SP2013Access</RootNamespace>
+    <AssemblyName>SP2013Access</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>SharePoint2013.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.SharePoint.Client, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.SharePoint.Client.Runtime, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL" />
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+    <Compile Include="Commands\CommandEntity.cs" />
+    <Compile Include="Commands\DelegateCommand.cs" />
+    <Compile Include="Commands\WeakRefEventManager.cs" />
+    <Compile Include="Controls\Converters\BorderThicknessToStrokeThicknessConverter.cs" />
+    <Compile Include="Controls\Converters\CalculatorMemoryToVisibilityConverter.cs" />
+    <Compile Include="Controls\Converters\CenterTitleConverter.cs" />
+    <Compile Include="Controls\Converters\ColorBlendConverter.cs" />
+    <Compile Include="Controls\Converters\ColorToSolidColorBrushConverter.cs" />
+    <Compile Include="Controls\Converters\IntToThicknessConverter.cs" />
+    <Compile Include="Controls\Converters\InverseBoolConverter.cs" />
+    <Compile Include="Controls\PropertyGrid\Implementation\Attributes\DefinitionKeyAttribute.cs" />
+    <Compile Include="Controls\PropertyGrid\Implementation\Attributes\ExpandedCategoryAttribute.cs" />
+    <Compile Include="Controls\PropertyGrid\Implementation\Attributes\LocalizedCategoryAttribute.cs" />
+    <Compile Include="Controls\PropertyGrid\Implementation\Converters\CommonPropertyConverter.cs" />
+    <Compile Include="Controls\PropertyGrid\Implementation\Converters\IsCategoryExpandedConverter.cs" />
+    <Compile Include="Controls\PropertyGrid\Implementation\Converters\MultipleValuesConverter.cs" />
+    <Compile Include="Controls\Converters\ObjectTypeToNameConverter.cs" />
+    <Compile Include="Controls\Converters\RoundedValueConverter.cs" />
+    <Compile Include="Controls\Converters\SolidColorBrushToColorConverter.cs" />
+    <Compile Include="Controls\Converters\VisibilityToBoolConverter.cs" />
+    <Compile Include="Controls\Converters\WindowContentBorderMarginConverter.cs" />
+    <Compile Include="Controls\Converters\WindowControlBackgroundConverter.cs" />
+    <Compile Include="Controls\PropertyGrid\Implementation\Attributes\CategoryOrderAttribute.cs" />
+    <Compile Include="Controls\PropertyGrid\Implementation\Attributes\ExpandableObjectAttribute.cs" />
+    <Compile Include="Controls\PropertyGrid\Implementation\Attributes\IItemsSource.cs" />
+    <Compile Include="Controls\PropertyGrid\Implementation\Attributes\ItemsSourceAttribute.cs" />
+    <Compile Include="Controls\PropertyGrid\Implementation\Attributes\NewItemTypesAttribute.cs" />
+    <Compile Include="Controls\PropertyGrid\Implementation\Attributes\PropertyOrderAttribute.cs" />
+    <Compile Include="Controls\PropertyGrid\Implementation\CategoryDefinition.cs" />
+    <Compile Include="Controls\PropertyGrid\Implementation\CategoryDefinitionCollection.cs" />
+    <Compile Include="Controls\PropertyGrid\Implementation\Commands\PropertyGridCommands.cs" />
+    <Compile Include="Controls\PropertyGrid\Implementation\Commands\PropertyItemCommands.cs" />
+    <Compile Include="Controls\PropertyGrid\Implementation\CommonDescriptorPropertyDefinition.cs" />
+    <Compile Include="Controls\PropertyGrid\Implementation\CommonPropertyExceptionValidationRule.cs" />
+    <Compile Include="Controls\PropertyGrid\Implementation\ContainerHelperBase.cs" />
+    <Compile Include="Controls\PropertyGrid\Implementation\Converters\EditorTimeSpanConverter.cs" />
+    <Compile Include="Controls\PropertyGrid\Implementation\Converters\ExpandableObjectMarginConverter.cs" />
+    <Compile Include="Controls\PropertyGrid\Implementation\Converters\ListConverter.cs" />
+    <Compile Include="Controls\PropertyGrid\Implementation\Converters\ObjectToUIElementConverter.cs" />
+    <Compile Include="Controls\PropertyGrid\Implementation\Converters\SelectedObjectConverter.cs" />
+    <Compile Include="Controls\PropertyGrid\Implementation\CustomPropertyItem.cs" />
+    <Compile Include="Controls\PropertyGrid\Implementation\Definitions\DefinitionBase.cs" />
+    <Compile Include="Controls\PropertyGrid\Implementation\Definitions\EditorDefinitionBase.cs" />
+    <Compile Include="Controls\PropertyGrid\Implementation\Definitions\EditorTemplateDefinition.cs" />
+    <Compile Include="Controls\PropertyGrid\Implementation\Definitions\PropertyDefinitionBase.cs" />
+    <Compile Include="Controls\PropertyGrid\Implementation\DescriptorPropertyDefinition.cs" />
+    <Compile Include="Controls\PropertyGrid\Implementation\DescriptorPropertyDefinitionBase.cs" />
+    <Compile Include="Controls\PropertyGrid\Implementation\EditorDefinition.cs" />
+    <Compile Include="Controls\PropertyGrid\Implementation\FilterInfo.cs" />
+    <Compile Include="Controls\PropertyGrid\Implementation\IPropertyContainer.cs" />
+    <Compile Include="Controls\PropertyGrid\Implementation\ObjectContainerHelper.cs" />
+    <Compile Include="Controls\PropertyGrid\Implementation\ObjectContainerHelperBase.cs" />
+    <Compile Include="Controls\PropertyGrid\Implementation\ObjectsContainerHelper.cs" />
+    <Compile Include="Controls\PropertyGrid\Implementation\PropertiesCollectionView.cs" />
+    <Compile Include="Controls\PropertyGrid\Implementation\PropertiesContainerHelper.cs" />
+    <Compile Include="Controls\PropertyGrid\Implementation\PropertiesSourceContainerHelper.cs" />
+    <Compile Include="Controls\PropertyGrid\Implementation\PropertyDefinition.cs" />
+    <Compile Include="Controls\PropertyGrid\Implementation\PropertyDefinitionBaseCollection.cs" />
+    <Compile Include="Controls\PropertyGrid\Implementation\PropertyGrid.cs" />
+    <Compile Include="Controls\PropertyGrid\Implementation\PropertyGridUtilities.cs" />
+    <Compile Include="Controls\PropertyGrid\Implementation\PropertyItem.cs" />
+    <Compile Include="Controls\PropertyGrid\Implementation\PropertyItemBase.cs" />
+    <Compile Include="Controls\PropertyGrid\Implementation\PropertyItemCollection.cs" />
+    <Compile Include="Controls\PropertyGrid\Implementation\PropertyItemsControl.cs" />
+    <Compile Include="Controls\PropertyGrid\Implementation\StringConstants.cs" />
+    <Compile Include="Controls\PropertyGrid\Implementation\TargetPropertyType.cs" />
+    <Compile Include="Controls\PropertyGrid\Implementation\WeakCollectionChangedWrapper.cs" />
+    <Compile Include="Controls\PropertyGrid\Implementation\PropertiesContainerHelperBase.cs" />
+    <Compile Include="Controls\SPClientTreeView.xaml.cs">
+      <DependentUpon>SPClientTreeView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DynamicSplashScreen.cs" />
+    <Compile Include="Extensions\PropertyChangedExtensions.cs" />
+    <Compile Include="Globals.cs" />
+    <Compile Include="RecentSite.cs" />
+    <Compile Include="SplashWindow.xaml.cs">
+      <DependentUpon>SplashWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Extensions\TreeViewExtensions.cs" />
+    <Compile Include="Controls\Utilities\ContextMenuUtilities.cs" />
+    <Compile Include="Controls\Utilities\GeneralUtilities.cs" />
+    <Compile Include="Controls\Utilities\LocalizationHelper.cs" />
+    <Compile Include="Controls\Utilities\ReflectionHelper.cs" />
+    <Compile Include="Controls\Utilities\WeakEventListener.cs" />
+    <Compile Include="Validation\RequiredValidationRule.cs" />
+    <Compile Include="Validation\UrlValidationRule.cs" />
+    <Compile Include="ViewModels\AsyncObservableCollection.cs" />
+    <Compile Include="ViewModels\ITreeViewItemViewModel.cs" />
+    <Compile Include="ViewModels\SPContentTypeFieldCollectionViewModel.cs" />
+    <Compile Include="ViewModels\SPContextCollectionViewModel.cs" />
+    <Compile Include="ViewModels\SPFieldViewModel.cs" />
+    <Compile Include="ViewModels\SPContextViewModel.cs" />
+    <Compile Include="ViewModels\SPContentTypeViewModel.cs" />
+    <Compile Include="ViewModels\SPListContentTypeCollectionViewModel.cs" />
+    <Compile Include="ViewModels\SPFieldCollectionViewModel.cs" />
+    <Compile Include="ViewModels\SPSiteFieldCollectionViewModel.cs" />
+    <Compile Include="ViewModels\SPWebContentTypeCollectionViewModel.cs" />
+    <Compile Include="ViewModels\SPListCollectionViewModel.cs" />
+    <Compile Include="ViewModels\SPWebCollectionViewModel.cs" />
+    <Compile Include="ViewModels\SPWebViewModel.cs" />
+    <Compile Include="ViewModels\SPListViewModel.cs" />
+    <Compile Include="ViewModels\SPSiteViewModel.cs" />
+    <Compile Include="ViewModels\TreeViewItemViewModel.cs" />
+    <Page Include="Controls\PropertyGrid\Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\SPClientTreeView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ConfigManager.cs" />
+    <Compile Include="Constants.cs" />
+    <Compile Include="MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Page Include="OpenSiteWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SplashWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="OpenSiteWindow.xaml.cs">
+      <DependentUpon>OpenSiteWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SharePoint.Remote.Access\SharePoint.Remote.Access.csproj">
+      <Project>{cde4c77f-acf4-4d04-8c6c-0f8165aeaf21}</Project>
+      <Name>SharePoint.Remote.Access</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\FAVICON.ICO" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\App.png" />
+    <Resource Include="Images\App2.png" />
+    <Resource Include="Images\App3.png" />
+    <Resource Include="Images\ContentType.png" />
+    <Resource Include="Images\CustomAction.png" />
+    <Resource Include="Images\DotNetObject.png" />
+    <Resource Include="Images\EMMGroup.png" />
+    <Resource Include="Images\EMMRoot.png" />
+    <Resource Include="Images\EMMTerm.png" />
+    <Resource Include="Images\EMMTermSet.png" />
+    <Resource Include="Images\EventReceiver.png" />
+    <Resource Include="Images\File.png" />
+    <Resource Include="Images\Folder.png" />
+    <Resource Include="Images\GenericFeature.gif" />
+    <Resource Include="Images\GenericFeatureActivated.png" />
+    <Resource Include="Images\GenericFeatureCustom.gif" />
+    <Resource Include="Images\GenericFeatureCustomActivated.png" />
+    <Resource Include="Images\GroupCollection.png" />
+    <Resource Include="Images\GroupCollection1.png" />
+    <Resource Include="Images\ITEVENT.PNG" />
+    <Resource Include="Images\ITGEN.GIF" />
+    <Resource Include="Images\ITGEN.PNG" />
+    <Resource Include="Images\ITLINK.PNG" />
+    <Resource Include="Images\ITWP.PNG" />
+    <Resource Include="Images\ListSettings.png" />
+    <Resource Include="Images\ListTemplate.png" />
+    <Resource Include="Images\Open.png" />
+    <Resource Include="Images\Permission.png" />
+    <Resource Include="Images\Permission2.png" />
+    <Resource Include="Images\personresult.gif" />
+    <Resource Include="Images\PowerShell.png" />
+    <Resource Include="Images\Property.png" />
+    <Resource Include="Images\RecycleBin.png" />
+    <Resource Include="Images\sharepointfoundation16-warning.png" />
+    <Resource Include="Images\sharepointfoundation16.png" />
+    <Resource Include="Images\sharethissite.png" />
+    <Resource Include="Images\SiteColumn.png" />
+    <Resource Include="Images\SiteGroup.png" />
+    <Resource Include="Images\SiteGroupDistributionList.png" />
+    <Resource Include="Images\SiteGroupSecurityGroup.png" />
+    <Resource Include="Images\siteicon_16x16.png" />
+    <Resource Include="Images\sitelaunchsharedanonymously.png" />
+    <Resource Include="Images\SubSite.png" />
+    <Resource Include="Images\User.png" />
+    <Resource Include="Images\UserExclamation.png" />
+    <Resource Include="Images\UserProfile.png" />
+    <Resource Include="Images\VersionHistory.png" />
+    <Resource Include="Images\View.png" />
+    <Resource Include="Images\Warning.png" />
+    <Resource Include="Images\WebPart.png" />
+    <Resource Include="Images\WebTemplate.png" />
+    <Resource Include="Images\workflows.png" />
+    <Resource Include="Images\workflows2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Refresh.png" />
+    <Resource Include="Images\Settings.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="SharePoint2013.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Logo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Controls\PropertyGrid\Images\AdvancedProperties11.png" />
+    <Resource Include="Controls\PropertyGrid\Images\Categorize16.png" />
+    <Resource Include="Controls\PropertyGrid\Images\ClearFilter16.png" />
+    <Resource Include="Controls\PropertyGrid\Images\Database11.png" />
+    <Resource Include="Controls\PropertyGrid\Images\Inheritance11.png" />
+    <Resource Include="Controls\PropertyGrid\Images\Local11.png" />
+    <Resource Include="Controls\PropertyGrid\Images\Resource11.png" />
+    <Resource Include="Controls\PropertyGrid\Images\SortAscending16.png" />
+    <Resource Include="Controls\PropertyGrid\Images\Style11.png" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

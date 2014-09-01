@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30324.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SP2013Access", "SP2013Access\SP2013Access.csproj", "{579A830D-B64E-44BF-ABC0-99E56D275E8D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Assembly", "Assembly", "{EFDBC368-BE4F-4D36-8BC5-423CEA0FA09A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharePoint.Remote.Access", "SharePoint.Remote.Access\SharePoint.Remote.Access.csproj", "{CDE4C77F-ACF4-4D04-8C6C-0F8165AEAF21}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{579A830D-B64E-44BF-ABC0-99E56D275E8D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{579A830D-B64E-44BF-ABC0-99E56D275E8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{579A830D-B64E-44BF-ABC0-99E56D275E8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{579A830D-B64E-44BF-ABC0-99E56D275E8D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CDE4C77F-ACF4-4D04-8C6C-0F8165AEAF21}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDE4C77F-ACF4-4D04-8C6C-0F8165AEAF21}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CDE4C77F-ACF4-4D04-8C6C-0F8165AEAF21}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CDE4C77F-ACF4-4D04-8C6C-0F8165AEAF21}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

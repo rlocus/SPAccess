@@ -1,22 +1,9 @@
-﻿/*************************************************************************************
-
-   Extended WPF Toolkit
-
-   Copyright (C) 2007-2013 Xceed Software Inc.
-
-   This program is provided to you under the terms of the Microsoft Public
-   License (Ms-PL) as published at http://wpftoolkit.codeplex.com/license
-
-   For more features, controls, and fast professional support,
-   pick up the Plus Edition at http://xceed.com/wpf_toolkit
-
-   Stay informed: follow @datagrid on Twitter or Like http://facebook.com/datagrids
-
-  ***********************************************************************************/
-
+﻿using SP2013Access.Controls.PropertyGrid.Attributes;
+using SP2013Access.Controls.PropertyGrid.Editors;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Markup.Primitives;
@@ -105,10 +92,10 @@ namespace SP2013Access.Controls.PropertyGrid
             return PropertyDescriptor.IsReadOnly;
         }
 
-        //internal override ITypeEditor CreateDefaultEditor()
-        //{
-        //  return PropertyGridUtilities.CreateDefaultEditor( PropertyDescriptor.PropertyType, PropertyDescriptor.Converter );
-        //}
+        internal override ITypeEditor CreateDefaultEditor()
+        {
+            return PropertyGridUtilities.CreateDefaultEditor(PropertyDescriptor.PropertyType, PropertyDescriptor.Converter);
+        }
 
         protected override bool ComputeCanResetValue()
         {
@@ -165,30 +152,29 @@ namespace SP2013Access.Controls.PropertyGrid
             PropertyDescriptor.ResetValue(SelectedObject);
         }
 
-        //internal override ITypeEditor CreateAttributeEditor()
-        //{
-        //  var editorAttribute = GetAttribute<EditorAttribute>();
-        //  if( editorAttribute != null )
-        //  {
-        //    Type type = Type.GetType( editorAttribute.EditorTypeName );
+        internal override ITypeEditor CreateAttributeEditor()
+        {
+            var editorAttribute = GetAttribute<EditorAttribute>();
+            if (editorAttribute != null)
+            {
+                Type type = Type.GetType(editorAttribute.EditorTypeName);
 
-        //    // If the editor does not have any public parameterless constructor, forget it.
-        //    if( typeof( ITypeEditor ).IsAssignableFrom( type )
-        //      && ( type.GetConstructor( new Type[ 0 ] ) != null ) )
-        //    {
-        //      var instance = Activator.CreateInstance( type ) as ITypeEditor;
-        //      Debug.Assert( instance != null, "Type was expected to be ITypeEditor with public constructor." );
-        //      if( instance != null )
-        //        return instance;
-        //    }
-        //  }
+                // If the editor does not have any public parameterless constructor, forget it.
+                if (typeof(ITypeEditor).IsAssignableFrom(type)
+                  && (type.GetConstructor(new Type[0]) != null))
+                {
+                    var instance = Activator.CreateInstance(type) as ITypeEditor;
+                    Debug.Assert(instance != null, "Type was expected to be ITypeEditor with public constructor.");
+                    return instance;
+                }
+            }
 
-        //  var itemsSourceAttribute = GetAttribute<ItemsSourceAttribute>();
-        //  if( itemsSourceAttribute != null )
-        //    return new ItemsSourceAttributeEditor( itemsSourceAttribute );
+            var itemsSourceAttribute = GetAttribute<ItemsSourceAttribute>();
+            if (itemsSourceAttribute != null)
+                return new ItemsSourceAttributeEditor(itemsSourceAttribute);
 
-        //  return null;
-        //}
+            return null;
+        }
 
         #endregion Override Methods
 

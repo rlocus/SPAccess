@@ -1,20 +1,4 @@
-﻿/*************************************************************************************
-
-   Extended WPF Toolkit
-
-   Copyright (C) 2007-2013 Xceed Software Inc.
-
-   This program is provided to you under the terms of the Microsoft Public
-   License (Ms-PL) as published at http://wpftoolkit.codeplex.com/license
-
-   For more features, controls, and fast professional support,
-   pick up the Plus Edition at http://xceed.com/wpf_toolkit
-
-   Stay informed: follow @datagrid on Twitter or Like http://facebook.com/datagrids
-
-  ***********************************************************************************/
-
-using SP2013Access.Controls.Utilities;
+﻿using SP2013Access.Controls.Utilities;
 using SP2013Access.Extensions;
 using System;
 using System.Collections;
@@ -34,7 +18,6 @@ namespace SP2013Access.Controls.PropertyGrid
         internal const string PART_ValueContainer = "PART_ValueContainer";
         private ContentControl _valueContainer;
         private ContainerHelperBase _containerHelper;
-        private IPropertyContainer _parentNode;
         public static readonly DependencyProperty AdvancedOptionsIconProperty;
         public static readonly DependencyProperty AdvancedOptionsTooltipProperty;
         public static readonly DependencyProperty DefinitionKeyProperty;
@@ -164,17 +147,7 @@ namespace SP2013Access.Controls.PropertyGrid
             }
         }
 
-        internal IPropertyContainer ParentNode
-        {
-            get
-            {
-                return this._parentNode;
-            }
-            set
-            {
-                this._parentNode = value;
-            }
-        }
+        internal IPropertyContainer ParentNode { get; set; }
 
         internal ContentControl ValueContainer
         {

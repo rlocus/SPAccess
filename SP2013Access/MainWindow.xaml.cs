@@ -1,9 +1,11 @@
-﻿using SharePoint.Remote.Access.Helpers;
+﻿using System.Collections.Generic;
+using SharePoint.Remote.Access.Helpers;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using SP2013Access.Controls.PropertyGrid;
 
 namespace SP2013Access
 {
@@ -13,6 +15,12 @@ namespace SP2013Access
     public partial class MainWindow : Window
     {
         public ObservableCollection<RecentSite> RecentSites
+        {
+            get;
+            private set;
+        }
+
+        public ObservableCollection<CustomPropertyItem> PropertyItems
         {
             get;
             private set;
@@ -71,6 +79,11 @@ namespace SP2013Access
                 SPClientContext clientContext = openSiteWindow.ClientContext;
                 ClientTreeView.Fill(clientContext);
                 LoadMenu();
+
+                PropertyItems = new ObservableCollection<CustomPropertyItem>();
+                PropertyItems.Add(new CustomPropertyItem() {DisplayName = "Url", Value = clientContext.Url});
+
+                PropertyGrid.PropertiesSource = PropertyItems;
             }
         }
 

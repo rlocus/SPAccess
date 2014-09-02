@@ -132,60 +132,62 @@ namespace SP2013Access.Controls.PropertyGrid
 
         private void PrepareChildrenPropertyItemCore(PropertyItemBase propertyItem, object item)
         {
-            //object obj = null;
+            object obj = null;
             if (propertyItem.DisplayName == null && this.PropertyContainer.PropertyNameBinding != null)
             {
                 BindingOperations.SetBinding(propertyItem, PropertyItemBase.DisplayNameProperty, this.PropertyContainer.PropertyNameBinding);
-                //obj = propertyItem.DisplayName;
+                obj = propertyItem.DisplayName;
             }
             if (propertyItem.Editor == null)
             {
-                //object definitionKey = propertyItem.DefinitionKey;
-                //Type type = definitionKey as Type;
-                //if (propertyItem.Editor == null && definitionKey != null)
-                //{
-                //    propertyItem.Editor = base.GenerateCustomEditingElement(definitionKey, propertyItem);
-                //}
-                //if (propertyItem.Editor == null && type != null)
-                //{
-                //    propertyItem.Editor = (base.GenerateCustomEditingElement(type, propertyItem) ?? this.GenerateSystemDefaultEditingElement(type, propertyItem));
-                //}
-                //if (propertyItem.Editor == null && definitionKey == null)
-                //{
-                //    if (obj == null && this.PropertyContainer.PropertyNameBinding != null && item != null)
-                //    {
-                //        obj = GeneralUtilities.GetBindingValue(item, this.PropertyContainer.PropertyNameBinding);
-                //    }
-                //    if (obj != null)
-                //    {
-                //        propertyItem.Editor = base.GenerateCustomEditingElement(obj, propertyItem);
-                //    }
-                //}
-                //if (propertyItem.Editor == null && type == null)
-                //{
-                //    if (item != null && this.PropertyContainer.PropertyValueBinding != null)
-                //    {
-                //        object bindingValue = GeneralUtilities.GetBindingValue(item, this.CreateChildrenDefaultBinding(propertyItem));
-                //        if (bindingValue != null)
-                //        {
-                //            Type type2 = bindingValue.GetType();
-                //            propertyItem.Editor = (base.GenerateCustomEditingElement(type2, propertyItem) ?? this.GenerateSystemDefaultEditingElement(type2, propertyItem));
-                //        }
-                //    }
-                //    else
-                //    {
-                //        propertyItem.Editor = this.GenerateDefaultEditingElement(propertyItem);
-                //    }
-                //}
-                //if (propertyItem.Editor == null)
-                //{
-                //    propertyItem.Editor = this.GenerateDefaultEditingElement(propertyItem);
-                //}
-                //if (propertyItem.Editor == null)
-                //{
-                //    propertyItem.Editor = this.GenerateSystemDefaultEditingElement(propertyItem);
-                //}
-                //ContainerHelperBase.SetIsGenerated(propertyItem.Editor, true);
+                object definitionKey = propertyItem.DefinitionKey;
+                Type type = definitionKey as Type;
+                if (propertyItem.Editor == null && definitionKey != null)
+                {
+                    propertyItem.Editor = base.GenerateCustomEditingElement(definitionKey, propertyItem);
+                }
+                if (propertyItem.Editor == null && type != null)
+                {
+                    propertyItem.Editor = base.GenerateCustomEditingElement(type, propertyItem)
+                         ?? this.GenerateSystemDefaultEditingElement(type, propertyItem);
+                }
+                if (propertyItem.Editor == null && definitionKey == null)
+                {
+                    if (obj == null && this.PropertyContainer.PropertyNameBinding != null && item != null)
+                    {
+                        obj = GeneralUtilities.GetBindingValue(item, this.PropertyContainer.PropertyNameBinding);
+                    }
+                    if (obj != null)
+                    {
+                        propertyItem.Editor = base.GenerateCustomEditingElement(obj, propertyItem);
+                    }
+                }
+                if (propertyItem.Editor == null && type == null)
+                {
+                    if (item != null && this.PropertyContainer.PropertyValueBinding != null)
+                    {
+                        object bindingValue = GeneralUtilities.GetBindingValue(item, this.CreateChildrenDefaultBinding(propertyItem));
+                        if (bindingValue != null)
+                        {
+                            Type type2 = bindingValue.GetType();
+                            propertyItem.Editor = base.GenerateCustomEditingElement(type2, propertyItem)
+                            ?? this.GenerateSystemDefaultEditingElement(type2, propertyItem);
+                        }
+                    }
+                    else
+                    {
+                        propertyItem.Editor = this.GenerateDefaultEditingElement(propertyItem);
+                    }
+                }
+                if (propertyItem.Editor == null)
+                {
+                    propertyItem.Editor = this.GenerateDefaultEditingElement(propertyItem);
+                }
+                if (propertyItem.Editor == null)
+                {
+                    propertyItem.Editor = this.GenerateSystemDefaultEditingElement(propertyItem);
+                }
+                ContainerHelperBase.SetIsGenerated(propertyItem.Editor, true);
             }
         }
 
@@ -210,7 +212,7 @@ namespace SP2013Access.Controls.PropertyGrid
                 }
                 if (customProperty.Editor == null && type != null)
                 {
-                    //customProperty.Editor = this.GenerateSystemDefaultEditingElement(type, customProperty);
+                    customProperty.Editor = this.GenerateSystemDefaultEditingElement(type, customProperty);
                 }
                 if (customProperty.Editor == null)
                 {
@@ -218,7 +220,7 @@ namespace SP2013Access.Controls.PropertyGrid
                 }
                 if (customProperty.Editor == null)
                 {
-                    //customProperty.Editor = this.GenerateSystemDefaultEditingElement(customProperty);
+                    customProperty.Editor = this.GenerateSystemDefaultEditingElement(customProperty);
                 }
                 if (customProperty.Editor != null)
                 {
@@ -329,13 +331,14 @@ namespace SP2013Access.Controls.PropertyGrid
             return base.CreateCustomEditor(this.PropertyContainer.DefaultEditorDefinition, propertyItem);
         }
 
-        //protected FrameworkElement GenerateSystemDefaultEditingElement(Type type, PropertyItemBase propertyItem)
-        //{
-        //    return PropertyGridUtilities.GenerateSystemDefaultEditingElement(type, propertyItem);
-        //}
-        //protected FrameworkElement GenerateSystemDefaultEditingElement(PropertyItemBase propertyItem)
-        //{
-        //    return PropertyGridUtilities.GenerateSystemDefaultEditingElement(propertyItem);
-        //}
+        protected FrameworkElement GenerateSystemDefaultEditingElement(Type type, PropertyItemBase propertyItem)
+        {
+            return PropertyGridUtilities.GenerateSystemDefaultEditingElement(type, propertyItem);
+        }
+
+        protected FrameworkElement GenerateSystemDefaultEditingElement(PropertyItemBase propertyItem)
+        {
+            return PropertyGridUtilities.GenerateSystemDefaultEditingElement(propertyItem);
+        }
     }
 }

@@ -1,0 +1,5 @@
+D:\Проекты\SPAccess\SharePoint.Remote.Access\bin\Debug\SharePoint.Remote.Access.dll
+D:\Проекты\SPAccess\SharePoint.Remote.Access\bin\Debug\SharePoint.Remote.Access.pdb
+D:\Проекты\SPAccess\SharePoint.Remote.Access\obj\Debug\SharePoint.Remote.Access.csprojResolveAssemblyReference.cache
+D:\Проекты\SPAccess\SharePoint.Remote.Access\obj\Debug\SharePoint.Remote.Access.dll
+D:\Проекты\SPAccess\SharePoint.Remote.Access\obj\Debug\SharePoint.Remote.Access.pdb

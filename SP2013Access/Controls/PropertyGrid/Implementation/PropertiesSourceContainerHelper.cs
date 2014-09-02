@@ -5,7 +5,7 @@ namespace SP2013Access.Controls.PropertyGrid
 {
     internal class PropertiesSourceContainerHelper : PropertiesContainerHelperBase
     {
-        private static readonly string ReadOnlyCollectionExceptionMessage = "You cannot modify this collection directly when using PropertiesSource with the PropertyGrid. Have the content of PropertiesSource implement IList and INotifyCollectionChanged then modify the orignial source";
+        private const string ReadOnlyCollectionExceptionMessage = "You cannot modify this collection directly when using PropertiesSource with the PropertyGrid. Have the content of PropertiesSource implement IList and INotifyCollectionChanged then modify the orignial source";
 
         public PropertiesSourceContainerHelper(IPropertyContainer propertyContainer, IEnumerable propertiesSource)
             : base(propertyContainer)
@@ -18,12 +18,10 @@ namespace SP2013Access.Controls.PropertyGrid
             if (list == null)
             {
                 list = new ArrayList();
-                if (propertiesSource != null)
+
+                foreach (object current in propertiesSource)
                 {
-                    foreach (object current in propertiesSource)
-                    {
-                        list.Add(current);
-                    }
+                    list.Add(current);
                 }
             }
             list = new WeakCollectionChangedWrapper(list);

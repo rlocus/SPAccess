@@ -6,7 +6,14 @@
         xmlns:uc="clr-namespace:SP2013Access.Controls"
         xmlns:pg="clr-namespace:SP2013Access.Controls.PropertyGrid"
         Icon="pack://application:,,,/images/FAVICON.ICO">
-    <Grid x:Name="LayoutRoot">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Controls/PropertyGrid/Themes/Generic.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            </ResourceDictionary>
+        </Window.Resources>
+            <Grid x:Name="LayoutRoot">
         <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="50*" />
@@ -45,7 +52,7 @@
                     </GridView>
                 </ListView.View>
             </ListView>-->
-            <pg:PropertyGrid Grid.Column="2" HorizontalContentAlignment="Stretch" Grid.Row="1" VerticalContentAlignment="Stretch" ShowSearchBox="False"></pg:PropertyGrid>
+            <pg:PropertyGrid x:Name="PropertyGrid" Grid.Column="2" HorizontalContentAlignment="Stretch" Grid.Row="1" VerticalContentAlignment="Stretch" ShowSearchBox="False" IsReadOnly="True" IsCategorized="False"></pg:PropertyGrid>
         </Grid>
     </Grid>
 </Window>

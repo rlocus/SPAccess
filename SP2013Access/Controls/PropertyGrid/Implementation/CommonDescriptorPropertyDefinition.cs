@@ -1,4 +1,6 @@
-﻿using SP2013Access.Controls.PropertyGrid.Converters;
+﻿using SP2013Access.Controls.PropertyGrid.Attributes;
+using SP2013Access.Controls.PropertyGrid.Converters;
+using SP2013Access.Controls.PropertyGrid.Editors;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -135,15 +137,16 @@ namespace SP2013Access.Controls.PropertyGrid
             return this.PropertyDescriptors.FirstOrDefault((PropertyDescriptor x) => x.IsReadOnly) != null;
         }
 
-        //internal override ITypeEditor CreateDefaultEditor()
-        //{
-        //    object obj = null;
-        //    if (PropertyGridUtilities.IsSameForAllObject(this.PropertyDescriptors, (object o) => ((PropertyDescriptor)o).Converter.GetType(), out obj))
-        //    {
-        //        return PropertyGridUtilities.CreateDefaultEditor(base.PropertyType, this.PropertyDescriptors.First<PropertyDescriptor>().Converter);
-        //    }
-        //    return new TextBlockEditor();
-        //}
+        internal override ITypeEditor CreateDefaultEditor()
+        {
+            object obj = null;
+            if (PropertyGridUtilities.IsSameForAllObject(this.PropertyDescriptors, (object o) => ((PropertyDescriptor)o).Converter.GetType(), out obj))
+            {
+                return PropertyGridUtilities.CreateDefaultEditor(base.PropertyType, this.PropertyDescriptors.First<PropertyDescriptor>().Converter);
+            }
+            return new TextBlockEditor();
+        }
+
         protected override string ComputeCategory()
         {
             object obj = null;
@@ -291,44 +294,45 @@ namespace SP2013Access.Controls.PropertyGrid
             return !base.IsReadOnly;
         }
 
-        //internal override ITypeEditor CreateAttributeEditor()
-        //{
-        //    if (this.IsAttributePresentForAllSelectedObjects<EditorAttribute>())
-        //    {
-        //        object obj = null;
-        //        PropertyGridUtilities.IsSameForAllObject(this.PropertyDescriptors, (object o) => Type.GetType(this.GetAttribute<EditorAttribute>((PropertyDescriptor)o).EditorTypeName), out obj);
-        //        Type type = obj as Type;
-        //        if (type != null)
-        //        {
-        //            object obj2 = Activator.CreateInstance(type);
-        //            if (obj2 is ITypeEditor)
-        //            {
-        //                return (ITypeEditor)obj2;
-        //            }
-        //        }
-        //    }
-        //    if (this.IsAttributePresentForAllSelectedObjects<ItemsSourceAttribute>())
-        //    {
-        //        object obj3 = null;
-        //        PropertyGridUtilities.IsSameForAllObject(this.PropertyDescriptors, (object o) => this.GetAttribute<ItemsSourceAttribute>((PropertyDescriptor)o), out obj3);
-        //        ItemsSourceAttribute itemsSourceAttribute = obj3 as ItemsSourceAttribute;
-        //        if (itemsSourceAttribute != null)
-        //        {
-        //            return new ItemsSourceAttributeEditor(itemsSourceAttribute);
-        //        }
-        //    }
-        //    return null;
-        //}
+        internal override ITypeEditor CreateAttributeEditor()
+        {
+            if (this.IsAttributePresentForAllSelectedObjects<EditorAttribute>())
+            {
+                object obj = null;
+                PropertyGridUtilities.IsSameForAllObject(this.PropertyDescriptors, (object o) => Type.GetType(this.GetAttribute<EditorAttribute>((PropertyDescriptor)o).EditorTypeName), out obj);
+                Type type = obj as Type;
+                if (type != null)
+                {
+                    object obj2 = Activator.CreateInstance(type);
+                    if (obj2 is ITypeEditor)
+                    {
+                        return (ITypeEditor)obj2;
+                    }
+                }
+            }
+            if (this.IsAttributePresentForAllSelectedObjects<ItemsSourceAttribute>())
+            {
+                object obj3 = null;
+                PropertyGridUtilities.IsSameForAllObject(this.PropertyDescriptors, (object o) => this.GetAttribute<ItemsSourceAttribute>((PropertyDescriptor)o), out obj3);
+                ItemsSourceAttribute itemsSourceAttribute = obj3 as ItemsSourceAttribute;
+                if (itemsSourceAttribute != null)
+                {
+                    return new ItemsSourceAttributeEditor(itemsSourceAttribute);
+                }
+            }
+            return null;
+        }
+
         private T GetAttribute<T>(PropertyDescriptor pd) where T : Attribute
         {
             return PropertyGridUtilities.GetAttribute<T>(pd);
         }
 
-        //private bool IsAttributePresentForAllSelectedObjects<T>() where T : Attribute
-        //{
-        //    object obj = null;
-        //    PropertyGridUtilities.IsSameForAllObject(this.PropertyDescriptors, (object o) => this.GetAttribute<T>((PropertyDescriptor)o) != null, out obj);
-        //    return obj != null && (bool)obj;
-        //}
+        private bool IsAttributePresentForAllSelectedObjects<T>() where T : Attribute
+        {
+            object obj = null;
+            PropertyGridUtilities.IsSameForAllObject(this.PropertyDescriptors, (object o) => this.GetAttribute<T>((PropertyDescriptor)o) != null, out obj);
+            return obj != null && (bool)obj;
+        }
     }
 }

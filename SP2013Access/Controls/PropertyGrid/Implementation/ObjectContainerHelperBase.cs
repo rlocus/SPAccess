@@ -1,4 +1,5 @@
 ﻿using SP2013Access.Controls.PropertyGrid.Attributes;
+using SP2013Access.Controls.PropertyGrid.Editors;
 using SP2013Access.Controls.Utilities;
 using System;
 using System.Collections;
@@ -18,7 +19,7 @@ namespace SP2013Access.Controls.PropertyGrid
     internal abstract class ObjectContainerHelperBase : ContainerHelperBase
     {
         private bool _isPreparingItemFlag;
-        private PropertyItemCollection _propertyItemCollection;
+        private readonly PropertyItemCollection _propertyItemCollection;
 
         public override IList Properties
         {
@@ -50,7 +51,7 @@ namespace SP2013Access.Controls.PropertyGrid
             }
         }
 
-        public ObjectContainerHelperBase(IPropertyContainer propertyContainer)
+        protected ObjectContainerHelperBase(IPropertyContainer propertyContainer)
             : base(propertyContainer)
         {
             this._propertyItemCollection = new PropertyItemCollection(new ObservableCollection<PropertyItem>());
@@ -184,7 +185,6 @@ namespace SP2013Access.Controls.PropertyGrid
         private void RegenerateProperties()
         {
             IEnumerable<PropertyItem> enumerable = this.GenerateSubPropertiesCore();
-            IPropertyContainer arg_0D_0 = this.PropertyContainer;
             foreach (PropertyItem current in enumerable)
             {
                 this.InitializePropertyItem(current);
@@ -209,7 +209,7 @@ namespace SP2013Access.Controls.PropertyGrid
         {
             TypeConverter converter = TypeDescriptor.GetConverter(instance);
             PropertyDescriptorCollection properties;
-            if (converter == null || !converter.GetPropertiesSupported())
+            if (!converter.GetPropertiesSupported())
             {
                 if (instance is ICustomTypeDescriptor)
                 {
@@ -311,51 +311,52 @@ namespace SP2013Access.Controls.PropertyGrid
             propertyItem.SetBinding(itemProperty, binding);
         }
 
-        //private FrameworkElement GenerateChildrenEditorElement(PropertyItem propertyItem)
-        //{
-        //    FrameworkElement frameworkElement = null;
-        //    DescriptorPropertyDefinitionBase descriptorDefinition = propertyItem.DescriptorDefinition;
-        //    object definitionKey = propertyItem.DefinitionKey;
-        //    Type type = definitionKey as Type;
-        //    ITypeEditor typeEditor = null;
-        //    if (descriptorDefinition.IsReadOnly)
-        //    {
-        //        typeEditor = new TextBlockEditor();
-        //    }
-        //    if (typeEditor == null)
-        //    {
-        //        typeEditor = descriptorDefinition.CreateAttributeEditor();
-        //    }
-        //    if (typeEditor != null)
-        //    {
-        //        frameworkElement = typeEditor.ResolveEditor(propertyItem);
-        //    }
-        //    if (frameworkElement == null && definitionKey != null)
-        //    {
-        //        frameworkElement = base.GenerateCustomEditingElement(definitionKey, propertyItem);
-        //    }
-        //    if (frameworkElement == null && type != null)
-        //    {
-        //        frameworkElement = base.GenerateCustomEditingElement(type, propertyItem);
-        //    }
-        //    if (frameworkElement == null && definitionKey == null)
-        //    {
-        //        frameworkElement = base.GenerateCustomEditingElement(propertyItem.PropertyDescriptor.Name, propertyItem);
-        //    }
-        //    if (frameworkElement == null && type == null)
-        //    {
-        //        frameworkElement = base.GenerateCustomEditingElement(propertyItem.PropertyType, propertyItem);
-        //    }
-        //    if (frameworkElement == null)
-        //    {
-        //        if (typeEditor == null)
-        //        {
-        //            typeEditor = ((type != null) ? PropertyGridUtilities.CreateDefaultEditor(type, null) : descriptorDefinition.CreateDefaultEditor());
-        //        }
-        //        frameworkElement = typeEditor.ResolveEditor(propertyItem);
-        //    }
-        //    return frameworkElement;
-        //}
+        private FrameworkElement GenerateChildrenEditorElement(PropertyItem propertyItem)
+        {
+            FrameworkElement frameworkElement = null;
+            DescriptorPropertyDefinitionBase descriptorDefinition = propertyItem.DescriptorDefinition;
+            object definitionKey = propertyItem.DefinitionKey;
+            Type type = definitionKey as Type;
+            ITypeEditor typeEditor = null;
+            if (descriptorDefinition.IsReadOnly)
+            {
+                typeEditor = new TextBlockEditor();
+            }
+            if (typeEditor == null)
+            {
+                typeEditor = descriptorDefinition.CreateAttributeEditor();
+            }
+            if (typeEditor != null)
+            {
+                frameworkElement = typeEditor.ResolveEditor(propertyItem);
+            }
+            if (frameworkElement == null && definitionKey != null)
+            {
+                frameworkElement = base.GenerateCustomEditingElement(definitionKey, propertyItem);
+            }
+            if (frameworkElement == null && type != null)
+            {
+                frameworkElement = base.GenerateCustomEditingElement(type, propertyItem);
+            }
+            if (frameworkElement == null && definitionKey == null)
+            {
+                frameworkElement = base.GenerateCustomEditingElement(propertyItem.PropertyDescriptor.Name, propertyItem);
+            }
+            if (frameworkElement == null && type == null)
+            {
+                frameworkElement = base.GenerateCustomEditingElement(propertyItem.PropertyType, propertyItem);
+            }
+            if (frameworkElement == null)
+            {
+                if (typeEditor == null)
+                {
+                    typeEditor = ((type != null) ? PropertyGridUtilities.CreateDefaultEditor(type, null) : descriptorDefinition.CreateDefaultEditor());
+                }
+                frameworkElement = typeEditor.ResolveEditor(propertyItem);
+            }
+            return frameworkElement;
+        }
+
         internal PropertyDefinition GetPropertyDefinition(PropertyDescriptor descriptor)
         {
             PropertyDefinition propertyDefinition = null;
@@ -387,12 +388,12 @@ namespace SP2013Access.Controls.PropertyGrid
             base.PrepareChildrenPropertyItem(propertyItem, item);
             if (propertyItem.Editor == null)
             {
-                //FrameworkElement frameworkElement = this.GenerateChildrenEditorElement((PropertyItem)propertyItem);
-                //if (frameworkElement != null)
-                //{
-                //    ContainerHelperBase.SetIsGenerated(frameworkElement, true);
-                //    propertyItem.Editor = frameworkElement;
-                //}
+                FrameworkElement frameworkElement = this.GenerateChildrenEditorElement((PropertyItem)propertyItem);
+                if (frameworkElement != null)
+                {
+                    ContainerHelperBase.SetIsGenerated(frameworkElement, true);
+                    propertyItem.Editor = frameworkElement;
+                }
             }
             this._isPreparingItemFlag = false;
         }

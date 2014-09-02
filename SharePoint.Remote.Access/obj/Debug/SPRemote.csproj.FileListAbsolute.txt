@@ -1,0 +1,5 @@
+D:\Проекты\SPRemoteManager\SPRemote\bin\Debug\SharePoint.Remote.Access.dll
+D:\Проекты\SPRemoteManager\SPRemote\bin\Debug\SharePoint.Remote.Access.pdb
+D:\Проекты\SPRemoteManager\SPRemote\bin\Debug\Microsoft.SharePoint.Client.WorkflowServices.dll
+D:\Проекты\SPRemoteManager\SPRemote\obj\Debug\SharePoint.Remote.Access.dll
+D:\Проекты\SPRemoteManager\SPRemote\obj\Debug\SharePoint.Remote.Access.pdb

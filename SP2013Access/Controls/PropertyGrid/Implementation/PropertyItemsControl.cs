@@ -1,20 +1,4 @@
-﻿/*************************************************************************************
-
-   Extended WPF Toolkit
-
-   Copyright (C) 2007-2013 Xceed Software Inc.
-
-   This program is provided to you under the terms of the Microsoft Public
-   License (Ms-PL) as published at http://wpftoolkit.codeplex.com/license
-
-   For more features, controls, and fast professional support,
-   pick up the Plus Edition at http://xceed.com/wpf_toolkit
-
-   Stay informed: follow @datagrid on Twitter or Like http://facebook.com/datagrids
-
-  ***********************************************************************************/
-
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 
 namespace SP2013Access.Controls.PropertyGrid
@@ -26,55 +10,51 @@ namespace SP2013Access.Controls.PropertyGrid
     /// </summary>
     public class PropertyItemsControl : ItemsControl
     {
-        #region PreparePropertyItemEvent Attached Routed Event
-
         internal static readonly RoutedEvent PreparePropertyItemEvent = EventManager.RegisterRoutedEvent("PreparePropertyItem", RoutingStrategy.Bubble, typeof(PropertyItemEventHandler), typeof(PropertyItemsControl));
+        internal static readonly RoutedEvent ClearPropertyItemEvent = EventManager.RegisterRoutedEvent("ClearPropertyItem", RoutingStrategy.Bubble, typeof(PropertyItemEventHandler), typeof(PropertyItemsControl));
 
         internal event PropertyItemEventHandler PreparePropertyItem
         {
             add
             {
-                AddHandler(PropertyItemsControl.PreparePropertyItemEvent, value);
+                base.AddHandler(PropertyItemsControl.PreparePropertyItemEvent, value);
             }
             remove
             {
-                RemoveHandler(PropertyItemsControl.PreparePropertyItemEvent, value);
+                base.RemoveHandler(PropertyItemsControl.PreparePropertyItemEvent, value);
             }
         }
-
-        private void RaisePreparePropertyItemEvent(PropertyItemBase propertyItem, object item)
-        {
-            this.RaiseEvent(new PropertyItemEventArgs(PropertyItemsControl.PreparePropertyItemEvent, this, propertyItem, item));
-        }
-
-        #endregion PreparePropertyItemEvent Attached Routed Event
-
-        #region ClearPropertyItemEvent Attached Routed Event
-
-        internal static readonly RoutedEvent ClearPropertyItemEvent = EventManager.RegisterRoutedEvent("ClearPropertyItem", RoutingStrategy.Bubble, typeof(PropertyItemEventHandler), typeof(PropertyItemsControl));
 
         internal event PropertyItemEventHandler ClearPropertyItem
         {
             add
             {
-                AddHandler(PropertyItemsControl.ClearPropertyItemEvent, value);
+                base.AddHandler(PropertyItemsControl.ClearPropertyItemEvent, value);
             }
             remove
             {
-                RemoveHandler(PropertyItemsControl.ClearPropertyItemEvent, value);
+                base.RemoveHandler(PropertyItemsControl.ClearPropertyItemEvent, value);
             }
+        }
+
+        private void RaisePreparePropertyItemEvent(PropertyItemBase propertyItem, object item)
+        {
+            base.RaiseEvent(new PropertyItemEventArgs(PropertyItemsControl.PreparePropertyItemEvent, this, propertyItem, item));
         }
 
         private void RaiseClearPropertyItemEvent(PropertyItemBase propertyItem, object item)
         {
-            this.RaiseEvent(new PropertyItemEventArgs(PropertyItemsControl.ClearPropertyItemEvent, this, propertyItem, item));
+            base.RaiseEvent(new PropertyItemEventArgs(PropertyItemsControl.ClearPropertyItemEvent, this, propertyItem, item));
         }
-
-        #endregion ClearPropertyItemEvent Attached Routed Event
 
         protected override bool IsItemItsOwnContainerOverride(object item)
         {
-            return (item is PropertyItemBase);
+            return item is PropertyItemBase;
+        }
+
+        protected override DependencyObject GetContainerForItemOverride()
+        {
+            return new ListPropertyItem();
         }
 
         protected override void PrepareContainerForItemOverride(DependencyObject element, object item)

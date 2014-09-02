@@ -1,20 +1,4 @@
-﻿/*************************************************************************************
-
-   Extended WPF Toolkit
-
-   Copyright (C) 2007-2013 Xceed Software Inc.
-
-   This program is provided to you under the terms of the Microsoft Public
-   License (Ms-PL) as published at http://wpftoolkit.codeplex.com/license
-
-   For more features, controls, and fast professional support,
-   pick up the Plus Edition at http://xceed.com/wpf_toolkit
-
-   Stay informed: follow @datagrid on Twitter or Like http://facebook.com/datagrids
-
-  ***********************************************************************************/
-
-using SP2013Access.Controls.PropertyGrid.Commands;
+﻿using SP2013Access.Controls.PropertyGrid.Commands;
 using SP2013Access.Controls.Utilities;
 using SP2013Access.Extensions;
 using System;
@@ -47,11 +31,11 @@ namespace SP2013Access.Controls.PropertyGrid
         private ContainerHelperBase _containerHelper;
         private PropertyDefinitionCollection _propertyDefinitions;
         private EditorDefinitionCollection _editorDefinitions;
-        private WeakEventListener<NotifyCollectionChangedEventArgs> _propertyDefinitionsListener;
-        private WeakEventListener<NotifyCollectionChangedEventArgs> _editorDefinitionsListener;
-        private WeakEventListener<NotifyCollectionChangedEventArgs> _categoryDefinitionsListener;
+        private readonly WeakEventListener<NotifyCollectionChangedEventArgs> _propertyDefinitionsListener;
+        private readonly WeakEventListener<NotifyCollectionChangedEventArgs> _editorDefinitionsListener;
+        private readonly WeakEventListener<NotifyCollectionChangedEventArgs> _categoryDefinitionsListener;
         private CategoryDefinitionCollection _categoryDefinitions;
-        private WeakEventListener<NotifyCollectionChangedEventArgs> _selectedObjectsListener;
+        private readonly WeakEventListener<NotifyCollectionChangedEventArgs> _selectedObjectsListener;
         private Binding _propertyValueBinding;
         private Binding _propertyNameBinding;
         private IList _selectedObjects;
@@ -796,7 +780,7 @@ namespace SP2013Access.Controls.PropertyGrid
 
         private void OnSelectedObjectsOverrideChanged(IList oldValue, IList newValue)
         {
-            this.SetSelectedObjects((newValue != null) ? newValue : new ObservableCollection<object>());
+            this.SetSelectedObjects(newValue ?? new ObservableCollection<object>());
         }
 
         private static void OnSelectedPropertyItemChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
@@ -909,7 +893,12 @@ namespace SP2013Access.Controls.PropertyGrid
             this._containerHelper.ChildrenItemsControl = (base.GetTemplateChild("PART_PropertyItemsControl") as PropertyItemsControl);
             TranslateTransform translateTransform = new TranslateTransform();
             translateTransform.X = this.NameColumnWidth;
-            this._dragThumb.RenderTransform = translateTransform;
+
+            if (this._dragThumb != null)
+            {
+                this._dragThumb.RenderTransform = translateTransform;
+            }
+
             this.UpdateThumb();
         }
 

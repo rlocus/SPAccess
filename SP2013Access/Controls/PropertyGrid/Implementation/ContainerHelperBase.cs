@@ -25,7 +25,7 @@ namespace SP2013Access.Controls.PropertyGrid
             set;
         }
 
-        public ContainerHelperBase(IPropertyContainer propertyContainer)
+        protected ContainerHelperBase(IPropertyContainer propertyContainer)
         {
             if (propertyContainer == null)
             {
@@ -120,11 +120,11 @@ namespace SP2013Access.Controls.PropertyGrid
                 this.OnCategorizationChanged();
                 return;
             }
-            //if (propertyName == ReflectionHelper.GetPropertyOrFieldName<CategoryDefinitionCollection>(() => ps.CategoryDefinitions))
-            //{
-            //    this.OnCategoryDefinitionsChanged();
-            //    return;
-            //}
+            if (propertyName == ReflectionHelper.GetPropertyOrFieldName<CategoryDefinitionCollection>(() => ps.CategoryDefinitions))
+            {
+                this.OnCategoryDefinitionsChanged();
+                return;
+            }
             if (propertyName == ReflectionHelper.GetPropertyOrFieldName<bool>(() => ps.AutoGenerateProperties))
             {
                 this.OnAutoGeneratePropertiesChanged();

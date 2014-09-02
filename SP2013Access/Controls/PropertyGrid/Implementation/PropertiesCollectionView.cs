@@ -87,7 +87,7 @@ namespace SP2013Access.Controls.PropertyGrid
         public PropertiesCollectionView(IList sourceList, string invalidOperationMessage)
             : base(sourceList)
         {
-            this._invalidOperationMessage = ((invalidOperationMessage != null) ? invalidOperationMessage : string.Empty);
+            this._invalidOperationMessage = (invalidOperationMessage ?? string.Empty);
         }
 
         private void ThrowIfReadOnly()

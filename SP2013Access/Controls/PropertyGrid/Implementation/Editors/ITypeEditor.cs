@@ -14,22 +14,12 @@
 
   ***********************************************************************************/
 
-using System;
 using System.Windows;
-using System.Windows.Data;
 
-namespace SP2013Access.Controls.Converters
+namespace SP2013Access.Controls.PropertyGrid.Editors
 {
-    public class CalculatorMemoryToVisibilityConverter : IValueConverter
+    public interface ITypeEditor
     {
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            return (decimal)value == decimal.Zero ? Visibility.Hidden : Visibility.Visible;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
+        FrameworkElement ResolveEditor(PropertyItem propertyItem);
     }
 }

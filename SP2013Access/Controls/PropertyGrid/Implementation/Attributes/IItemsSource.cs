@@ -1,20 +1,4 @@
-﻿/*************************************************************************************
-
-   Extended WPF Toolkit
-
-   Copyright (C) 2007-2013 Xceed Software Inc.
-
-   This program is provided to you under the terms of the Microsoft Public
-   License (Ms-PL) as published at http://wpftoolkit.codeplex.com/license
-
-   For more features, controls, and fast professional support,
-   pick up the Plus Edition at http://xceed.com/wpf_toolkit
-
-   Stay informed: follow @datagrid on Twitter or Like http://facebook.com/datagrids
-
-  ***********************************************************************************/
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace SP2013Access.Controls.PropertyGrid.Attributes
 {
@@ -39,21 +23,13 @@ namespace SP2013Access.Controls.PropertyGrid.Attributes
     }
 
     public class ItemCollection : List<Item>
-    {
-        public void Add(object value)
+    {public void Add(object value, string displayName)
         {
-            Item item = new Item();
-            item.DisplayName = value.ToString();
-            item.Value = value;
-            base.Add(item);
-        }
-
-        public void Add(object value, string displayName)
-        {
-            Item newItem = new Item();
-            newItem.DisplayName = displayName;
-            newItem.Value = value;
-            base.Add(newItem);
+            base.Add(new Item
+            {
+                DisplayName = displayName,
+                Value = value
+            });
         }
     }
 }

@@ -25,9 +25,9 @@ namespace SP2013Access.Controls.PropertyGrid
             }
         }
 
-        protected EditorBoundDefinition()
-        {
-        }
+        //protected EditorBoundDefinition()
+        //{
+        //}
 
         internal void UpdateBinding(FrameworkElement element, DependencyProperty dependencyProperty, PropertyItemBase propertyItem)
         {

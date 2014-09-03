@@ -280,13 +280,13 @@ namespace SP2013Access.Controls.PropertyGrid
             }
         }
 
-        bool IPropertyContainer.AutoGenerateProperties
-        {
-            get
-            {
-                return true;
-            }
-        }
+        //bool IPropertyContainer.AutoGenerateProperties
+        //{
+        //    get
+        //    {
+        //        return true;
+        //    }
+        //}
 
         FilterInfo IPropertyContainer.FilterInfo
         {
@@ -311,7 +311,7 @@ namespace SP2013Access.Controls.PropertyGrid
 
         private static void OnEditorChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
-            PropertyItem propertyItem = o as PropertyItem;
+            PropertyItemBase propertyItem = o as PropertyItemBase;
             if (propertyItem != null)
             {
                 propertyItem.OnEditorChanged((FrameworkElement)e.OldValue, (FrameworkElement)e.NewValue);
@@ -381,7 +381,7 @@ namespace SP2013Access.Controls.PropertyGrid
 
         internal PropertyItemBase()
         {
-            this._containerHelper = new ObjectContainerHelper(this, null);
+            this._containerHelper = null;//new PropertiesSourceContainerHelper(this, null);
             base.GotFocus += new RoutedEventHandler(this.PropertyItemBase_GotFocus);
             base.AddHandler(PropertyItemsControl.PreparePropertyItemEvent, new PropertyItemEventHandler(this.OnPreparePropertyItemInternal));
             base.AddHandler(PropertyItemsControl.ClearPropertyItemEvent, new PropertyItemEventHandler(this.OnClearPropertyItemInternal));

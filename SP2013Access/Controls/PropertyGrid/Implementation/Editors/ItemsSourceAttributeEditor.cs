@@ -22,7 +22,7 @@ namespace SP2013Access.Controls.PropertyGrid.Editors
             return new PropertyGridEditorComboBox();
         }
 
-        protected override void ResolveValueBinding(PropertyItem propertyItem)
+        protected override void ResolveValueBinding(PropertyItemBase propertyItem)
         {
             SetItemsSource();
             base.ResolveValueBinding(propertyItem);

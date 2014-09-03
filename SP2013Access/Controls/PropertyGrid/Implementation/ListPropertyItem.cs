@@ -2,8 +2,5 @@
 {
     internal class ListPropertyItem : PropertyItemBase
     {
-        internal ListPropertyItem()
-        {
-        }
     }
 }

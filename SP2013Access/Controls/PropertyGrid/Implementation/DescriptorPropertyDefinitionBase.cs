@@ -22,8 +22,7 @@ namespace SP2013Access.Controls.PropertyGrid
         private object _definitionKey;
         private int _displayOrder;
         private bool _expandableAttribute;
-        private bool _isReadOnly;
-        private IList<Type> _newItemTypes;
+        //private IList<Type> _newItemTypes;
         private IEnumerable<CommandBinding> _commandBindings;
         public static readonly DependencyProperty AdvancedOptionsIconProperty = DependencyProperty.Register("AdvancedOptionsIcon", typeof(ImageSource), typeof(DescriptorPropertyDefinitionBase), new UIPropertyMetadata(null));
         public static readonly DependencyProperty AdvancedOptionsTooltipProperty = DependencyProperty.Register("AdvancedOptionsTooltip", typeof(object), typeof(DescriptorPropertyDefinitionBase), new UIPropertyMetadata(null));
@@ -37,17 +36,17 @@ namespace SP2013Access.Controls.PropertyGrid
             get;
         }
 
-        public ImageSource AdvancedOptionsIcon
-        {
-            get
-            {
-                return (ImageSource)base.GetValue(DescriptorPropertyDefinitionBase.AdvancedOptionsIconProperty);
-            }
-            set
-            {
-                base.SetValue(DescriptorPropertyDefinitionBase.AdvancedOptionsIconProperty, value);
-            }
-        }
+        //public ImageSource AdvancedOptionsIcon
+        //{
+        //    get
+        //    {
+        //        return (ImageSource)base.GetValue(DescriptorPropertyDefinitionBase.AdvancedOptionsIconProperty);
+        //    }
+        //    set
+        //    {
+        //        base.SetValue(DescriptorPropertyDefinitionBase.AdvancedOptionsIconProperty, value);
+        //    }
+        //}
 
         public object AdvancedOptionsTooltip
         {
@@ -149,21 +148,15 @@ namespace SP2013Access.Controls.PropertyGrid
             }
         }
 
-        public bool IsReadOnly
-        {
-            get
-            {
-                return this._isReadOnly;
-            }
-        }
+        public bool IsReadOnly { get; private set; }
 
-        public IList<Type> NewItemTypes
-        {
-            get
-            {
-                return this._newItemTypes;
-            }
-        }
+        //public IList<Type> NewItemTypes
+        //{
+        //    get
+        //    {
+        //        return this._newItemTypes;
+        //    }
+        //}
 
         public string PropertyName
         {
@@ -275,7 +268,7 @@ namespace SP2013Access.Controls.PropertyGrid
 
         protected abstract BindingBase CreateValueBinding();
 
-        internal abstract ObjectContainerHelperBase CreateContainerHelper(IPropertyContainer parent);
+        internal abstract ContainerHelperBase CreateContainerHelper(IPropertyContainer parent);
 
         internal void RaiseContainerHelperInvalidated()
         {
@@ -485,14 +478,14 @@ namespace SP2013Access.Controls.PropertyGrid
 
         private void ValidatePropertyOrderAttributes(List<PropertyOrderAttribute> list)
         {
-            if (list.Count > 0)
-            {
-                PropertyOrderAttribute propertyOrderAttribute = list.FirstOrDefault((PropertyOrderAttribute x) => x.UsageContext == UsageContextEnum.Both);
-                if (propertyOrderAttribute != null)
-                {
-                    int arg_38_0 = list.Count;
-                }
-            }
+        //    if (list.Count > 0)
+        //    {
+        //        PropertyOrderAttribute propertyOrderAttribute = list.FirstOrDefault((PropertyOrderAttribute x) => x.UsageContext == UsageContextEnum.Both);
+        //        if (propertyOrderAttribute != null)
+        //        {
+        //            int arg_38_0 = list.Count;
+        //        }
+        //    }
         }
 
         private static void OnValueChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
@@ -509,7 +502,7 @@ namespace SP2013Access.Controls.PropertyGrid
 
         public virtual void InitProperties()
         {
-            this._isReadOnly = this.ComputeIsReadOnly();
+            this.IsReadOnly = this.ComputeIsReadOnly();
             this._category = this.ComputeCategory();
             this._categoryValue = this.ComputeCategoryValue();
             this._description = this.ComputeDescription();
@@ -517,7 +510,7 @@ namespace SP2013Access.Controls.PropertyGrid
             this._displayOrder = this.ComputeDisplayOrder(this.IsPropertyGridCategorized);
             this._definitionKey = this.ComputeDefinitionKey();
             this._expandableAttribute = this.ComputeExpandableAttribute();
-            this._newItemTypes = this.ComputeNewItemTypes();
+            //this._newItemTypes = this.ComputeNewItemTypes();
             this._commandBindings = new CommandBinding[]
 			{
 				new CommandBinding(PropertyItemCommands.ResetValue, new ExecutedRoutedEventHandler(this.ExecuteResetValueCommand), new CanExecuteRoutedEventHandler(this.CanExecuteResetValueCommand))

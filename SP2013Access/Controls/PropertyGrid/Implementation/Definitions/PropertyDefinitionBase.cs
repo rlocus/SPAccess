@@ -36,7 +36,7 @@ namespace SP2013Access.Controls.PropertyGrid
             // Just create a new copy of the properties target to ensure
             // that the list doesn't ever get modified.
 
-            List<object> newList = new List<object>();
+            var newList = new List<object>();
             if (_targetProperties != null)
             {
                 foreach (object p in _targetProperties)

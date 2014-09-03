@@ -52,7 +52,7 @@
                     </GridView>
                 </ListView.View>
             </ListView>-->
-            <pg:PropertyGrid x:Name="PropertyGrid" Grid.Column="2" HorizontalContentAlignment="Stretch" Grid.Row="1" VerticalContentAlignment="Stretch" ShowSearchBox="False" IsReadOnly="True" IsCategorized="False"></pg:PropertyGrid>
+            <pg:PropertyGrid x:Name="PropertyGrid" Grid.Column="2" HorizontalContentAlignment="Stretch" Grid.Row="1" VerticalContentAlignment="Stretch" ShowSearchBox="False" IsReadOnly="True" IsCategorized="False" ShowSortOptions="False"></pg:PropertyGrid>
         </Grid>
     </Grid>
 </Window>

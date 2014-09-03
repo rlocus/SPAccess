@@ -20,13 +20,13 @@ namespace SP2013Access.Controls.PropertyGrid
     [TemplatePart(Name = PART_DragThumb, Type = typeof(Thumb))]
     [TemplatePart(Name = PART_PropertyItemsControl, Type = typeof(PropertyItemsControl))]
     [StyleTypedProperty(Property = "PropertyContainerStyle", StyleTargetType = typeof(PropertyItemBase)), TemplatePart(Name = "PART_PropertyItemsControl", Type = typeof(PropertyItemsControl)), TemplatePart(Name = "PART_DragThumb", Type = typeof(Thumb))]
-    public class PropertyGrid : Control, ISupportInitialize, IPropertyContainer, INotifyPropertyChanged
+    public class PropertyGrid : Control, IPropertyContainer, INotifyPropertyChanged
     {
         private const string PART_DragThumb = "PART_DragThumb";
         internal const string PART_PropertyItemsControl = "PART_PropertyItemsControl";
-        private static readonly ComponentResourceKey SelectedObjectAdvancedOptionsMenuKey;
+        //private static readonly ComponentResourceKey SelectedObjectAdvancedOptionsMenuKey;
         private Thumb _dragThumb;
-        private bool _hasPendingSelectedObjectChanged;
+        //private bool _hasPendingSelectedObjectChanged;
         private int _initializationCount;
         private ContainerHelperBase _containerHelper;
         private PropertyDefinitionCollection _propertyDefinitions;
@@ -35,10 +35,10 @@ namespace SP2013Access.Controls.PropertyGrid
         private readonly WeakEventListener<NotifyCollectionChangedEventArgs> _editorDefinitionsListener;
         private readonly WeakEventListener<NotifyCollectionChangedEventArgs> _categoryDefinitionsListener;
         private CategoryDefinitionCollection _categoryDefinitions;
-        private readonly WeakEventListener<NotifyCollectionChangedEventArgs> _selectedObjectsListener;
+        //private readonly WeakEventListener<NotifyCollectionChangedEventArgs> _selectedObjectsListener;
         private Binding _propertyValueBinding;
         private Binding _propertyNameBinding;
-        private IList _selectedObjects;
+        //private IList _selectedObjects;
         public static readonly DependencyProperty AdvancedOptionsMenuProperty;
         public static readonly DependencyProperty AutoGeneratePropertiesProperty;
         public static readonly DependencyProperty ShowSummaryProperty;
@@ -51,11 +51,11 @@ namespace SP2013Access.Controls.PropertyGrid
         public static readonly DependencyProperty PropertiesSourceProperty;
         public static readonly DependencyProperty PropertyContainerStyleProperty;
         public static readonly DependencyProperty IsReadOnlyProperty;
-        public static readonly DependencyProperty SelectedObjectProperty;
-        public static readonly DependencyProperty SelectedObjectTypeProperty;
-        public static readonly DependencyProperty SelectedObjectTypeNameProperty;
-        public static readonly DependencyProperty SelectedObjectNameProperty;
-        public static readonly DependencyProperty SelectedObjectsOverrideProperty;
+        //public static readonly DependencyProperty SelectedObjectProperty;
+        //public static readonly DependencyProperty SelectedObjectTypeProperty;
+        //public static readonly DependencyProperty SelectedObjectTypeNameProperty;
+        //public static readonly DependencyProperty SelectedObjectNameProperty;
+        //public static readonly DependencyProperty SelectedObjectsOverrideProperty;
         private static readonly DependencyPropertyKey SelectedPropertyItemPropertyKey;
         public static readonly DependencyProperty SelectedPropertyItemProperty;
         public static readonly DependencyProperty SelectedPropertyProperty;
@@ -67,7 +67,7 @@ namespace SP2013Access.Controls.PropertyGrid
         public static readonly DependencyProperty UpdateTextBoxSourceOnEnterKeyProperty;
         public static readonly RoutedEvent PropertyValueChangedEvent;
         public static readonly RoutedEvent SelectedPropertyItemChangedEvent;
-        public static readonly RoutedEvent SelectedObjectChangedEvent;
+        //public static readonly RoutedEvent SelectedObjectChangedEvent;
         public static readonly RoutedEvent PreparePropertyItemEvent;
         public static readonly RoutedEvent ClearPropertyItemEvent;
 
@@ -97,17 +97,17 @@ namespace SP2013Access.Controls.PropertyGrid
             }
         }
 
-        public event RoutedPropertyChangedEventHandler<object> SelectedObjectChanged
-        {
-            add
-            {
-                base.AddHandler(PropertyGrid.SelectedObjectChangedEvent, value);
-            }
-            remove
-            {
-                base.RemoveHandler(PropertyGrid.SelectedObjectChangedEvent, value);
-            }
-        }
+        //public event RoutedPropertyChangedEventHandler<object> SelectedObjectChanged
+        //{
+        //    add
+        //    {
+        //        base.AddHandler(PropertyGrid.SelectedObjectChangedEvent, value);
+        //    }
+        //    remove
+        //    {
+        //        base.RemoveHandler(PropertyGrid.SelectedObjectChangedEvent, value);
+        //    }
+        //}
 
         public event PropertyItemEventHandler PreparePropertyItem
         {
@@ -145,17 +145,17 @@ namespace SP2013Access.Controls.PropertyGrid
             }
         }
 
-        public bool AutoGenerateProperties
-        {
-            get
-            {
-                return (bool)base.GetValue(PropertyGrid.AutoGeneratePropertiesProperty);
-            }
-            set
-            {
-                base.SetValue(PropertyGrid.AutoGeneratePropertiesProperty, value);
-            }
-        }
+        //public bool AutoGenerateProperties
+        //{
+        //    get
+        //    {
+        //        return (bool)base.GetValue(PropertyGrid.AutoGeneratePropertiesProperty);
+        //    }
+        //    set
+        //    {
+        //        base.SetValue(PropertyGrid.AutoGeneratePropertiesProperty, value);
+        //    }
+        //}
 
         public bool ShowSummary
         {
@@ -368,73 +368,73 @@ namespace SP2013Access.Controls.PropertyGrid
             }
         }
 
-        public object SelectedObject
-        {
-            get
-            {
-                return base.GetValue(PropertyGrid.SelectedObjectProperty);
-            }
-            set
-            {
-                base.SetValue(PropertyGrid.SelectedObjectProperty, value);
-            }
-        }
+        //public object SelectedObject
+        //{
+        //    get
+        //    {
+        //        return base.GetValue(PropertyGrid.SelectedObjectProperty);
+        //    }
+        //    set
+        //    {
+        //        base.SetValue(PropertyGrid.SelectedObjectProperty, value);
+        //    }
+        //}
 
-        public Type SelectedObjectType
-        {
-            get
-            {
-                return (Type)base.GetValue(PropertyGrid.SelectedObjectTypeProperty);
-            }
-            set
-            {
-                base.SetValue(PropertyGrid.SelectedObjectTypeProperty, value);
-            }
-        }
+        //public Type SelectedObjectType
+        //{
+        //    get
+        //    {
+        //        return (Type)base.GetValue(PropertyGrid.SelectedObjectTypeProperty);
+        //    }
+        //    set
+        //    {
+        //        base.SetValue(PropertyGrid.SelectedObjectTypeProperty, value);
+        //    }
+        //}
 
-        public string SelectedObjectTypeName
-        {
-            get
-            {
-                return (string)base.GetValue(PropertyGrid.SelectedObjectTypeNameProperty);
-            }
-            set
-            {
-                base.SetValue(PropertyGrid.SelectedObjectTypeNameProperty, value);
-            }
-        }
+        //public string SelectedObjectTypeName
+        //{
+        //    get
+        //    {
+        //        return (string)base.GetValue(PropertyGrid.SelectedObjectTypeNameProperty);
+        //    }
+        //    set
+        //    {
+        //        base.SetValue(PropertyGrid.SelectedObjectTypeNameProperty, value);
+        //    }
+        //}
 
-        public string SelectedObjectName
-        {
-            get
-            {
-                return (string)base.GetValue(PropertyGrid.SelectedObjectNameProperty);
-            }
-            set
-            {
-                base.SetValue(PropertyGrid.SelectedObjectNameProperty, value);
-            }
-        }
+        //public string SelectedObjectName
+        //{
+        //    get
+        //    {
+        //        return (string)base.GetValue(PropertyGrid.SelectedObjectNameProperty);
+        //    }
+        //    set
+        //    {
+        //        base.SetValue(PropertyGrid.SelectedObjectNameProperty, value);
+        //    }
+        //}
 
-        public IList SelectedObjects
-        {
-            get
-            {
-                return this._selectedObjects;
-            }
-        }
+        //public IList SelectedObjects
+        //{
+        //    get
+        //    {
+        //        return this._selectedObjects;
+        //    }
+        //}
 
-        public IList SelectedObjectsOverride
-        {
-            get
-            {
-                return (IList)base.GetValue(PropertyGrid.SelectedObjectsOverrideProperty);
-            }
-            set
-            {
-                base.SetValue(PropertyGrid.SelectedObjectsOverrideProperty, value);
-            }
-        }
+        //public IList SelectedObjectsOverride
+        //{
+        //    get
+        //    {
+        //        return (IList)base.GetValue(PropertyGrid.SelectedObjectsOverrideProperty);
+        //    }
+        //    set
+        //    {
+        //        base.SetValue(PropertyGrid.SelectedObjectsOverrideProperty, value);
+        //    }
+        //}
 
         public PropertyItemBase SelectedPropertyItem
         {
@@ -711,57 +711,57 @@ namespace SP2013Access.Controls.PropertyGrid
             }
         }
 
-        private static void OnSelectedObjectChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
-        {
-            PropertyGrid propertyGrid = o as PropertyGrid;
-            if (propertyGrid != null)
-            {
-                propertyGrid.OnSelectedObjectChanged(e.OldValue, e.NewValue);
-            }
-        }
+        //private static void OnSelectedObjectChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
+        //{
+        //    PropertyGrid propertyGrid = o as PropertyGrid;
+        //    if (propertyGrid != null)
+        //    {
+        //        propertyGrid.OnSelectedObjectChanged(e.OldValue, e.NewValue);
+        //    }
+        //}
 
-        protected virtual void OnSelectedObjectChanged(object oldValue, object newValue)
-        {
-            if (this._initializationCount != 0)
-            {
-                this._hasPendingSelectedObjectChanged = true;
-                return;
-            }
-            this.UpdateContainerHelper();
-            base.RaiseEvent(new RoutedPropertyChangedEventArgs<object>(oldValue, newValue, PropertyGrid.SelectedObjectChangedEvent));
-        }
+        //protected virtual void OnSelectedObjectChanged(object oldValue, object newValue)
+        //{
+        //    if (this._initializationCount != 0)
+        //    {
+        //        //this._hasPendingSelectedObjectChanged = true;
+        //        return;
+        //    }
+        //    this.UpdateContainerHelper();
+        //    base.RaiseEvent(new RoutedPropertyChangedEventArgs<object>(oldValue, newValue, PropertyGrid.SelectedObjectChangedEvent));
+        //}
 
-        private static void OnSelectedObjectTypeChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
-        {
-            PropertyGrid propertyGrid = o as PropertyGrid;
-            if (propertyGrid != null)
-            {
-                propertyGrid.OnSelectedObjectTypeChanged((Type)e.OldValue, (Type)e.NewValue);
-            }
-        }
+        //private static void OnSelectedObjectTypeChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
+        //{
+        //    PropertyGrid propertyGrid = o as PropertyGrid;
+        //    if (propertyGrid != null)
+        //    {
+        //        propertyGrid.OnSelectedObjectTypeChanged((Type)e.OldValue, (Type)e.NewValue);
+        //    }
+        //}
 
         protected virtual void OnSelectedObjectTypeChanged(Type oldValue, Type newValue)
         {
         }
 
-        private static object OnCoerceSelectedObjectName(DependencyObject o, object baseValue)
-        {
-            PropertyGrid propertyGrid = o as PropertyGrid;
-            if (propertyGrid != null && propertyGrid.SelectedObject is FrameworkElement && string.IsNullOrEmpty((string)baseValue))
-            {
-                return "<no name>";
-            }
-            return baseValue;
-        }
+        //private static object OnCoerceSelectedObjectName(DependencyObject o, object baseValue)
+        //{
+        //    PropertyGrid propertyGrid = o as PropertyGrid;
+        //    if (propertyGrid != null/* && propertyGrid.SelectedObject is FrameworkElement*/ && string.IsNullOrEmpty((string)baseValue))
+        //    {
+        //        return "<no name>";
+        //    }
+        //    return baseValue;
+        //}
 
-        private static void OnSelectedObjectNameChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
-        {
-            PropertyGrid propertyGrid = o as PropertyGrid;
-            if (propertyGrid != null)
-            {
-                propertyGrid.SelectedObjectNameChanged((string)e.OldValue, (string)e.NewValue);
-            }
-        }
+        //private static void OnSelectedObjectNameChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
+        //{
+        //    PropertyGrid propertyGrid = o as PropertyGrid;
+        //    if (propertyGrid != null)
+        //    {
+        //        propertyGrid.SelectedObjectNameChanged((string)e.OldValue, (string)e.NewValue);
+        //    }
+        //}
 
         protected virtual void SelectedObjectNameChanged(string oldValue, string newValue)
         {
@@ -773,10 +773,10 @@ namespace SP2013Access.Controls.PropertyGrid
             return value;
         }
 
-        private static void SelectedObjectsOverrideChanged(DependencyObject sender, DependencyPropertyChangedEventArgs args)
-        {
-            ((PropertyGrid)sender).OnSelectedObjectsOverrideChanged((IList)args.OldValue, (IList)args.NewValue);
-        }
+        //private static void SelectedObjectsOverrideChanged(DependencyObject sender, DependencyPropertyChangedEventArgs args)
+        //{
+        //    ((PropertyGrid)sender).OnSelectedObjectsOverrideChanged((IList)args.OldValue, (IList)args.NewValue);
+        //}
 
         private void OnSelectedObjectsOverrideChanged(IList oldValue, IList newValue)
         {
@@ -826,7 +826,7 @@ namespace SP2013Access.Controls.PropertyGrid
 
         static PropertyGrid()
         {
-            PropertyGrid.SelectedObjectAdvancedOptionsMenuKey = new ComponentResourceKey(typeof(PropertyGrid), "SelectedObjectAdvancedOptionsMenu");
+            //PropertyGrid.SelectedObjectAdvancedOptionsMenuKey = new ComponentResourceKey(typeof(PropertyGrid), "SelectedObjectAdvancedOptionsMenu");
             PropertyGrid.AdvancedOptionsMenuProperty = DependencyProperty.Register("AdvancedOptionsMenu", typeof(ContextMenu), typeof(PropertyGrid), new UIPropertyMetadata(null));
             PropertyGrid.AutoGeneratePropertiesProperty = DependencyProperty.Register("AutoGenerateProperties", typeof(bool), typeof(PropertyGrid), new UIPropertyMetadata(true));
             PropertyGrid.ShowSummaryProperty = DependencyProperty.Register("ShowSummary", typeof(bool), typeof(PropertyGrid), new UIPropertyMetadata(true));
@@ -839,11 +839,11 @@ namespace SP2013Access.Controls.PropertyGrid
             PropertyGrid.PropertiesSourceProperty = DependencyProperty.Register("PropertiesSource", typeof(IEnumerable), typeof(PropertyGrid), new UIPropertyMetadata(null, new PropertyChangedCallback(PropertyGrid.OnPropertiesSourceChanged), new CoerceValueCallback(PropertyGrid.OnCoercePropertiesSourceChanged)));
             PropertyGrid.PropertyContainerStyleProperty = DependencyProperty.Register("PropertyContainerStyle", typeof(Style), typeof(PropertyGrid), new UIPropertyMetadata(null, new PropertyChangedCallback(PropertyGrid.OnPropertyContainerStyleChanged)));
             PropertyGrid.IsReadOnlyProperty = DependencyProperty.Register("IsReadOnly", typeof(bool), typeof(PropertyGrid), new UIPropertyMetadata(false));
-            PropertyGrid.SelectedObjectProperty = DependencyProperty.Register("SelectedObject", typeof(object), typeof(PropertyGrid), new UIPropertyMetadata(null, new PropertyChangedCallback(PropertyGrid.OnSelectedObjectChanged)));
-            PropertyGrid.SelectedObjectTypeProperty = DependencyProperty.Register("SelectedObjectType", typeof(Type), typeof(PropertyGrid), new UIPropertyMetadata(null, new PropertyChangedCallback(PropertyGrid.OnSelectedObjectTypeChanged)));
-            PropertyGrid.SelectedObjectTypeNameProperty = DependencyProperty.Register("SelectedObjectTypeName", typeof(string), typeof(PropertyGrid), new UIPropertyMetadata(string.Empty));
-            PropertyGrid.SelectedObjectNameProperty = DependencyProperty.Register("SelectedObjectName", typeof(string), typeof(PropertyGrid), new UIPropertyMetadata(string.Empty, new PropertyChangedCallback(PropertyGrid.OnSelectedObjectNameChanged), new CoerceValueCallback(PropertyGrid.OnCoerceSelectedObjectName)));
-            PropertyGrid.SelectedObjectsOverrideProperty = DependencyProperty.Register("SelectedObjectsOverride", typeof(IList), typeof(PropertyGrid), new UIPropertyMetadata(null, new PropertyChangedCallback(PropertyGrid.SelectedObjectsOverrideChanged), new CoerceValueCallback(PropertyGrid.OnCoerceSelectedObjectsOverride)));
+            //PropertyGrid.SelectedObjectProperty = DependencyProperty.Register("SelectedObject", typeof(object), typeof(PropertyGrid), new UIPropertyMetadata(null, new PropertyChangedCallback(PropertyGrid.OnSelectedObjectChanged)));
+            //PropertyGrid.SelectedObjectTypeProperty = DependencyProperty.Register("SelectedObjectType", typeof(Type), typeof(PropertyGrid), new UIPropertyMetadata(null, new PropertyChangedCallback(PropertyGrid.OnSelectedObjectTypeChanged)));
+            //PropertyGrid.SelectedObjectTypeNameProperty = DependencyProperty.Register("SelectedObjectTypeName", typeof(string), typeof(PropertyGrid), new UIPropertyMetadata(string.Empty));
+            //PropertyGrid.SelectedObjectNameProperty = DependencyProperty.Register("SelectedObjectName", typeof(string), typeof(PropertyGrid), new UIPropertyMetadata(string.Empty, new PropertyChangedCallback(PropertyGrid.OnSelectedObjectNameChanged), new CoerceValueCallback(PropertyGrid.OnCoerceSelectedObjectName)));
+            //PropertyGrid.SelectedObjectsOverrideProperty = DependencyProperty.Register("SelectedObjectsOverride", typeof(IList), typeof(PropertyGrid), new UIPropertyMetadata(null, new PropertyChangedCallback(PropertyGrid.SelectedObjectsOverrideChanged), new CoerceValueCallback(PropertyGrid.OnCoerceSelectedObjectsOverride)));
             PropertyGrid.SelectedPropertyItemPropertyKey = DependencyProperty.RegisterReadOnly("SelectedPropertyItem", typeof(PropertyItemBase), typeof(PropertyGrid), new UIPropertyMetadata(null, new PropertyChangedCallback(PropertyGrid.OnSelectedPropertyItemChanged)));
             PropertyGrid.SelectedPropertyItemProperty = PropertyGrid.SelectedPropertyItemPropertyKey.DependencyProperty;
             PropertyGrid.SelectedPropertyProperty = DependencyProperty.Register("SelectedProperty", typeof(object), typeof(PropertyGrid), new UIPropertyMetadata(null, new PropertyChangedCallback(PropertyGrid.OnSelectedPropertyChanged)));
@@ -855,7 +855,7 @@ namespace SP2013Access.Controls.PropertyGrid
             PropertyGrid.UpdateTextBoxSourceOnEnterKeyProperty = DependencyProperty.Register("UpdateTextBoxSourceOnEnterKey", typeof(bool), typeof(PropertyGrid), new UIPropertyMetadata(true));
             PropertyGrid.PropertyValueChangedEvent = EventManager.RegisterRoutedEvent("PropertyValueChanged", RoutingStrategy.Bubble, typeof(PropertyValueChangedEventHandler), typeof(PropertyGrid));
             PropertyGrid.SelectedPropertyItemChangedEvent = EventManager.RegisterRoutedEvent("SelectedPropertyItemChanged", RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<PropertyItemBase>), typeof(PropertyGrid));
-            PropertyGrid.SelectedObjectChangedEvent = EventManager.RegisterRoutedEvent("SelectedObjectChanged", RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<object>), typeof(PropertyGrid));
+            //PropertyGrid.SelectedObjectChangedEvent = EventManager.RegisterRoutedEvent("SelectedObjectChanged", RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<object>), typeof(PropertyGrid));
             PropertyGrid.PreparePropertyItemEvent = EventManager.RegisterRoutedEvent("PreparePropertyItem", RoutingStrategy.Bubble, typeof(PropertyItemEventHandler), typeof(PropertyGrid));
             PropertyGrid.ClearPropertyItemEvent = EventManager.RegisterRoutedEvent("ClearPropertyItem", RoutingStrategy.Bubble, typeof(PropertyItemEventHandler), typeof(PropertyGrid));
             FrameworkElement.DefaultStyleKeyProperty.OverrideMetadata(typeof(PropertyGrid), new FrameworkPropertyMetadata(typeof(PropertyGrid)));
@@ -865,7 +865,7 @@ namespace SP2013Access.Controls.PropertyGrid
         {
             this._propertyDefinitionsListener = new WeakEventListener<NotifyCollectionChangedEventArgs>(new Action<object, NotifyCollectionChangedEventArgs>(this.OnPropertyDefinitionsCollectionChanged));
             this._editorDefinitionsListener = new WeakEventListener<NotifyCollectionChangedEventArgs>(new Action<object, NotifyCollectionChangedEventArgs>(this.OnEditorDefinitionsCollectionChanged));
-            this._selectedObjectsListener = new WeakEventListener<NotifyCollectionChangedEventArgs>(new Action<object, NotifyCollectionChangedEventArgs>(this.OnSelectedObjectsCollectionChanged));
+            //this._selectedObjectsListener = new WeakEventListener<NotifyCollectionChangedEventArgs>(new Action<object, NotifyCollectionChangedEventArgs>(this.OnSelectedObjectsCollectionChanged));
             this._categoryDefinitionsListener = new WeakEventListener<NotifyCollectionChangedEventArgs>(new Action<object, NotifyCollectionChangedEventArgs>(this.OnCategoryDefinitionsCollectionChanged));
             this.UpdateContainerHelper();
             this.EditorDefinitions = new EditorDefinitionCollection();
@@ -972,48 +972,48 @@ namespace SP2013Access.Controls.PropertyGrid
             {
                 childrenItemsControl = this._containerHelper.ChildrenItemsControl;
                 this._containerHelper.ClearHelper();
-                if (this._containerHelper is ObjectContainerHelperBase)
-                {
-                    ContextMenu contextMenu = (ContextMenu)base.FindResource(PropertyGrid.SelectedObjectAdvancedOptionsMenuKey);
-                    if (this.AdvancedOptionsMenu == contextMenu)
-                    {
-                        this.AdvancedOptionsMenu = null;
-                    }
-                }
+                //if (this._containerHelper is ObjectContainerHelperBase)
+                //{
+                //    ContextMenu contextMenu = (ContextMenu)base.FindResource(PropertyGrid.SelectedObjectAdvancedOptionsMenuKey);
+                //    if (this.AdvancedOptionsMenu == contextMenu)
+                //    {
+                //        this.AdvancedOptionsMenu = null;
+                //    }
+                //}
             }
-            ObjectContainerHelperBase objectContainerHelperBase = null;
+            //ObjectContainerHelperBase objectContainerHelperBase = null;
             if (this.PropertiesSource != null)
             {
                 this._containerHelper = new PropertiesSourceContainerHelper(this, this.PropertiesSource);
             }
             else
             {
-                if (this.SelectedObjects != null && this.SelectedObjects.Count > 0)
-                {
-                    objectContainerHelperBase = new ObjectsContainerHelper(this, this.SelectedObjects);
-                }
-                else
-                {
-                    if (this.SelectedObject != null)
-                    {
-                        objectContainerHelperBase = new ObjectContainerHelper(this, this.SelectedObject);
-                    }
-                    else
-                    {
-                        this._containerHelper = new PropertiesContainerHelper(this);
-                    }
-                }
+                //if (this.SelectedObjects != null && this.SelectedObjects.Count > 0)
+                //{
+                //    objectContainerHelperBase = new ObjectsContainerHelper(this, this.SelectedObjects);
+                //}
+                //else
+                //{
+                //    if (this.SelectedObject != null)
+                //    {
+                //        objectContainerHelperBase = new ObjectContainerHelper(this, this.SelectedObject);
+                //    }
+                //    else
+                //    {
+                this._containerHelper = new PropertiesContainerHelper(this);
+                //    }
+                //}
             }
-            if (objectContainerHelperBase != null)
-            {
-                objectContainerHelperBase.ChildrenItemsControl = childrenItemsControl;
-                this._containerHelper = objectContainerHelperBase;
-                objectContainerHelperBase.GenerateProperties();
-                if (this.AdvancedOptionsMenu == null)
-                {
-                    this.AdvancedOptionsMenu = (ContextMenu)base.FindResource(PropertyGrid.SelectedObjectAdvancedOptionsMenuKey);
-                }
-            }
+            //if (objectContainerHelperBase != null)
+            //{
+            //    objectContainerHelperBase.ChildrenItemsControl = childrenItemsControl;
+            //    this._containerHelper = objectContainerHelperBase;
+            //    objectContainerHelperBase.GenerateProperties();
+            //    if (this.AdvancedOptionsMenu == null)
+            //    {
+            //        this.AdvancedOptionsMenu = (ContextMenu)base.FindResource(PropertyGrid.SelectedObjectAdvancedOptionsMenuKey);
+            //    }
+            //}
             //if (!(this._containerHelper is ObjectContainerHelper) && this._containerHelper != null)
             //{
             //}
@@ -1030,25 +1030,25 @@ namespace SP2013Access.Controls.PropertyGrid
             //if (this._selectedObjects != null)
             //{
             //}
-            INotifyCollectionChanged notifyCollectionChanged = this._selectedObjects as INotifyCollectionChanged;
-            INotifyCollectionChanged notifyCollectionChanged2 = newSelectedObjectsList as INotifyCollectionChanged;
-            if (notifyCollectionChanged != null)
-            {
-                CollectionChangedEventManager.RemoveListener(notifyCollectionChanged, this._selectedObjectsListener);
-            }
-            if (notifyCollectionChanged2 != null)
-            {
-                CollectionChangedEventManager.AddListener(notifyCollectionChanged2, this._selectedObjectsListener);
-            }
-            this._selectedObjects = newSelectedObjectsList;
+            //INotifyCollectionChanged notifyCollectionChanged = this._selectedObjects as INotifyCollectionChanged;
+            //var notifyCollectionChanged2 = newSelectedObjectsList as INotifyCollectionChanged;
+            //if (notifyCollectionChanged != null)
+            //{
+            //    CollectionChangedEventManager.RemoveListener(notifyCollectionChanged, this._selectedObjectsListener);
+            //}
+            //if (notifyCollectionChanged2 != null)
+            //{
+            //    CollectionChangedEventManager.AddListener(notifyCollectionChanged2, this._selectedObjectsListener);
+            //}
+            //this._selectedObjects = newSelectedObjectsList;
             this.UpdateContainerHelper();
         }
 
-        private void OnSelectedObjectsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            PropertyGrid.ValidateSelectedObjectsCollection((IList)sender);
-            this.UpdateContainerHelper();
-        }
+        //private void OnSelectedObjectsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        //{
+        //    PropertyGrid.ValidateSelectedObjectsCollection((IList)sender);
+        //    this.UpdateContainerHelper();
+        //}
 
         private static void ValidateSelectedObjectsCollection(IList objectList)
         {
@@ -1149,11 +1149,11 @@ namespace SP2013Access.Controls.PropertyGrid
             base.EndInit();
             if (--this._initializationCount == 0)
             {
-                if (this._hasPendingSelectedObjectChanged)
-                {
-                    this.UpdateContainerHelper();
-                    this._hasPendingSelectedObjectChanged = false;
-                }
+                //if (this._hasPendingSelectedObjectChanged)
+                //{
+                //    this.UpdateContainerHelper();
+                //    this._hasPendingSelectedObjectChanged = false;
+                //}
                 this._containerHelper.OnEndInit();
             }
         }

@@ -147,86 +147,86 @@ namespace SP2013Access.Controls.PropertyGrid
                                                                     }
                                                                     else
                                                                     {
-                                                                        if (propertyType.IsEnum)
+                                                                        //if (propertyType.IsEnum)
+                                                                        //{
+                                                                        //    result = new EnumComboBoxEditor();
+                                                                        //}
+                                                                        //else
+                                                                        //{
+                                                                        if (propertyType == typeof(TimeSpan) || propertyType == typeof(TimeSpan?))
                                                                         {
-                                                                            result = new EnumComboBoxEditor();
+                                                                            result = new TextBoxEditor();
+                                                                            //result = new TimeSpanUpDownEditor();
                                                                         }
                                                                         else
                                                                         {
-                                                                            if (propertyType == typeof(TimeSpan) || propertyType == typeof(TimeSpan?))
+                                                                            if (propertyType == typeof(FontFamily) || propertyType == typeof(FontWeight) || propertyType == typeof(FontStyle) || propertyType == typeof(FontStretch))
                                                                             {
                                                                                 result = new TextBoxEditor();
-                                                                                //result = new TimeSpanUpDownEditor();
+                                                                                //result = new FontComboBoxEditor();
                                                                             }
                                                                             else
                                                                             {
-                                                                                if (propertyType == typeof(FontFamily) || propertyType == typeof(FontWeight) || propertyType == typeof(FontStyle) || propertyType == typeof(FontStretch))
+                                                                                if (propertyType == typeof(Guid) || propertyType == typeof(Guid?))
                                                                                 {
                                                                                     result = new TextBoxEditor();
-                                                                                    //result = new FontComboBoxEditor();
+                                                                                    //    result = new MaskedTextBoxEditor
+                                                                                    //    {
+                                                                                    //        ValueDataType = propertyType,
+                                                                                    //        Mask = "AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"
+                                                                                    //    };
                                                                                 }
                                                                                 else
                                                                                 {
-                                                                                    if (propertyType == typeof(Guid) || propertyType == typeof(Guid?))
+                                                                                    if (propertyType == typeof(char) || propertyType == typeof(char?))
                                                                                     {
                                                                                         result = new TextBoxEditor();
-                                                                                        //    result = new MaskedTextBoxEditor
-                                                                                        //    {
-                                                                                        //        ValueDataType = propertyType,
-                                                                                        //        Mask = "AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"
-                                                                                        //    };
+                                                                                        //result = new MaskedTextBoxEditor
+                                                                                        //{
+                                                                                        //    ValueDataType = propertyType,
+                                                                                        //    Mask = "&"
+                                                                                        //};
                                                                                     }
                                                                                     else
                                                                                     {
-                                                                                        if (propertyType == typeof(char) || propertyType == typeof(char?))
+                                                                                        if (propertyType == typeof(object))
                                                                                         {
                                                                                             result = new TextBoxEditor();
-                                                                                            //result = new MaskedTextBoxEditor
-                                                                                            //{
-                                                                                            //    ValueDataType = propertyType,
-                                                                                            //    Mask = "&"
-                                                                                            //};
                                                                                         }
                                                                                         else
                                                                                         {
-                                                                                            if (propertyType == typeof(object))
+                                                                                            //Type listItemType = ListUtilities.GetListItemType(propertyType);
+                                                                                            //if (listItemType != null)
+                                                                                            //{
+                                                                                            //    if (!listItemType.IsPrimitive && !listItemType.Equals(typeof(string)) && !listItemType.IsEnum)
+                                                                                            //    {
+                                                                                            //        result = new CollectionEditor();
+                                                                                            //    }
+                                                                                            //    else
+                                                                                            //    {
+                                                                                            //        result = new PrimitiveTypeCollectionEditor();
+                                                                                            //    }
+                                                                                            //}
+                                                                                            //else
+                                                                                            //{
+                                                                                            ITypeEditor arg_43B_0;
+                                                                                            if (typeConverter == null || !typeConverter.CanConvertFrom(typeof(string)))
                                                                                             {
-                                                                                                result = new TextBoxEditor();
+                                                                                                ITypeEditor typeEditor = new TextBlockEditor();
+                                                                                                arg_43B_0 = typeEditor;
                                                                                             }
                                                                                             else
                                                                                             {
-                                                                                                //Type listItemType = ListUtilities.GetListItemType(propertyType);
-                                                                                                //if (listItemType != null)
-                                                                                                //{
-                                                                                                //    if (!listItemType.IsPrimitive && !listItemType.Equals(typeof(string)) && !listItemType.IsEnum)
-                                                                                                //    {
-                                                                                                //        result = new CollectionEditor();
-                                                                                                //    }
-                                                                                                //    else
-                                                                                                //    {
-                                                                                                //        result = new PrimitiveTypeCollectionEditor();
-                                                                                                //    }
-                                                                                                //}
-                                                                                                //else
-                                                                                                //{
-                                                                                                ITypeEditor arg_43B_0;
-                                                                                                if (typeConverter == null || !typeConverter.CanConvertFrom(typeof(string)))
-                                                                                                {
-                                                                                                    ITypeEditor typeEditor = new TextBlockEditor();
-                                                                                                    arg_43B_0 = typeEditor;
-                                                                                                }
-                                                                                                else
-                                                                                                {
-                                                                                                    arg_43B_0 = new TextBoxEditor();
-                                                                                                }
-                                                                                                result = arg_43B_0;
-                                                                                                //}
+                                                                                                arg_43B_0 = new TextBoxEditor();
                                                                                             }
+                                                                                            result = arg_43B_0;
+                                                                                            //}
                                                                                         }
                                                                                     }
                                                                                 }
                                                                             }
                                                                         }
+                                                                        //}
                                                                     }
                                                                 }
                                                             }

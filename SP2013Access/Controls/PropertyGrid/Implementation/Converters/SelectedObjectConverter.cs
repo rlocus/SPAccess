@@ -1,20 +1,4 @@
-﻿/*************************************************************************************
-
-   Extended WPF Toolkit
-
-   Copyright (C) 2007-2013 Xceed Software Inc.
-
-   This program is provided to you under the terms of the Microsoft Public
-   License (Ms-PL) as published at http://wpftoolkit.codeplex.com/license
-
-   For more features, controls, and fast professional support,
-   pick up the Plus Edition at http://xceed.com/wpf_toolkit
-
-   Stay informed: follow @datagrid on Twitter or Like http://facebook.com/datagrids
-
-  ***********************************************************************************/
-
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
@@ -45,10 +29,10 @@ namespace SP2013Access.Controls.PropertyGrid.Converters
             {
                 return this.ConvertToTypeName(value, culture);
             }
-            else if (this.CompareParam(parameter, "SelectedObjectName"))
-            {
-                return this.ConvertToSelectedObjectName(value, culture);
-            }
+            //else if (this.CompareParam(parameter, "SelectedObjectName"))
+            //{
+            //    return this.ConvertToSelectedObjectName(value, culture);
+            //}
             else
             {
                 throw new ArgumentException(SelectedObjectConverter.ValidParameterMessage);
@@ -57,7 +41,7 @@ namespace SP2013Access.Controls.PropertyGrid.Converters
 
         private bool CompareParam(object parameter, string parameterValue)
         {
-            return string.Compare((string)parameter, parameterValue, true) == 0;
+            return String.Compare((string)parameter, parameterValue, StringComparison.OrdinalIgnoreCase) == 0;
         }
 
         private object ConvertToType(object value, CultureInfo culture)
@@ -81,21 +65,21 @@ namespace SP2013Access.Controls.PropertyGrid.Converters
               : displayNameAttribute.DisplayName;
         }
 
-        private object ConvertToSelectedObjectName(object value, CultureInfo culture)
-        {
-            if (value == null)
-                return String.Empty;
+        //private object ConvertToSelectedObjectName(object value, CultureInfo culture)
+        //{
+        //    if (value == null)
+        //        return String.Empty;
 
-            Type newType = value.GetType();
-            PropertyInfo[] properties = newType.GetProperties();
-            foreach (PropertyInfo property in properties)
-            {
-                if (property.Name == "Name")
-                    return property.GetValue(value, null);
-            }
+        //    Type newType = value.GetType();
+        //    PropertyInfo[] properties = newType.GetProperties();
+        //    foreach (PropertyInfo property in properties)
+        //    {
+        //        if (property.Name == "Name")
+        //            return property.GetValue(value, null);
+        //    }
 
-            return String.Empty;
-        }
+        //    return String.Empty;
+        //}
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {

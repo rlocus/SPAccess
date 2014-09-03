@@ -56,10 +56,10 @@ namespace SP2013Access.Controls.PropertyGrid
             get;
         }
 
-        bool AutoGenerateProperties
-        {
-            get;
-        }
+        //bool AutoGenerateProperties
+        //{
+        //    get;
+        //}
 
         FilterInfo FilterInfo
         {

@@ -85,6 +85,7 @@ namespace SP2013Access
 
                 PropertyGrid.PropertiesSource = PropertyItems;
             }
+        
         }
 
         private void RecentMenuItem_OnClick(object sender, RoutedEventArgs e)

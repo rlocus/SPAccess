@@ -20,6 +20,6 @@ namespace SP2013Access.Controls.PropertyGrid.Editors
 {
     public interface ITypeEditor
     {
-        FrameworkElement ResolveEditor(PropertyItem propertyItem);
+        FrameworkElement ResolveEditor(PropertyItemBase propertyItem);
     }
 }

@@ -125,11 +125,11 @@ namespace SP2013Access.Controls.PropertyGrid
                 this.OnCategoryDefinitionsChanged();
                 return;
             }
-            if (propertyName == ReflectionHelper.GetPropertyOrFieldName<bool>(() => ps.AutoGenerateProperties))
-            {
-                this.OnAutoGeneratePropertiesChanged();
-                return;
-            }
+            //if (propertyName == ReflectionHelper.GetPropertyOrFieldName<bool>(() => ps.AutoGenerateProperties))
+            //{
+            //    this.OnAutoGeneratePropertiesChanged();
+            //    return;
+            //}
             if (propertyName == ReflectionHelper.GetPropertyOrFieldName<EditorDefinitionCollection>(() => ps.EditorDefinitions))
             {
                 this.OnEditorDefinitionsChanged();
@@ -149,9 +149,9 @@ namespace SP2013Access.Controls.PropertyGrid
         {
         }
 
-        protected virtual void OnAutoGeneratePropertiesChanged()
-        {
-        }
+        //protected virtual void OnAutoGeneratePropertiesChanged()
+        //{
+        //}
 
         protected virtual void OnEditorDefinitionsChanged()
         {

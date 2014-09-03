@@ -374,7 +374,7 @@
         </Setter>
     </Style>
 
-    <Style x:Key="ClearFilterButtonStyle" TargetType="{x:Type Button}">
+    <!--<Style x:Key="ClearFilterButtonStyle" TargetType="{x:Type Button}">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderBrush" Value="Transparent" />
         <Setter Property="BorderThickness" Value="1" />
@@ -422,7 +422,7 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-    </Style>
+    </Style>-->
 
     <SolidColorBrush x:Key="GlyphBrush" Color="#FF31347C" />
 
@@ -502,6 +502,10 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Expander}">
                     <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
                         <Border Visibility="Collapsed" Grid.Row="1" x:Name="ExpandSite" Padding="0 0 0 0">
                             <Border BorderThickness="0" Margin="0" Padding="0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                                 <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
@@ -672,14 +676,11 @@
 
     <Style TargetType="{x:Type pg:PropertyGrid}">
         <Style.Resources>
-            <pgconv:SelectedObjectConverter x:Key="objectConverter" />
+            <!--<pgconv:SelectedObjectConverter x:Key="objectConverter" />-->
         </Style.Resources>
         <Setter Property="Background" Value="#BCC7D8" />
         <Setter Property="BorderBrush" Value="#43577B" />
         <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="SelectedObjectType" Value="{Binding RelativeSource={RelativeSource Self}, Path=SelectedObject, Converter={StaticResource objectConverter}, ConverterParameter=Type}" />
-        <Setter Property="SelectedObjectTypeName" Value="{Binding RelativeSource={RelativeSource Self}, Path=SelectedObject, Converter={StaticResource objectConverter}, ConverterParameter=TypeName}" />
-        <Setter Property="SelectedObjectName" Value="{Binding RelativeSource={RelativeSource Self}, Path=SelectedObject, Converter={StaticResource objectConverter}, ConverterParameter=SelectedObjectName}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type pg:PropertyGrid}">
@@ -693,13 +694,13 @@
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
-                            <StackPanel Orientation="Horizontal" Margin="6,2,0,4"
+                            <!--<StackPanel Orientation="Horizontal" Margin="6,2,0,4"
 								 Visibility="{Binding ShowTitle, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource BooleanToVisibilityConverter}}">
                                 <TextBlock Text="{TemplateBinding SelectedObjectTypeName}" FontWeight="Bold" />
                                 <TextBlock Text="{TemplateBinding SelectedObjectName}" Margin="5,0,0,0" />
-                            </StackPanel>
+                            </StackPanel>-->
 
-                            <Grid x:Name="toolsContainer" Grid.Row="1" Margin="4,0,4,4">
+                            <!--<Grid x:Name="toolsContainer" Grid.Row="1" Margin="4,0,4,4">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="*" />
@@ -721,7 +722,7 @@
                                     </StackPanel>
                                 </Grid>
 
-                                <!--<Border x:Name="searchBoxContainer" Grid.Column="1" Margin="4,4,0,4" Background="White" BorderBrush="Gray" BorderThickness="1" Visibility="{Binding ShowSearchBox, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                --><!--<Border x:Name="searchBoxContainer" Grid.Column="1" Margin="4,4,0,4" Background="White" BorderBrush="Gray" BorderThickness="1" Visibility="{Binding ShowSearchBox, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource BooleanToVisibilityConverter}}">
 									<Grid>
 										<Grid.ColumnDefinitions>
 											<ColumnDefinition Width="*" />
@@ -750,8 +751,8 @@
 											<Image Source="./../Images/ClearFilter16.png" Width="16" Height="16" />
 										</Button>
 									</Grid>
-								</Border>-->
-                            </Grid>
+								</Border>--><!--
+                            </Grid>-->
 
                             <Grid Grid.Row="2" Background="{x:Static SystemColors.WindowBrush}">
                                 <ScrollViewer VerticalScrollBarVisibility="Auto">
@@ -774,8 +775,7 @@
                                                             <Setter.Value>
                                                                 <ControlTemplate>
                                                                     <Border>
-                                                                        <Expander Header="{Binding Name}"
-																	Style="{StaticResource ExpanderStyle}">
+                                                                        <Expander Header="{Binding Name}" Style="{StaticResource ExpanderStyle}">
                                                                             <Expander.IsExpanded>
                                                                                 <sys:Boolean>True</sys:Boolean>
                                                                             </Expander.IsExpanded>
@@ -792,13 +792,13 @@
                                     </pg:PropertyItemsControl>
                                 </ScrollViewer>
 
-                                <Thumb x:Name="PART_DragThumb" HorizontalAlignment="Left" Width="5" Margin="6,0,0,0" Cursor="SizeWE">
+                                <!--<Thumb x:Name="PART_DragThumb" HorizontalAlignment="Left" Width="5" Margin="6,0,0,0" Cursor="SizeWE">
                                     <Thumb.Template>
                                         <ControlTemplate>
                                             <Border Background="Transparent" />
                                         </ControlTemplate>
                                     </Thumb.Template>
-                                </Thumb>
+                                </Thumb>-->
                             </Grid>
 
                             <GridSplitter Height="3" Grid.Row="3" HorizontalAlignment="Stretch" Visibility="{Binding ShowSummary, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource BooleanToVisibilityConverter}}" />
@@ -808,15 +808,15 @@
                             </StackPanel>
                         </Grid>
                     </Border>
-                    <ControlTemplate.Triggers>
+                    <!--<ControlTemplate.Triggers>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
-                                <!--<Condition SourceName="searchBoxContainer" Property="Visibility" Value="Collapsed" />-->
+                                <Condition SourceName="searchBoxContainer" Property="Visibility" Value="Collapsed" />
                                 <Condition SourceName="sortButtonContainer" Property="Visibility" Value="Collapsed" />
                             </MultiTrigger.Conditions>
                             <Setter TargetName="toolsContainer" Property="Visibility" Value="Collapsed" />
                         </MultiTrigger>
-                    </ControlTemplate.Triggers>
+                    </ControlTemplate.Triggers>-->
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

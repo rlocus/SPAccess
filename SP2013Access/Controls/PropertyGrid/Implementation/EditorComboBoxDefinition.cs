@@ -80,9 +80,9 @@ namespace SP2013Access.Controls.PropertyGrid
             set;
         }
 
-        public EditorComboBoxDefinition()
-        {
-        }
+        //public EditorComboBoxDefinition()
+        //{
+        //}
 
         protected override FrameworkElement GenerateEditingElement(PropertyItemBase propertyItem)
         {

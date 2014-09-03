@@ -8,7 +8,7 @@ using System.Windows.Data;
 
 namespace SP2013Access.Controls.PropertyGrid
 {
-    public class PropertyItemCollection : ReadOnlyObservableCollection<PropertyItem>
+    public class PropertyItemCollection : ReadOnlyObservableCollection<PropertyItemBase>
     {
         internal static readonly string CategoryPropertyName;
         internal static readonly string CategoryOrderPropertyName;
@@ -28,7 +28,7 @@ namespace SP2013Access.Controls.PropertyGrid
             }
         }
 
-        public ObservableCollection<PropertyItem> EditableCollection
+        public ObservableCollection<PropertyItemBase> EditableCollection
         {
             get;
             private set;
@@ -36,14 +36,14 @@ namespace SP2013Access.Controls.PropertyGrid
 
         static PropertyItemCollection()
         {
-            PropertyItem p = null;
+            CustomPropertyItem p = null;
             PropertyItemCollection.CategoryPropertyName = ReflectionHelper.GetPropertyOrFieldName<string>(() => p.Category);
             PropertyItemCollection.CategoryOrderPropertyName = ReflectionHelper.GetPropertyOrFieldName<int>(() => p.CategoryOrder);
             PropertyItemCollection.PropertyOrderPropertyName = ReflectionHelper.GetPropertyOrFieldName<int>(() => p.PropertyOrder);
             PropertyItemCollection.DisplayNamePropertyName = ReflectionHelper.GetPropertyOrFieldName<string>(() => p.DisplayName);
         }
 
-        public PropertyItemCollection(ObservableCollection<PropertyItem> editableCollection)
+        public PropertyItemCollection(ObservableCollection<PropertyItemBase> editableCollection)
             : base(editableCollection)
         {
             this.EditableCollection = editableCollection;
@@ -79,7 +79,7 @@ namespace SP2013Access.Controls.PropertyGrid
             base.OnCollectionChanged(args);
         }
 
-        internal void UpdateItems(IEnumerable<PropertyItem> newItems)
+        internal void UpdateItems(IEnumerable<PropertyItemBase> newItems)
         {
             if (newItems == null)
             {
@@ -89,7 +89,7 @@ namespace SP2013Access.Controls.PropertyGrid
             using (this.GetDefaultView().DeferRefresh())
             {
                 this.EditableCollection.Clear();
-                foreach (PropertyItem current in newItems)
+                foreach (PropertyItemBase current in newItems)
                 {
                     this.EditableCollection.Add(current);
                 }
@@ -100,11 +100,11 @@ namespace SP2013Access.Controls.PropertyGrid
 
         internal void UpdateCategorization(GroupDescription groupDescription, bool isPropertyGridCategorized)
         {
-            foreach (PropertyItem current in base.Items)
-            {
-                current.DescriptorDefinition.DisplayOrder = current.DescriptorDefinition.ComputeDisplayOrderInternal(isPropertyGridCategorized);
-                current.PropertyOrder = current.DescriptorDefinition.DisplayOrder;
-            }
+            //foreach (PropertyItem current in base.Items)
+            //{
+            //    current.DescriptorDefinition.DisplayOrder = current.DescriptorDefinition.ComputeDisplayOrderInternal(isPropertyGridCategorized);
+            //    current.PropertyOrder = current.DescriptorDefinition.DisplayOrder;
+            //}
             ICollectionView defaultView = this.GetDefaultView();
             using (defaultView.DeferRefresh())
             {
@@ -133,8 +133,8 @@ namespace SP2013Access.Controls.PropertyGrid
             {
                 result = delegate(object item)
                 {
-                    PropertyItem propertyItem = item as PropertyItem;
-                    return propertyItem.DisplayName != null && propertyItem.DisplayName.ToLower().StartsWith(text.ToLower());
+                    PropertyItemBase propertyItem = item as PropertyItemBase;
+                    return propertyItem != null && (propertyItem.DisplayName != null && propertyItem.DisplayName.ToLower().StartsWith(text.ToLower()));
                 };
             }
             return result;

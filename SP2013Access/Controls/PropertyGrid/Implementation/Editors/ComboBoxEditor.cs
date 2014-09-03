@@ -15,15 +15,15 @@ namespace SP2013Access.Controls.PropertyGrid.Editors
             return new PropertyGridEditorComboBox();
         }
 
-        protected override void ResolveValueBinding(PropertyItem propertyItem)
+        protected override void ResolveValueBinding(PropertyItemBase propertyItem)
         {
             SetItemsSource(propertyItem);
             base.ResolveValueBinding(propertyItem);
         }
 
-        protected abstract IEnumerable CreateItemsSource(PropertyItem propertyItem);
+        protected abstract IEnumerable CreateItemsSource(PropertyItemBase propertyItem);
 
-        private void SetItemsSource(PropertyItem propertyItem)
+        private void SetItemsSource(PropertyItemBase propertyItem)
         {
             Editor.ItemsSource = CreateItemsSource(propertyItem);
         }

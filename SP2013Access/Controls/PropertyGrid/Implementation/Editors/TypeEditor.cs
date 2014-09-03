@@ -39,7 +39,7 @@ namespace SP2013Access.Controls.PropertyGrid.Editors
 
         #region ITypeEditor Members
 
-        public virtual FrameworkElement ResolveEditor(PropertyItem propertyItem)
+        public virtual FrameworkElement ResolveEditor(PropertyItemBase propertyItem)
         {
             Editor = this.CreateEditor();
             SetValueDependencyProperty();
@@ -62,14 +62,14 @@ namespace SP2013Access.Controls.PropertyGrid.Editors
             return null;
         }
 
-        protected virtual void ResolveValueBinding(PropertyItem propertyItem)
+        protected virtual void ResolveValueBinding(PropertyItemBase propertyItem)
         {
-            var _binding = new Binding("Value");
-            _binding.Source = propertyItem;
-            _binding.UpdateSourceTrigger = UpdateSourceTrigger.Default;
-            _binding.Mode = propertyItem.IsReadOnly ? BindingMode.OneWay : BindingMode.TwoWay;
-            _binding.Converter = CreateValueConverter();
-            BindingOperations.SetBinding(Editor, ValueProperty, _binding);
+            var binding = new Binding("Value");
+            binding.Source = propertyItem;
+            binding.UpdateSourceTrigger = UpdateSourceTrigger.Default;
+            binding.Mode = (propertyItem as CustomPropertyItem).IsReadOnly ? BindingMode.OneWay : BindingMode.TwoWay;
+            binding.Converter = CreateValueConverter();
+            BindingOperations.SetBinding(Editor, ValueProperty, binding);
         }
 
         protected virtual void SetControlProperties()

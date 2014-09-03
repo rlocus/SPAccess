@@ -62,9 +62,9 @@ namespace SP2013Access.Controls.PropertyGrid
 
         #region Override Methods
 
-        internal override ObjectContainerHelperBase CreateContainerHelper(IPropertyContainer parent)
+        internal override ContainerHelperBase CreateContainerHelper(IPropertyContainer parent)
         {
-            return new ObjectContainerHelper(parent, this.Value);
+            return null;
         }
 
         internal override void OnValueChanged(object oldValue, object newValue)

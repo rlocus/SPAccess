@@ -23,7 +23,8 @@ namespace SP2013Access.Controls.PropertyGrid.Attributes
     }
 
     public class ItemCollection : List<Item>
-    {public void Add(object value, string displayName)
+    {
+        public void Add(object value, string displayName)
         {
             base.Add(new Item
             {

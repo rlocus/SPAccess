@@ -68,7 +68,7 @@ namespace SP2013Access.Controls.PropertyGrid
             CustomPropertyItem customPropertyItem = propertyItem as CustomPropertyItem;
             if (customPropertyItem != null)
             {
-                return this.CreateCustomPropertyBinding(customPropertyItem);
+                return CreateCustomPropertyBinding(customPropertyItem);
             }
             return this.PropertyContainer.PropertyValueBinding;
         }
@@ -224,12 +224,12 @@ namespace SP2013Access.Controls.PropertyGrid
                 }
                 if (customProperty.Editor != null)
                 {
-                    ContainerHelperBase.SetIsGenerated(customProperty.Editor, true);
+                    SetIsGenerated(customProperty.Editor, true);
                 }
             }
         }
 
-        private Binding CreateCustomPropertyBinding(CustomPropertyItem customProperty)
+        private static Binding CreateCustomPropertyBinding(CustomPropertyItem customProperty)
         {
             return new Binding
             {

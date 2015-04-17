@@ -17,15 +17,15 @@ using System.Windows.Media;
 
 namespace SP2013Access.Controls.PropertyGrid
 {
-    [TemplatePart(Name = PART_DragThumb, Type = typeof(Thumb))]
+    //[TemplatePart(Name = PART_DragThumb, Type = typeof(Thumb))]
     [TemplatePart(Name = PART_PropertyItemsControl, Type = typeof(PropertyItemsControl))]
-    [StyleTypedProperty(Property = "PropertyContainerStyle", StyleTargetType = typeof(PropertyItemBase)), TemplatePart(Name = "PART_PropertyItemsControl", Type = typeof(PropertyItemsControl)), TemplatePart(Name = "PART_DragThumb", Type = typeof(Thumb))]
-    public class PropertyGrid : Control, IPropertyContainer, INotifyPropertyChanged
+    [StyleTypedProperty(Property = "PropertyContainerStyle", StyleTargetType = typeof(PropertyItemBase))]
+    public class PropertyGridView : Control, IPropertyContainer, INotifyPropertyChanged
     {
-        private const string PART_DragThumb = "PART_DragThumb";
+        //private const string PART_DragThumb = "PART_DragThumb";
         internal const string PART_PropertyItemsControl = "PART_PropertyItemsControl";
         //private static readonly ComponentResourceKey SelectedObjectAdvancedOptionsMenuKey;
-        private Thumb _dragThumb;
+        //private Thumb _dragThumb;
         //private bool _hasPendingSelectedObjectChanged;
         private int _initializationCount;
         private ContainerHelperBase _containerHelper;
@@ -77,11 +77,11 @@ namespace SP2013Access.Controls.PropertyGrid
         {
             add
             {
-                base.AddHandler(PropertyGrid.PropertyValueChangedEvent, value);
+                base.AddHandler(PropertyGridView.PropertyValueChangedEvent, value);
             }
             remove
             {
-                base.RemoveHandler(PropertyGrid.PropertyValueChangedEvent, value);
+                base.RemoveHandler(PropertyGridView.PropertyValueChangedEvent, value);
             }
         }
 
@@ -89,11 +89,11 @@ namespace SP2013Access.Controls.PropertyGrid
         {
             add
             {
-                base.AddHandler(PropertyGrid.SelectedPropertyItemChangedEvent, value);
+                base.AddHandler(PropertyGridView.SelectedPropertyItemChangedEvent, value);
             }
             remove
             {
-                base.RemoveHandler(PropertyGrid.SelectedPropertyItemChangedEvent, value);
+                base.RemoveHandler(PropertyGridView.SelectedPropertyItemChangedEvent, value);
             }
         }
 
@@ -113,11 +113,11 @@ namespace SP2013Access.Controls.PropertyGrid
         {
             add
             {
-                base.AddHandler(PropertyGrid.PreparePropertyItemEvent, value);
+                base.AddHandler(PropertyGridView.PreparePropertyItemEvent, value);
             }
             remove
             {
-                base.RemoveHandler(PropertyGrid.PreparePropertyItemEvent, value);
+                base.RemoveHandler(PropertyGridView.PreparePropertyItemEvent, value);
             }
         }
 
@@ -125,11 +125,11 @@ namespace SP2013Access.Controls.PropertyGrid
         {
             add
             {
-                base.AddHandler(PropertyGrid.ClearPropertyItemEvent, value);
+                base.AddHandler(PropertyGridView.ClearPropertyItemEvent, value);
             }
             remove
             {
-                base.RemoveHandler(PropertyGrid.ClearPropertyItemEvent, value);
+                base.RemoveHandler(PropertyGridView.ClearPropertyItemEvent, value);
             }
         }
 
@@ -137,11 +137,11 @@ namespace SP2013Access.Controls.PropertyGrid
         {
             get
             {
-                return (ContextMenu)base.GetValue(PropertyGrid.AdvancedOptionsMenuProperty);
+                return (ContextMenu)base.GetValue(PropertyGridView.AdvancedOptionsMenuProperty);
             }
             set
             {
-                base.SetValue(PropertyGrid.AdvancedOptionsMenuProperty, value);
+                base.SetValue(PropertyGridView.AdvancedOptionsMenuProperty, value);
             }
         }
 
@@ -161,11 +161,11 @@ namespace SP2013Access.Controls.PropertyGrid
         {
             get
             {
-                return (bool)base.GetValue(PropertyGrid.ShowSummaryProperty);
+                return (bool)base.GetValue(PropertyGridView.ShowSummaryProperty);
             }
             set
             {
-                base.SetValue(PropertyGrid.ShowSummaryProperty, value);
+                base.SetValue(PropertyGridView.ShowSummaryProperty, value);
             }
         }
 
@@ -190,11 +190,11 @@ namespace SP2013Access.Controls.PropertyGrid
         {
             get
             {
-                return (string)base.GetValue(PropertyGrid.FilterProperty);
+                return (string)base.GetValue(PropertyGridView.FilterProperty);
             }
             set
             {
-                base.SetValue(PropertyGrid.FilterProperty, value);
+                base.SetValue(PropertyGridView.FilterProperty, value);
             }
         }
 
@@ -202,11 +202,11 @@ namespace SP2013Access.Controls.PropertyGrid
         {
             get
             {
-                return (string)base.GetValue(PropertyGrid.FilterWatermarkProperty);
+                return (string)base.GetValue(PropertyGridView.FilterWatermarkProperty);
             }
             set
             {
-                base.SetValue(PropertyGrid.FilterWatermarkProperty, value);
+                base.SetValue(PropertyGridView.FilterWatermarkProperty, value);
             }
         }
 
@@ -214,11 +214,11 @@ namespace SP2013Access.Controls.PropertyGrid
         {
             get
             {
-                return (bool)base.GetValue(PropertyGrid.IsCategorizedProperty);
+                return (bool)base.GetValue(PropertyGridView.IsCategorizedProperty);
             }
             set
             {
-                base.SetValue(PropertyGrid.IsCategorizedProperty, value);
+                base.SetValue(PropertyGridView.IsCategorizedProperty, value);
             }
         }
 
@@ -243,11 +243,11 @@ namespace SP2013Access.Controls.PropertyGrid
         {
             get
             {
-                return (GroupDescription)base.GetValue(PropertyGrid.CategoryGroupDescriptionProperty);
+                return (GroupDescription)base.GetValue(PropertyGridView.CategoryGroupDescriptionProperty);
             }
             set
             {
-                base.SetValue(PropertyGrid.CategoryGroupDescriptionProperty, value);
+                base.SetValue(PropertyGridView.CategoryGroupDescriptionProperty, value);
             }
         }
 
@@ -261,7 +261,7 @@ namespace SP2013Access.Controls.PropertyGrid
             {
                 if (this._propertyNameBinding != value)
                 {
-                    this.ValidatePropertyBinding<Binding>(value, () => this.PropertyNameBinding);
+                    ValidatePropertyBinding(value, () => this.PropertyNameBinding);
                     this._propertyNameBinding = value;
                 }
             }
@@ -277,7 +277,7 @@ namespace SP2013Access.Controls.PropertyGrid
             {
                 if (this._propertyValueBinding != value)
                 {
-                    this.ValidatePropertyBinding<Binding>(value, () => this.PropertyValueBinding);
+                    ValidatePropertyBinding(value, () => this.PropertyValueBinding);
                     this._propertyValueBinding = value;
                 }
             }
@@ -287,11 +287,11 @@ namespace SP2013Access.Controls.PropertyGrid
         {
             get
             {
-                return (EditorDefinitionBase)base.GetValue(PropertyGrid.DefaultEditorDefinitionProperty);
+                return (EditorDefinitionBase)base.GetValue(PropertyGridView.DefaultEditorDefinitionProperty);
             }
             set
             {
-                base.SetValue(PropertyGrid.DefaultEditorDefinitionProperty, value);
+                base.SetValue(PropertyGridView.DefaultEditorDefinitionProperty, value);
             }
         }
 
@@ -299,11 +299,11 @@ namespace SP2013Access.Controls.PropertyGrid
         {
             get
             {
-                return (double)base.GetValue(PropertyGrid.NameColumnWidthProperty);
+                return (double)base.GetValue(PropertyGridView.NameColumnWidthProperty);
             }
             set
             {
-                base.SetValue(PropertyGrid.NameColumnWidthProperty, value);
+                base.SetValue(PropertyGridView.NameColumnWidthProperty, value);
             }
         }
 
@@ -319,11 +319,11 @@ namespace SP2013Access.Controls.PropertyGrid
         {
             get
             {
-                return (IEnumerable)base.GetValue(PropertyGrid.PropertiesSourceProperty);
+                return (IEnumerable)base.GetValue(PropertyGridView.PropertiesSourceProperty);
             }
             set
             {
-                base.SetValue(PropertyGrid.PropertiesSourceProperty, value);
+                base.SetValue(PropertyGridView.PropertiesSourceProperty, value);
             }
         }
 
@@ -331,11 +331,11 @@ namespace SP2013Access.Controls.PropertyGrid
         {
             get
             {
-                return (Style)base.GetValue(PropertyGrid.PropertyContainerStyleProperty);
+                return (Style)base.GetValue(PropertyGridView.PropertyContainerStyleProperty);
             }
             set
             {
-                base.SetValue(PropertyGrid.PropertyContainerStyleProperty, value);
+                base.SetValue(PropertyGridView.PropertyContainerStyleProperty, value);
             }
         }
 
@@ -360,11 +360,11 @@ namespace SP2013Access.Controls.PropertyGrid
         {
             get
             {
-                return (bool)base.GetValue(PropertyGrid.IsReadOnlyProperty);
+                return (bool)base.GetValue(PropertyGridView.IsReadOnlyProperty);
             }
             set
             {
-                base.SetValue(PropertyGrid.IsReadOnlyProperty, value);
+                base.SetValue(PropertyGridView.IsReadOnlyProperty, value);
             }
         }
 
@@ -440,11 +440,11 @@ namespace SP2013Access.Controls.PropertyGrid
         {
             get
             {
-                return (PropertyItemBase)base.GetValue(PropertyGrid.SelectedPropertyItemProperty);
+                return (PropertyItemBase)base.GetValue(PropertyGridView.SelectedPropertyItemProperty);
             }
             internal set
             {
-                base.SetValue(PropertyGrid.SelectedPropertyItemPropertyKey, value);
+                base.SetValue(PropertyGridView.SelectedPropertyItemPropertyKey, value);
             }
         }
 
@@ -452,11 +452,11 @@ namespace SP2013Access.Controls.PropertyGrid
         {
             get
             {
-                return base.GetValue(PropertyGrid.SelectedPropertyProperty);
+                return base.GetValue(PropertyGridView.SelectedPropertyProperty);
             }
             set
             {
-                base.SetValue(PropertyGrid.SelectedPropertyProperty, value);
+                base.SetValue(PropertyGridView.SelectedPropertyProperty, value);
             }
         }
 
@@ -464,11 +464,11 @@ namespace SP2013Access.Controls.PropertyGrid
         {
             get
             {
-                return (bool)base.GetValue(PropertyGrid.ShowAdvancedOptionsProperty);
+                return (bool)base.GetValue(PropertyGridView.ShowAdvancedOptionsProperty);
             }
             set
             {
-                base.SetValue(PropertyGrid.ShowAdvancedOptionsProperty, value);
+                base.SetValue(PropertyGridView.ShowAdvancedOptionsProperty, value);
             }
         }
 
@@ -476,11 +476,11 @@ namespace SP2013Access.Controls.PropertyGrid
         {
             get
             {
-                return (bool)base.GetValue(PropertyGrid.ShowPreviewProperty);
+                return (bool)base.GetValue(PropertyGridView.ShowPreviewProperty);
             }
             set
             {
-                base.SetValue(PropertyGrid.ShowPreviewProperty, value);
+                base.SetValue(PropertyGridView.ShowPreviewProperty, value);
             }
         }
 
@@ -488,11 +488,11 @@ namespace SP2013Access.Controls.PropertyGrid
         {
             get
             {
-                return (bool)base.GetValue(PropertyGrid.ShowSearchBoxProperty);
+                return (bool)base.GetValue(PropertyGridView.ShowSearchBoxProperty);
             }
             set
             {
-                base.SetValue(PropertyGrid.ShowSearchBoxProperty, value);
+                base.SetValue(PropertyGridView.ShowSearchBoxProperty, value);
             }
         }
 
@@ -500,11 +500,11 @@ namespace SP2013Access.Controls.PropertyGrid
         {
             get
             {
-                return (bool)base.GetValue(PropertyGrid.ShowSortOptionsProperty);
+                return (bool)base.GetValue(PropertyGridView.ShowSortOptionsProperty);
             }
             set
             {
-                base.SetValue(PropertyGrid.ShowSortOptionsProperty, value);
+                base.SetValue(PropertyGridView.ShowSortOptionsProperty, value);
             }
         }
 
@@ -512,11 +512,11 @@ namespace SP2013Access.Controls.PropertyGrid
         {
             get
             {
-                return (bool)base.GetValue(PropertyGrid.ShowTitleProperty);
+                return (bool)base.GetValue(PropertyGridView.ShowTitleProperty);
             }
             set
             {
-                base.SetValue(PropertyGrid.ShowTitleProperty, value);
+                base.SetValue(PropertyGridView.ShowTitleProperty, value);
             }
         }
 
@@ -524,11 +524,11 @@ namespace SP2013Access.Controls.PropertyGrid
         {
             get
             {
-                return (bool)base.GetValue(PropertyGrid.UpdateTextBoxSourceOnEnterKeyProperty);
+                return (bool)base.GetValue(PropertyGridView.UpdateTextBoxSourceOnEnterKeyProperty);
             }
             set
             {
-                base.SetValue(PropertyGrid.UpdateTextBoxSourceOnEnterKeyProperty, value);
+                base.SetValue(PropertyGridView.UpdateTextBoxSourceOnEnterKeyProperty, value);
             }
         }
 
@@ -572,7 +572,7 @@ namespace SP2013Access.Controls.PropertyGrid
 
         private static void OnFilterChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
-            PropertyGrid propertyGrid = o as PropertyGrid;
+            PropertyGridView propertyGrid = o as PropertyGridView;
             if (propertyGrid != null)
             {
                 propertyGrid.OnFilterChanged((string)e.OldValue, (string)e.NewValue);
@@ -586,7 +586,7 @@ namespace SP2013Access.Controls.PropertyGrid
 
         private static void OnIsCategorizedChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
-            PropertyGrid propertyGrid = o as PropertyGrid;
+            PropertyGridView propertyGrid = o as PropertyGridView;
             if (propertyGrid != null)
             {
                 propertyGrid.OnIsCategorizedChanged((bool)e.OldValue, (bool)e.NewValue);
@@ -595,7 +595,7 @@ namespace SP2013Access.Controls.PropertyGrid
 
         protected virtual void OnIsCategorizedChanged(bool oldValue, bool newValue)
         {
-            this.UpdateThumb();
+            //this.UpdateThumb();
         }
 
         protected virtual void OnCategoryDefinitionsChanged(CategoryDefinitionCollection oldValue, CategoryDefinitionCollection newValue)
@@ -623,7 +623,7 @@ namespace SP2013Access.Controls.PropertyGrid
 
         private static void OnCategoryGroupDescriptionChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
-            PropertyGrid propertyGrid = o as PropertyGrid;
+            PropertyGridView propertyGrid = o as PropertyGridView;
             if (propertyGrid != null)
             {
                 propertyGrid.OnCategoryGroupDescriptionChanged((GroupDescription)e.OldValue, (GroupDescription)e.NewValue);
@@ -632,7 +632,7 @@ namespace SP2013Access.Controls.PropertyGrid
 
         private void OnCategoryGroupDescriptionChanged(GroupDescription oldValue, GroupDescription newValue)
         {
-            this.UpdateThumb();
+            //this.UpdateThumb();
         }
 
         private static object OnCoerceDefaultEditorDefinition(DependencyObject o, object value)
@@ -642,7 +642,7 @@ namespace SP2013Access.Controls.PropertyGrid
 
         private static void OnNameColumnWidthChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
-            PropertyGrid propertyGrid = o as PropertyGrid;
+            PropertyGridView propertyGrid = o as PropertyGridView;
             if (propertyGrid != null)
             {
                 propertyGrid.OnNameColumnWidthChanged((double)e.OldValue, (double)e.NewValue);
@@ -651,10 +651,10 @@ namespace SP2013Access.Controls.PropertyGrid
 
         protected virtual void OnNameColumnWidthChanged(double oldValue, double newValue)
         {
-            if (this._dragThumb != null)
-            {
-                ((TranslateTransform)this._dragThumb.RenderTransform).X = newValue;
-            }
+            //if (this._dragThumb != null)
+            //{
+            //    ((TranslateTransform)this._dragThumb.RenderTransform).X = newValue;
+            //}
         }
 
         private static object OnCoercePropertiesSourceChanged(DependencyObject o, object value)
@@ -664,7 +664,7 @@ namespace SP2013Access.Controls.PropertyGrid
 
         private static void OnPropertiesSourceChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
-            PropertyGrid propertyGrid = o as PropertyGrid;
+            PropertyGridView propertyGrid = o as PropertyGridView;
             if (propertyGrid != null)
             {
                 propertyGrid.OnPropertiesSourceChanged((IEnumerable)e.OldValue, (IEnumerable)e.NewValue);
@@ -678,7 +678,7 @@ namespace SP2013Access.Controls.PropertyGrid
 
         private static void OnPropertyContainerStyleChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
-            PropertyGrid propertyGrid = o as PropertyGrid;
+            PropertyGridView propertyGrid = o as PropertyGridView;
             if (propertyGrid != null)
             {
                 propertyGrid.OnPropertyContainerStyleChanged((Style)e.OldValue, (Style)e.NewValue);
@@ -740,9 +740,9 @@ namespace SP2013Access.Controls.PropertyGrid
         //    }
         //}
 
-        protected virtual void OnSelectedObjectTypeChanged(Type oldValue, Type newValue)
-        {
-        }
+        //protected virtual void OnSelectedObjectTypeChanged(Type oldValue, Type newValue)
+        //{
+        //}
 
         //private static object OnCoerceSelectedObjectName(DependencyObject o, object baseValue)
         //{
@@ -763,29 +763,29 @@ namespace SP2013Access.Controls.PropertyGrid
         //    }
         //}
 
-        protected virtual void SelectedObjectNameChanged(string oldValue, string newValue)
-        {
-        }
+        //protected virtual void SelectedObjectNameChanged(string oldValue, string newValue)
+        //{
+        //}
 
-        private static object OnCoerceSelectedObjectsOverride(DependencyObject sender, object value)
-        {
-            PropertyGrid.ValidateSelectedObjectsCollection((IList)value);
-            return value;
-        }
+        //private static object OnCoerceSelectedObjectsOverride(DependencyObject sender, object value)
+        //{
+        //    PropertyGrid.ValidateSelectedObjectsCollection((IList)value);
+        //    return value;
+        //}
 
         //private static void SelectedObjectsOverrideChanged(DependencyObject sender, DependencyPropertyChangedEventArgs args)
         //{
         //    ((PropertyGrid)sender).OnSelectedObjectsOverrideChanged((IList)args.OldValue, (IList)args.NewValue);
         //}
 
-        private void OnSelectedObjectsOverrideChanged(IList oldValue, IList newValue)
-        {
-            this.SetSelectedObjects(newValue ?? new ObservableCollection<object>());
-        }
+        //private void OnSelectedObjectsOverrideChanged(IList oldValue, IList newValue)
+        //{
+        //    this.SetSelectedObjects(newValue ?? new ObservableCollection<object>());
+        //}
 
         private static void OnSelectedPropertyItemChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
-            PropertyGrid propertyGrid = o as PropertyGrid;
+            PropertyGridView propertyGrid = o as PropertyGridView;
             if (propertyGrid != null)
             {
                 propertyGrid.OnSelectedPropertyItemChanged((PropertyItemBase)e.OldValue, (PropertyItemBase)e.NewValue);
@@ -803,12 +803,12 @@ namespace SP2013Access.Controls.PropertyGrid
                 newValue.IsSelected = true;
             }
             this.SelectedProperty = ((newValue != null) ? this._containerHelper.ItemFromContainer(newValue) : null);
-            base.RaiseEvent(new RoutedPropertyChangedEventArgs<PropertyItemBase>(oldValue, newValue, PropertyGrid.SelectedPropertyItemChangedEvent));
+            base.RaiseEvent(new RoutedPropertyChangedEventArgs<PropertyItemBase>(oldValue, newValue, PropertyGridView.SelectedPropertyItemChangedEvent));
         }
 
         private static void OnSelectedPropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs args)
         {
-            PropertyGrid propertyGrid = sender as PropertyGrid;
+            PropertyGridView propertyGrid = sender as PropertyGridView;
             if (propertyGrid != null)
             {
                 propertyGrid.OnSelectedPropertyChanged(args.OldValue, args.NewValue);
@@ -824,44 +824,88 @@ namespace SP2013Access.Controls.PropertyGrid
             }
         }
 
-        static PropertyGrid()
+        static PropertyGridView()
         {
             //PropertyGrid.SelectedObjectAdvancedOptionsMenuKey = new ComponentResourceKey(typeof(PropertyGrid), "SelectedObjectAdvancedOptionsMenu");
-            PropertyGrid.AdvancedOptionsMenuProperty = DependencyProperty.Register("AdvancedOptionsMenu", typeof(ContextMenu), typeof(PropertyGrid), new UIPropertyMetadata(null));
-            PropertyGrid.AutoGeneratePropertiesProperty = DependencyProperty.Register("AutoGenerateProperties", typeof(bool), typeof(PropertyGrid), new UIPropertyMetadata(true));
-            PropertyGrid.ShowSummaryProperty = DependencyProperty.Register("ShowSummary", typeof(bool), typeof(PropertyGrid), new UIPropertyMetadata(true));
-            PropertyGrid.FilterProperty = DependencyProperty.Register("Filter", typeof(string), typeof(PropertyGrid), new UIPropertyMetadata(null, new PropertyChangedCallback(PropertyGrid.OnFilterChanged)));
-            PropertyGrid.FilterWatermarkProperty = DependencyProperty.Register("FilterWatermark", typeof(string), typeof(PropertyGrid), new UIPropertyMetadata("Search"));
-            PropertyGrid.IsCategorizedProperty = DependencyProperty.Register("IsCategorized", typeof(bool), typeof(PropertyGrid), new UIPropertyMetadata(true, new PropertyChangedCallback(PropertyGrid.OnIsCategorizedChanged)));
-            PropertyGrid.CategoryGroupDescriptionProperty = DependencyProperty.Register("CategoryGroupDescription", typeof(GroupDescription), typeof(PropertyGrid), new UIPropertyMetadata(null, new PropertyChangedCallback(PropertyGrid.OnCategoryGroupDescriptionChanged), new CoerceValueCallback(PropertyGrid.OnCoerceCategoryGroupDescription)));
-            PropertyGrid.DefaultEditorDefinitionProperty = DependencyProperty.Register("DefaultEditorDefinition", typeof(EditorDefinitionBase), typeof(PropertyGrid), new UIPropertyMetadata(null, null, new CoerceValueCallback(PropertyGrid.OnCoerceDefaultEditorDefinition)));
-            PropertyGrid.NameColumnWidthProperty = DependencyProperty.Register("NameColumnWidth", typeof(double), typeof(PropertyGrid), new UIPropertyMetadata(150.0, new PropertyChangedCallback(PropertyGrid.OnNameColumnWidthChanged)));
-            PropertyGrid.PropertiesSourceProperty = DependencyProperty.Register("PropertiesSource", typeof(IEnumerable), typeof(PropertyGrid), new UIPropertyMetadata(null, new PropertyChangedCallback(PropertyGrid.OnPropertiesSourceChanged), new CoerceValueCallback(PropertyGrid.OnCoercePropertiesSourceChanged)));
-            PropertyGrid.PropertyContainerStyleProperty = DependencyProperty.Register("PropertyContainerStyle", typeof(Style), typeof(PropertyGrid), new UIPropertyMetadata(null, new PropertyChangedCallback(PropertyGrid.OnPropertyContainerStyleChanged)));
-            PropertyGrid.IsReadOnlyProperty = DependencyProperty.Register("IsReadOnly", typeof(bool), typeof(PropertyGrid), new UIPropertyMetadata(false));
+            PropertyGridView.AdvancedOptionsMenuProperty = DependencyProperty.Register("AdvancedOptionsMenu",
+                typeof(ContextMenu), typeof(PropertyGridView), new UIPropertyMetadata(null));
+            PropertyGridView.AutoGeneratePropertiesProperty = DependencyProperty.Register("AutoGenerateProperties",
+                typeof(bool), typeof(PropertyGridView), new UIPropertyMetadata(true));
+            PropertyGridView.ShowSummaryProperty = DependencyProperty.Register("ShowSummary", typeof(bool),
+                typeof(PropertyGridView), new UIPropertyMetadata(true));
+            PropertyGridView.FilterProperty = DependencyProperty.Register("Filter", typeof(string),
+                typeof(PropertyGridView),
+                new UIPropertyMetadata(null, new PropertyChangedCallback(PropertyGridView.OnFilterChanged)));
+            PropertyGridView.FilterWatermarkProperty = DependencyProperty.Register("FilterWatermark", typeof(string),
+                typeof(PropertyGridView), new UIPropertyMetadata("Search"));
+            PropertyGridView.IsCategorizedProperty = DependencyProperty.Register("IsCategorized", typeof(bool),
+                typeof(PropertyGridView),
+                new UIPropertyMetadata(true, new PropertyChangedCallback(PropertyGridView.OnIsCategorizedChanged)));
+            PropertyGridView.CategoryGroupDescriptionProperty = DependencyProperty.Register("CategoryGroupDescription",
+                typeof(GroupDescription), typeof(PropertyGridView),
+                new UIPropertyMetadata(null,
+                    new PropertyChangedCallback(PropertyGridView.OnCategoryGroupDescriptionChanged),
+                    new CoerceValueCallback(PropertyGridView.OnCoerceCategoryGroupDescription)));
+            PropertyGridView.DefaultEditorDefinitionProperty = DependencyProperty.Register("DefaultEditorDefinition",
+                typeof(EditorDefinitionBase), typeof(PropertyGridView),
+                new UIPropertyMetadata(null, null,
+                    new CoerceValueCallback(PropertyGridView.OnCoerceDefaultEditorDefinition)));
+            PropertyGridView.NameColumnWidthProperty = DependencyProperty.Register("NameColumnWidth", typeof(double),
+                typeof(PropertyGridView),
+                new UIPropertyMetadata(150.0, new PropertyChangedCallback(PropertyGridView.OnNameColumnWidthChanged)));
+            PropertyGridView.PropertiesSourceProperty = DependencyProperty.Register("PropertiesSource",
+                typeof(IEnumerable), typeof(PropertyGridView),
+                new UIPropertyMetadata(null, new PropertyChangedCallback(PropertyGridView.OnPropertiesSourceChanged),
+                    new CoerceValueCallback(PropertyGridView.OnCoercePropertiesSourceChanged)));
+            PropertyGridView.PropertyContainerStyleProperty = DependencyProperty.Register("PropertyContainerStyle",
+                typeof(Style), typeof(PropertyGridView),
+                new UIPropertyMetadata(null,
+                    new PropertyChangedCallback(PropertyGridView.OnPropertyContainerStyleChanged)));
+            PropertyGridView.IsReadOnlyProperty = DependencyProperty.Register("IsReadOnly", typeof(bool),
+                typeof(PropertyGridView), new UIPropertyMetadata(false));
             //PropertyGrid.SelectedObjectProperty = DependencyProperty.Register("SelectedObject", typeof(object), typeof(PropertyGrid), new UIPropertyMetadata(null, new PropertyChangedCallback(PropertyGrid.OnSelectedObjectChanged)));
             //PropertyGrid.SelectedObjectTypeProperty = DependencyProperty.Register("SelectedObjectType", typeof(Type), typeof(PropertyGrid), new UIPropertyMetadata(null, new PropertyChangedCallback(PropertyGrid.OnSelectedObjectTypeChanged)));
             //PropertyGrid.SelectedObjectTypeNameProperty = DependencyProperty.Register("SelectedObjectTypeName", typeof(string), typeof(PropertyGrid), new UIPropertyMetadata(string.Empty));
             //PropertyGrid.SelectedObjectNameProperty = DependencyProperty.Register("SelectedObjectName", typeof(string), typeof(PropertyGrid), new UIPropertyMetadata(string.Empty, new PropertyChangedCallback(PropertyGrid.OnSelectedObjectNameChanged), new CoerceValueCallback(PropertyGrid.OnCoerceSelectedObjectName)));
             //PropertyGrid.SelectedObjectsOverrideProperty = DependencyProperty.Register("SelectedObjectsOverride", typeof(IList), typeof(PropertyGrid), new UIPropertyMetadata(null, new PropertyChangedCallback(PropertyGrid.SelectedObjectsOverrideChanged), new CoerceValueCallback(PropertyGrid.OnCoerceSelectedObjectsOverride)));
-            PropertyGrid.SelectedPropertyItemPropertyKey = DependencyProperty.RegisterReadOnly("SelectedPropertyItem", typeof(PropertyItemBase), typeof(PropertyGrid), new UIPropertyMetadata(null, new PropertyChangedCallback(PropertyGrid.OnSelectedPropertyItemChanged)));
-            PropertyGrid.SelectedPropertyItemProperty = PropertyGrid.SelectedPropertyItemPropertyKey.DependencyProperty;
-            PropertyGrid.SelectedPropertyProperty = DependencyProperty.Register("SelectedProperty", typeof(object), typeof(PropertyGrid), new UIPropertyMetadata(null, new PropertyChangedCallback(PropertyGrid.OnSelectedPropertyChanged)));
-            PropertyGrid.ShowAdvancedOptionsProperty = DependencyProperty.Register("ShowAdvancedOptions", typeof(bool), typeof(PropertyGrid), new UIPropertyMetadata(false));
-            PropertyGrid.ShowPreviewProperty = DependencyProperty.Register("ShowPreview", typeof(bool), typeof(PropertyGrid), new UIPropertyMetadata(false));
-            PropertyGrid.ShowSearchBoxProperty = DependencyProperty.Register("ShowSearchBox", typeof(bool), typeof(PropertyGrid), new UIPropertyMetadata(true));
-            PropertyGrid.ShowSortOptionsProperty = DependencyProperty.Register("ShowSortOptions", typeof(bool), typeof(PropertyGrid), new UIPropertyMetadata(true));
-            PropertyGrid.ShowTitleProperty = DependencyProperty.Register("ShowTitle", typeof(bool), typeof(PropertyGrid), new UIPropertyMetadata(true));
-            PropertyGrid.UpdateTextBoxSourceOnEnterKeyProperty = DependencyProperty.Register("UpdateTextBoxSourceOnEnterKey", typeof(bool), typeof(PropertyGrid), new UIPropertyMetadata(true));
-            PropertyGrid.PropertyValueChangedEvent = EventManager.RegisterRoutedEvent("PropertyValueChanged", RoutingStrategy.Bubble, typeof(PropertyValueChangedEventHandler), typeof(PropertyGrid));
-            PropertyGrid.SelectedPropertyItemChangedEvent = EventManager.RegisterRoutedEvent("SelectedPropertyItemChanged", RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<PropertyItemBase>), typeof(PropertyGrid));
+            PropertyGridView.SelectedPropertyItemPropertyKey =
+                DependencyProperty.RegisterReadOnly("SelectedPropertyItem", typeof(PropertyItemBase),
+                    typeof(PropertyGridView),
+                    new UIPropertyMetadata(null,
+                        new PropertyChangedCallback(PropertyGridView.OnSelectedPropertyItemChanged)));
+            PropertyGridView.SelectedPropertyItemProperty =
+                PropertyGridView.SelectedPropertyItemPropertyKey.DependencyProperty;
+            PropertyGridView.SelectedPropertyProperty = DependencyProperty.Register("SelectedProperty", typeof(object),
+                typeof(PropertyGridView),
+                new UIPropertyMetadata(null, new PropertyChangedCallback(PropertyGridView.OnSelectedPropertyChanged)));
+            PropertyGridView.ShowAdvancedOptionsProperty = DependencyProperty.Register("ShowAdvancedOptions",
+                typeof(bool), typeof(PropertyGridView), new UIPropertyMetadata(false));
+            PropertyGridView.ShowPreviewProperty = DependencyProperty.Register("ShowPreview", typeof(bool),
+                typeof(PropertyGridView), new UIPropertyMetadata(false));
+            PropertyGridView.ShowSearchBoxProperty = DependencyProperty.Register("ShowSearchBox", typeof(bool),
+                typeof(PropertyGridView), new UIPropertyMetadata(true));
+            PropertyGridView.ShowSortOptionsProperty = DependencyProperty.Register("ShowSortOptions", typeof(bool),
+                typeof(PropertyGridView), new UIPropertyMetadata(true));
+            PropertyGridView.ShowTitleProperty = DependencyProperty.Register("ShowTitle", typeof(bool),
+                typeof(PropertyGridView), new UIPropertyMetadata(true));
+            PropertyGridView.UpdateTextBoxSourceOnEnterKeyProperty =
+                DependencyProperty.Register("UpdateTextBoxSourceOnEnterKey", typeof(bool), typeof(PropertyGridView),
+                    new UIPropertyMetadata(true));
+            PropertyGridView.PropertyValueChangedEvent = EventManager.RegisterRoutedEvent("PropertyValueChanged",
+                RoutingStrategy.Bubble, typeof(PropertyValueChangedEventHandler), typeof(PropertyGridView));
+            PropertyGridView.SelectedPropertyItemChangedEvent =
+                EventManager.RegisterRoutedEvent("SelectedPropertyItemChanged", RoutingStrategy.Bubble,
+                    typeof(RoutedPropertyChangedEventHandler<PropertyItemBase>), typeof(PropertyGridView));
             //PropertyGrid.SelectedObjectChangedEvent = EventManager.RegisterRoutedEvent("SelectedObjectChanged", RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<object>), typeof(PropertyGrid));
-            PropertyGrid.PreparePropertyItemEvent = EventManager.RegisterRoutedEvent("PreparePropertyItem", RoutingStrategy.Bubble, typeof(PropertyItemEventHandler), typeof(PropertyGrid));
-            PropertyGrid.ClearPropertyItemEvent = EventManager.RegisterRoutedEvent("ClearPropertyItem", RoutingStrategy.Bubble, typeof(PropertyItemEventHandler), typeof(PropertyGrid));
-            FrameworkElement.DefaultStyleKeyProperty.OverrideMetadata(typeof(PropertyGrid), new FrameworkPropertyMetadata(typeof(PropertyGrid)));
+            PropertyGridView.PreparePropertyItemEvent = EventManager.RegisterRoutedEvent("PreparePropertyItem",
+                RoutingStrategy.Bubble, typeof(PropertyItemEventHandler), typeof(PropertyGridView));
+            PropertyGridView.ClearPropertyItemEvent = EventManager.RegisterRoutedEvent("ClearPropertyItem",
+                RoutingStrategy.Bubble, typeof(PropertyItemEventHandler), typeof(PropertyGridView));
+            FrameworkElement.DefaultStyleKeyProperty.OverrideMetadata(typeof(PropertyGridView),
+                new FrameworkPropertyMetadata(typeof(PropertyGridView)));
         }
 
-        public PropertyGrid()
+        public PropertyGridView()
         {
             this._propertyDefinitionsListener = new WeakEventListener<NotifyCollectionChangedEventArgs>(new Action<object, NotifyCollectionChangedEventArgs>(this.OnPropertyDefinitionsCollectionChanged));
             this._editorDefinitionsListener = new WeakEventListener<NotifyCollectionChangedEventArgs>(new Action<object, NotifyCollectionChangedEventArgs>(this.OnEditorDefinitionsCollectionChanged));
@@ -871,7 +915,7 @@ namespace SP2013Access.Controls.PropertyGrid
             this.EditorDefinitions = new EditorDefinitionCollection();
             this.PropertyDefinitions = new PropertyDefinitionCollection();
             this.CategoryDefinitions = new CategoryDefinitionCollection();
-            this.SetSelectedObjects(new ObservableCollection<object>());
+            //this.SetSelectedObjects(new ObservableCollection<object>());
             base.AddHandler(PropertyItemBase.ItemSelectionChangedEvent, new RoutedEventHandler(this.OnItemSelectionChanged));
             base.AddHandler(PropertyItemsControl.PreparePropertyItemEvent, new PropertyItemEventHandler(this.OnPreparePropertyItemInternal));
             base.AddHandler(PropertyItemsControl.ClearPropertyItemEvent, new PropertyItemEventHandler(this.OnClearPropertyItemInternal));
@@ -881,25 +925,25 @@ namespace SP2013Access.Controls.PropertyGrid
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
-            if (this._dragThumb != null)
-            {
-                this._dragThumb.DragDelta -= new DragDeltaEventHandler(this.DragThumb_DragDelta);
-            }
-            this._dragThumb = (base.GetTemplateChild("PART_DragThumb") as Thumb);
-            if (this._dragThumb != null)
-            {
-                this._dragThumb.DragDelta += new DragDeltaEventHandler(this.DragThumb_DragDelta);
-            }
+            //if (this._dragThumb != null)
+            //{
+            //    this._dragThumb.DragDelta -= new DragDeltaEventHandler(this.DragThumb_DragDelta);
+            //}
+            //this._dragThumb = (base.GetTemplateChild(PART_DragThumb) as Thumb);
+            //if (this._dragThumb != null)
+            //{
+            //    this._dragThumb.DragDelta += new DragDeltaEventHandler(this.DragThumb_DragDelta);
+            //}
             this._containerHelper.ChildrenItemsControl = (base.GetTemplateChild("PART_PropertyItemsControl") as PropertyItemsControl);
             TranslateTransform translateTransform = new TranslateTransform();
             translateTransform.X = this.NameColumnWidth;
 
-            if (this._dragThumb != null)
-            {
-                this._dragThumb.RenderTransform = translateTransform;
-            }
+            //if (this._dragThumb != null)
+            //{
+            //    this._dragThumb.RenderTransform = translateTransform;
+            //}
 
-            this.UpdateThumb();
+            //this.UpdateThumb();
         }
 
         protected override void OnPreviewKeyDown(KeyEventArgs e)
@@ -950,10 +994,10 @@ namespace SP2013Access.Controls.PropertyGrid
             args.Handled = true;
         }
 
-        private void DragThumb_DragDelta(object sender, DragDeltaEventArgs e)
-        {
-            this.NameColumnWidth = Math.Max(0.0, this.NameColumnWidth + e.HorizontalChange);
-        }
+        //private void DragThumb_DragDelta(object sender, DragDeltaEventArgs e)
+        //{
+        //    this.NameColumnWidth = Math.Max(0.0, this.NameColumnWidth + e.HorizontalChange);
+        //}
 
         private void ClearFilter(object sender, ExecutedRoutedEventArgs e)
         {
@@ -1000,7 +1044,7 @@ namespace SP2013Access.Controls.PropertyGrid
                 //    }
                 //    else
                 //    {
-                this._containerHelper = new PropertiesContainerHelper(this);
+                this._containerHelper = new PropertiesSourceContainerHelper(this);
                 //    }
                 //}
             }
@@ -1021,28 +1065,28 @@ namespace SP2013Access.Controls.PropertyGrid
             this.Notify(this.PropertyChanged, () => this.Properties);
         }
 
-        private void SetSelectedObjects(IList newSelectedObjectsList)
-        {
-            if (newSelectedObjectsList == null)
-            {
-                throw new ArgumentNullException("newSelectedObjectsList");
-            }
-            //if (this._selectedObjects != null)
-            //{
-            //}
-            //INotifyCollectionChanged notifyCollectionChanged = this._selectedObjects as INotifyCollectionChanged;
-            //var notifyCollectionChanged2 = newSelectedObjectsList as INotifyCollectionChanged;
-            //if (notifyCollectionChanged != null)
-            //{
-            //    CollectionChangedEventManager.RemoveListener(notifyCollectionChanged, this._selectedObjectsListener);
-            //}
-            //if (notifyCollectionChanged2 != null)
-            //{
-            //    CollectionChangedEventManager.AddListener(notifyCollectionChanged2, this._selectedObjectsListener);
-            //}
-            //this._selectedObjects = newSelectedObjectsList;
-            this.UpdateContainerHelper();
-        }
+        //private void SetSelectedObjects(IList newSelectedObjectsList)
+        //{
+        //    if (newSelectedObjectsList == null)
+        //    {
+        //        throw new ArgumentNullException("newSelectedObjectsList");
+        //    }
+        //    if (this._selectedObjects != null)
+        //    {
+        //    }
+        //    INotifyCollectionChanged notifyCollectionChanged = this._selectedObjects as INotifyCollectionChanged;
+        //    var notifyCollectionChanged2 = newSelectedObjectsList as INotifyCollectionChanged;
+        //    if (notifyCollectionChanged != null)
+        //    {
+        //        CollectionChangedEventManager.RemoveListener(notifyCollectionChanged, this._selectedObjectsListener);
+        //    }
+        //    if (notifyCollectionChanged2 != null)
+        //    {
+        //        CollectionChangedEventManager.AddListener(notifyCollectionChanged2, this._selectedObjectsListener);
+        //    }
+        //    this._selectedObjects = newSelectedObjectsList;
+        //    this.UpdateContainerHelper();
+        //}
 
         //private void OnSelectedObjectsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         //{
@@ -1050,29 +1094,29 @@ namespace SP2013Access.Controls.PropertyGrid
         //    this.UpdateContainerHelper();
         //}
 
-        private static void ValidateSelectedObjectsCollection(IList objectList)
-        {
-            if (objectList != null)
-            {
-                if (objectList.Cast<object>().Any((object o) => o == null))
-                {
-                    throw new InvalidOperationException("The SelectedObjects collection cannot contain any null entries");
-                }
-            }
-        }
+        //private static void ValidateSelectedObjectsCollection(IList objectList)
+        //{
+        //    if (objectList != null)
+        //    {
+        //        if (objectList.Cast<object>().Any((object o) => o == null))
+        //        {
+        //            throw new InvalidOperationException("The SelectedObjects collection cannot contain any null entries");
+        //        }
+        //    }
+        //}
 
-        private void UpdateThumb()
-        {
-            if (this._dragThumb != null)
-            {
-                if (this.IsCategorized)
-                {
-                    this._dragThumb.Margin = new Thickness(6.0, 0.0, 0.0, 0.0);
-                    return;
-                }
-                this._dragThumb.Margin = new Thickness(-1.0, 0.0, 0.0, 0.0);
-            }
-        }
+        //private void UpdateThumb()
+        //{
+        //    if (this._dragThumb != null)
+        //    {
+        //        if (this.IsCategorized)
+        //        {
+        //            this._dragThumb.Margin = new Thickness(6.0, 0.0, 0.0, 0.0);
+        //            return;
+        //        }
+        //        this._dragThumb.Margin = new Thickness(-1.0, 0.0, 0.0, 0.0);
+        //    }
+        //}
 
         protected virtual Predicate<object> CreateFilter(string filter)
         {
@@ -1084,7 +1128,7 @@ namespace SP2013Access.Controls.PropertyGrid
             this._containerHelper.UpdateValuesFromSource();
         }
 
-        private void ValidatePropertyBinding<TMember>(Binding value, Expression<Func<TMember>> property)
+        private static void ValidatePropertyBinding<TMember>(Binding value, Expression<Func<TMember>> property)
         {
             if (value == null)
             {
@@ -1110,32 +1154,32 @@ namespace SP2013Access.Controls.PropertyGrid
 
         public static void AddPreparePropertyItemHandler(UIElement element, PropertyItemEventHandler handler)
         {
-            element.AddHandler(PropertyGrid.PreparePropertyItemEvent, handler);
+            element.AddHandler(PropertyGridView.PreparePropertyItemEvent, handler);
         }
 
         public static void RemovePreparePropertyItemHandler(UIElement element, PropertyItemEventHandler handler)
         {
-            element.RemoveHandler(PropertyGrid.PreparePropertyItemEvent, handler);
+            element.RemoveHandler(PropertyGridView.PreparePropertyItemEvent, handler);
         }
 
         internal static void RaisePreparePropertyItemEvent(UIElement source, PropertyItemBase propertyItem, object item)
         {
-            source.RaiseEvent(new PropertyItemEventArgs(PropertyGrid.PreparePropertyItemEvent, source, propertyItem, item));
+            source.RaiseEvent(new PropertyItemEventArgs(PropertyGridView.PreparePropertyItemEvent, source, propertyItem, item));
         }
 
         public static void AddClearPropertyItemHandler(UIElement element, PropertyItemEventHandler handler)
         {
-            element.AddHandler(PropertyGrid.ClearPropertyItemEvent, handler);
+            element.AddHandler(PropertyGridView.ClearPropertyItemEvent, handler);
         }
 
         public static void RemoveClearPropertyItemHandler(UIElement element, PropertyItemEventHandler handler)
         {
-            element.RemoveHandler(PropertyGrid.ClearPropertyItemEvent, handler);
+            element.RemoveHandler(PropertyGridView.ClearPropertyItemEvent, handler);
         }
 
         internal static void RaiseClearPropertyItemEvent(UIElement source, PropertyItemBase propertyItem, object item)
         {
-            source.RaiseEvent(new PropertyItemEventArgs(PropertyGrid.ClearPropertyItemEvent, source, propertyItem, item));
+            source.RaiseEvent(new PropertyItemEventArgs(PropertyGridView.ClearPropertyItemEvent, source, propertyItem, item));
         }
 
         public override void BeginInit()

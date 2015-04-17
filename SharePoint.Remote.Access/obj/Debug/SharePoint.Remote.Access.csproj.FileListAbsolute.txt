@@ -3,3 +3,8 @@ D:\Проекты\SPAccess\SharePoint.Remote.Access\bin\Debug\SharePoint.Remote.
 D:\Проекты\SPAccess\SharePoint.Remote.Access\obj\Debug\SharePoint.Remote.Access.csprojResolveAssemblyReference.cache
 D:\Проекты\SPAccess\SharePoint.Remote.Access\obj\Debug\SharePoint.Remote.Access.dll
 D:\Проекты\SPAccess\SharePoint.Remote.Access\obj\Debug\SharePoint.Remote.Access.pdb
+D:\Git\SharePoint.Remote.Access\bin\Debug\SharePoint.Remote.Access.dll
+D:\Git\SharePoint.Remote.Access\bin\Debug\SharePoint.Remote.Access.pdb
+D:\Git\SharePoint.Remote.Access\obj\Debug\SharePoint.Remote.Access.dll
+D:\Git\SharePoint.Remote.Access\obj\Debug\SharePoint.Remote.Access.pdb
+D:\Git\SharePoint.Remote.Access\obj\Debug\SharePoint.Remote.Access.csprojResolveAssemblyReference.cache

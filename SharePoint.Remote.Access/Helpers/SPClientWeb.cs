@@ -62,33 +62,17 @@ namespace SharePoint.Remote.Access.Helpers
 
         private IEnumerable<SPClientList> LoadLists(ListCollection lists)
         {
-            List<SPClientList> clientLists = new List<SPClientList>();
-            if (lists != null && lists.Count > 0)
-            {
-                foreach (List list in lists)
-                {
-                    SPClientList clientList = LoadList(list, false);
-                    clientLists.Add(clientList);
-                }
-
-                this.Context.ExecuteQuery();
-            }
+            if (lists == null || lists.Count <= 0) return new SPClientList[0];
+            var clientLists = lists.ToList().Select(list => LoadList(list)).ToList();
+            this.Context.ExecuteQuery();
             return clientLists;
         }
 
-        private async Task<List<SPClientList>> LoadListsAsync(ListCollection lists)
+        private async Task<IEnumerable<SPClientList>> LoadListsAsync(ListCollection lists)
         {
-            var clientLists = new List<SPClientList>();
-            if (lists != null && lists.Count > 0)
-            {
-                foreach (List list in lists)
-                {
-                    SPClientList clientList = LoadList(list, false);
-                    clientLists.Add(clientList);
-                }
-
-                await this.Context.ExecuteQueryAsync();
-            }
+            if (lists == null || lists.Count <= 0) return new SPClientList[0];
+            var clientLists = lists.ToList().Select(list => LoadList(list)).ToList();
+            await this.Context.ExecuteQueryAsync();
             return clientLists;
         }
 
@@ -255,7 +239,6 @@ namespace SharePoint.Remote.Access.Helpers
             if (!webs.AreItemsAvailable)
             {
                 this.Context.Load(webs);
-                //this.Context.ExecuteQuery();
             }
             return webs;
         }
@@ -279,7 +262,6 @@ namespace SharePoint.Remote.Access.Helpers
             if (!lists.AreItemsAvailable)
             {
                 this.Context.Load(lists);
-                //this.Context.ExecuteQuery();
             }
             return lists;
         }
@@ -313,8 +295,7 @@ namespace SharePoint.Remote.Access.Helpers
         public async Task<IEnumerable<SPClientList>> LoadListsAsync()
         {
             ListCollection lists = await this.GetListCollectionAsync();
-            //int count = lists.Count;
-            List<SPClientList> clientLists = await LoadListsAsync(lists);
+            var clientLists = await LoadListsAsync(lists);
             return clientLists.Where(clientList => clientList != null);
         }
 
@@ -325,7 +306,6 @@ namespace SharePoint.Remote.Access.Helpers
             if (!contentTypes.AreItemsAvailable)
             {
                 this.Context.Load(contentTypes);
-                //this.Context.ExecuteQuery();
             }
             return contentTypes;
         }
@@ -360,11 +340,9 @@ namespace SharePoint.Remote.Access.Helpers
         public FieldCollection GetFieldCollection()
         {
             FieldCollection fields = this.Fields;
-
             if (!fields.AreItemsAvailable)
             {
                 this.Context.Load(fields);
-                //this.Context.ExecuteQuery();
             }
             return fields;
         }

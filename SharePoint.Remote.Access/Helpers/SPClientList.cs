@@ -104,7 +104,6 @@ namespace SharePoint.Remote.Access.Helpers
             if (!contentTypes.AreItemsAvailable)
             {
                 this.Context.Load(contentTypes);
-                //this.Context.ExecuteQuery();
             }
             return contentTypes;
         }
@@ -132,7 +131,6 @@ namespace SharePoint.Remote.Access.Helpers
         public async Task<IEnumerable<ContentType>> LoadContentTypesAsync()
         {
             ContentTypeCollection contentTypes = await this.GetContentTypeCollectionAsync();
-            //int count = lists.Count;
             List<ContentType> cts = await LoadContentTypesAsync(contentTypes);
             return cts.Where(clientList => clientList != null);
         }
@@ -197,7 +195,6 @@ namespace SharePoint.Remote.Access.Helpers
             if (!fields.AreItemsAvailable)
             {
                 this.Context.Load(fields);
-                //this.Context.ExecuteQuery();
             }
             return fields;
         }

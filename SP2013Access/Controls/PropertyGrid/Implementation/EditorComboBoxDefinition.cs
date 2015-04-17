@@ -93,14 +93,9 @@ namespace SP2013Access.Controls.PropertyGrid
             this.UpdateStyle(propertyGridEditorComboBox);
             if (this.SelectedItemBinding == null && this.SelectedValueBinding == null)
             {
-                if (this.SelectedValuePath == null)
-                {
-                    this.UpdateBinding(propertyGridEditorComboBox, Selector.SelectedItemProperty, PropertyGridUtilities.GetDefaultBinding(propertyItem));
-                }
-                else
-                {
-                    this.UpdateBinding(propertyGridEditorComboBox, Selector.SelectedValueProperty, PropertyGridUtilities.GetDefaultBinding(propertyItem));
-                }
+                this.UpdateBinding(propertyGridEditorComboBox,
+                    this.SelectedValuePath == null ? Selector.SelectedItemProperty : Selector.SelectedValueProperty,
+                    PropertyGridUtilities.GetDefaultBinding(propertyItem));
             }
             else
             {

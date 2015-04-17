@@ -123,7 +123,7 @@
     <Compile Include="Controls\PropertyGrid\Implementation\PropertiesSourceContainerHelper.cs" />
     <Compile Include="Controls\PropertyGrid\Implementation\PropertyDefinition.cs" />
     <Compile Include="Controls\PropertyGrid\Implementation\PropertyDefinitionBaseCollection.cs" />
-    <Compile Include="Controls\PropertyGrid\Implementation\PropertyGrid.cs" />
+    <Compile Include="Controls\PropertyGrid\Implementation\PropertyGridView.cs" />
     <Compile Include="Controls\PropertyGrid\Implementation\PropertyGridUtilities.cs" />
     <Compile Include="Controls\PropertyGrid\Implementation\PropertyItem.cs" />
     <Compile Include="Controls\PropertyGrid\Implementation\PropertyItemBase.cs" />

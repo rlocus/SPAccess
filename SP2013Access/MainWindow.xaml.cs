@@ -82,7 +82,7 @@ namespace SP2013Access
 
                 PropertyItems = new ObservableCollection<CustomPropertyItem>();
                 PropertyItems.Add(new CustomPropertyItem() {DisplayName = "Url", Value = clientContext.Url});
-
+                PropertyItems.Add(new CustomPropertyItem() { DisplayName = "UserName", Value = clientContext.UserName });
                 PropertyGrid.PropertiesSource = PropertyItems;
             }
         

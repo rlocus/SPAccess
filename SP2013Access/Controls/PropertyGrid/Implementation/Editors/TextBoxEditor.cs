@@ -22,5 +22,10 @@ namespace SP2013Access.Controls.PropertyGrid.Editors
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(PropertyGridEditorTextBox), new FrameworkPropertyMetadata(typeof(PropertyGridEditorTextBox)));
         }
+
+        public override void OnApplyTemplate()
+        {
+            base.OnApplyTemplate();
+        }
     }
 }

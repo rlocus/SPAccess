@@ -10,27 +10,23 @@ namespace SP2013Access.Controls.PropertyGrid
     {
         private readonly TypeConverter _propertyTypeConverter;
         private readonly Type _type;
-
         internal CommonPropertyExceptionValidationRule(Type type)
         {
-            _propertyTypeConverter = TypeDescriptor.GetConverter(type);
-            _type = type;
+            this._propertyTypeConverter = TypeDescriptor.GetConverter(type);
+            this._type = type;
         }
-
         public override ValidationResult Validate(object value, CultureInfo cultureInfo)
         {
             ValidationResult result = new ValidationResult(true, null);
-
-            if (GeneralUtilities.CanConvertValue(value, _type))
+            if (GeneralUtilities.CanConvertValue(value, this._type))
             {
                 try
                 {
-                    _propertyTypeConverter.ConvertFrom(value);
+                    this._propertyTypeConverter.ConvertFrom(value);
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    // Will display a red border in propertyGrid
-                    result = new ValidationResult(false, e.Message);
+                    result = new ValidationResult(false, ex.Message);
                 }
             }
             return result;

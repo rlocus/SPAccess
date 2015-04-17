@@ -12,11 +12,11 @@ using System.Windows.Media;
 
 namespace SP2013Access.Controls.PropertyGrid
 {
-    [TemplatePart(Name = "PART_PropertyItemsControl", Type = typeof(PropertyItemsControl)), TemplatePart(Name = "PART_ValueContainer", Type = typeof(ContentControl))]
+    [TemplatePart(Name = "PART_PropertyItemsControl", Type = typeof(PropertyItemsControl)),
+     TemplatePart(Name = "PART_ValueContainer", Type = typeof(ContentControl))]
     public abstract class PropertyItemBase : Control, IPropertyContainer, INotifyPropertyChanged
     {
         internal const string PART_ValueContainer = "PART_ValueContainer";
-        private ContentControl _valueContainer;
         private ContainerHelperBase _containerHelper;
         public static readonly DependencyProperty AdvancedOptionsIconProperty;
         public static readonly DependencyProperty AdvancedOptionsTooltipProperty;
@@ -28,7 +28,7 @@ namespace SP2013Access.Controls.PropertyGrid
         public static readonly DependencyProperty IsExpandableProperty;
         public static readonly DependencyProperty IsSelectedProperty;
         internal static readonly RoutedEvent ItemSelectionChangedEvent;
-
+        
         public event PropertyChangedEventHandler PropertyChanged;
 
         public ImageSource AdvancedOptionsIcon
@@ -149,13 +149,7 @@ namespace SP2013Access.Controls.PropertyGrid
 
         internal IPropertyContainer ParentNode { get; set; }
 
-        internal ContentControl ValueContainer
-        {
-            get
-            {
-                return this._valueContainer;
-            }
-        }
+        internal ContentControl ValueContainer { get; private set; }
 
         public int Level
         {
@@ -405,7 +399,7 @@ namespace SP2013Access.Controls.PropertyGrid
         {
             base.OnApplyTemplate();
             this._containerHelper.ChildrenItemsControl = (base.GetTemplateChild("PART_PropertyItemsControl") as PropertyItemsControl);
-            this._valueContainer = (base.GetTemplateChild("PART_ValueContainer") as ContentControl);
+            this.ValueContainer = (base.GetTemplateChild("PART_ValueContainer") as ContentControl);
         }
 
         protected override void OnMouseDown(MouseButtonEventArgs e)

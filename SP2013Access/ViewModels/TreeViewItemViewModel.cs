@@ -17,6 +17,7 @@ namespace SP2013Access.ViewModels
 
         private static readonly TreeViewItemViewModel DummyChild = new TreeViewItemViewModel();
         private readonly TreeViewItemViewModel _parent;
+        private readonly bool _lazyLoadChildren;
 
         private bool _isExpanded;
         private bool _isSelected;
@@ -39,8 +40,9 @@ namespace SP2013Access.ViewModels
             : this()
         {
             _parent = parent;
+            _lazyLoadChildren = lazyLoadChildren;
 
-            if (lazyLoadChildren)
+            if (_lazyLoadChildren)
                 Children.Add(DummyChild);
         }
 
@@ -53,7 +55,19 @@ namespace SP2013Access.ViewModels
             get { return _parent; }
         }
 
-        public virtual string Name { get; set; }
+        public virtual string Name
+        {
+            get { return _name; }
+            set
+            {
+                if (value != _name)
+                {
+                    _name = value;
+                    this.OnPropertyChanged("Name");
+                    //this.RaisePropertyChanged("Name");
+                }
+            }
+        }
 
         public virtual string ID { get; set; }
 
@@ -121,19 +135,21 @@ namespace SP2013Access.ViewModels
 
                 // Expand all the way up to the root.
                 if (_isExpanded && _parent != null)
+                {
                     _parent.IsExpanded = true;
 
-                // Lazy load the child items, if necessary.
-                if (this.HasDummyChild)
-                {
-                    this.Children.Remove(DummyChild);
-                    this.LoadChildren();
-                }
+                    // Lazy load the child items, if necessary.
+                    if (this.HasDummyChild)
+                    {
+                        this.Children.Remove(DummyChild);
+                        this.LoadChildren();
+                    }
 
-                if (this.IsDirty)
-                {
-                    this.Children.Clear();
-                    this.LoadChildren();
+                    if (this.IsDirty)
+                    {
+                        this.Children.Clear();
+                        this.LoadChildren();
+                    }
                 }
             }
         }
@@ -176,6 +192,7 @@ namespace SP2013Access.ViewModels
         }
 
         private ImageSource _imageSource;
+        private string _name;
 
         public virtual ImageSource ImageSource
         {
@@ -204,20 +221,13 @@ namespace SP2013Access.ViewModels
         {
             this.IsBusy = true;
             this.IsLoaded = false;
-
-            //if (!this.HasDummyChild)
-            //{
-            //    if (this.Children.Count > 0)
-            //    {
-            //        this.Children.Clear();
-            //    }
-            //}
         }
 
         public virtual void Refresh()
         {
             this.IsBusy = true;
             this.IsLoaded = false;
+            this.IsExpanded = false;
 
             if (!this.HasDummyChild)
             {
@@ -225,6 +235,8 @@ namespace SP2013Access.ViewModels
                 {
                     this.Children.Clear();
                 }
+                if (_lazyLoadChildren)
+                    Children.Add(DummyChild);
             }
         }
 

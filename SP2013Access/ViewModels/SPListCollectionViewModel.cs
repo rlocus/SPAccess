@@ -47,16 +47,11 @@ namespace SP2013Access.ViewModels
 
             promise.Done((lists) =>
             {
-                int count = lists.Count();
-                this.Name = string.Format("Lists ({0})", count);
-                if (count == 0)
+                foreach (var viewModel in lists.Select(list => new SPListViewModel(list, this)
                 {
-                    this.IsExpanded = true;
-                }
-                foreach (SPClientList list in lists)
+                    Name = string.Format("{0} ({1})", list.Title, list.ItemCount)
+                }))
                 {
-                    var viewModel = new SPListViewModel(list, this);
-                    viewModel.Name = string.Format("{0} ({1})", list.Title, list.ItemCount);
                     this.Children.Add(viewModel);
                 }
             });
@@ -72,87 +67,111 @@ namespace SP2013Access.ViewModels
             });
         }
 
+
         public override void Refresh()
         {
             base.Refresh();
 
-            //if (this.HasDummyChild)
-            //{
-            //    this.IsBusy = false;
-            //    this.IsLoaded = true;
-            //    return;
-            //}
+            var lists = _web.Lists;
+            lists.RefreshLoad();
+            _web.Context.Load(lists);
+            var promise = Utility.ExecuteAsync(_web.Context.ExecuteQueryAsync());
 
-            if (this.HasDummyChild)
+            promise.Done(() =>
             {
-                if (Parent != null)
+                this.Name = string.Format("Lists ({0})", lists.Count);
+                if (lists.Count == 0)
                 {
-                    var lists = (Parent as SPWebViewModel).Lists;
-
-                    if (lists != null)
-                    {
-                        lists.RefreshLoad();
-
-                        var promise = Utility.ExecuteAsync(_web.Context.ExecuteQueryAsync());
-
-                        promise.Done(() =>
-                        {
-                            int count = lists.Count();
-                            this.Name = string.Format("Lists ({0})", count);
-                            if (count == 0)
-                            {
-                                this.IsExpanded = true;
-                            }
-                        }).Always(() =>
-                        {
-                            this.IsBusy = false;
-                            this.IsLoaded = true;
-                        });
-                    }
-                    else
-                    {
-                        this.IsBusy = false;
-                        this.IsLoaded = true;
-                    }
+                    this.IsExpanded = true;
                 }
-                else
-                {
-                    this.IsBusy = false;
-                    this.IsLoaded = true;
-                }
-            }
-            else
+            }).Always(() =>
             {
-                this.Children.Clear();
-
-                var promise = Utility.ExecuteAsync(_web.LoadListsAsync());
-
-                promise.Done((lists) =>
-                {
-                    int count = lists.Count();
-                    this.Name = string.Format("Lists ({0})", count);
-                    if (count == 0)
-                    {
-                        this.IsExpanded = true;
-                    }
-                    foreach (SPClientList list in lists)
-                    {
-                        var viewModel = new SPListViewModel(list, this);
-                        viewModel.Name = string.Format("{0} ({1})", list.Title, list.ItemCount);
-                        this.Children.Add(viewModel);
-                    }
-                });
-
-                promise.Fail((ex) =>
-                {
-                });
-
-                promise.Always(() =>
-                {
-                    this.IsBusy = false;
-                    this.IsLoaded = true;
-                });
-            }
+                this.IsBusy = false;
+                this.IsLoaded = true;
+            });
         }
+
+        //public override void Refresh()
+        //{
+        //    base.Refresh();
+
+        //    //if (this.HasDummyChild)
+        //    //{
+        //    //    this.IsBusy = false;
+        //    //    this.IsLoaded = true;
+        //    //    return;
+        //    //}
+
+        //    if (this.HasDummyChild)
+        //    {
+        //        if (Parent != null)
+        //        {
+        //            var lists = (Parent as SPWebViewModel).Lists;
+
+        //            if (lists != null)
+        //            {
+        //                lists.RefreshLoad();
+
+        //                var promise = Utility.ExecuteAsync(_web.Context.ExecuteQueryAsync());
+
+        //                promise.Done(() =>
+        //                {
+        //                    int count = lists.Count();
+        //                    this.Name = string.Format("Lists ({0})", count);
+        //                    if (count == 0)
+        //                    {
+        //                        this.IsExpanded = true;
+        //                    }
+        //                }).Always(() =>
+        //                {
+        //                    this.IsBusy = false;
+        //                    this.IsLoaded = true;
+        //                });
+        //            }
+        //            else
+        //            {
+        //                this.IsBusy = false;
+        //                this.IsLoaded = true;
+        //            }
+        //        }
+        //        else
+        //        {
+        //            this.IsBusy = false;
+        //            this.IsLoaded = true;
+        //        }
+        //    }
+        //    else
+        //    {
+        //        this.Children.Clear();
+
+        //        var promise = Utility.ExecuteAsync(_web.LoadListsAsync());
+
+        //        promise.Done((lists) =>
+        //        {
+        //            int count = lists.Count();
+        //            this.Name = string.Format("Lists ({0})", count);
+        //            if (count == 0)
+        //            {
+        //                this.IsExpanded = true;
+        //            }
+        //            foreach (SPClientList list in lists)
+        //            {
+        //                var viewModel = new SPListViewModel(list, this);
+        //                viewModel.Name = string.Format("{0} ({1})", list.Title, list.ItemCount);
+        //                this.Children.Add(viewModel);
+        //            }
+        //        });
+
+        //        promise.Fail((ex) =>
+        //        {
+        //        });
+
+        //        promise.Always(() =>
+        //        {
+        //            this.IsBusy = false;
+        //            this.IsLoaded = true;
+        //        });
+        //    }
+        //}
     }
 }

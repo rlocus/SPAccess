@@ -71,17 +71,17 @@ namespace SP2013Access.Controls.PropertyGrid
             }
         }
 
-        internal override void Lock()
-        {
-            if (this.TargetProperties != null
-              && this.TargetProperties.Count > 0)
-            {
-                throw new InvalidOperationException(
-                  string.Format(
-                    @"{0}: When using 'TargetProperties' property, do not use 'Name' property.",
-                    typeof(PropertyDefinition)));
-            }
-            base.Lock();
-        }
+    //    internal override void Lock()
+    //    {
+    //        if (this.TargetProperties != null
+    //          && this.TargetProperties.Count > 0)
+    //        {
+    //            throw new InvalidOperationException(
+    //              string.Format(
+    //                @"{0}: When using 'TargetProperties' property, do not use 'Name' property.",
+    //                typeof(PropertyDefinition)));
+    //        }
+    //        base.Lock();
+    //    }
     }
 }

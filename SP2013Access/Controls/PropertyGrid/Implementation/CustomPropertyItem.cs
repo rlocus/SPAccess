@@ -97,7 +97,7 @@ namespace SP2013Access.Controls.PropertyGrid
 
         public CustomPropertyItem()
         {
-            base.ContainerHelper = new PropertiesContainerHelper(this);
+            base.ContainerHelper = new PropertiesSourceContainerHelper(this);
         }
 
         private static object OnCoerceValueChanged(DependencyObject o, object baseValue)
@@ -128,7 +128,7 @@ namespace SP2013Access.Controls.PropertyGrid
         {
             if (base.IsInitialized)
             {
-                base.RaiseEvent(new PropertyValueChangedEventArgs(PropertyGrid.PropertyValueChangedEvent, this, oldValue, newValue));
+                base.RaiseEvent(new PropertyValueChangedEventArgs(PropertyGridView.PropertyValueChangedEvent, this, oldValue, newValue));
             }
         }
     }

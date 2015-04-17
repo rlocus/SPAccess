@@ -10,10 +10,6 @@ namespace SP2013Access.ViewModels
     public class SPWebViewModel : TreeViewItemViewModel
     {
         private readonly SPClientWeb _web;
-        private WebCollection _subWebs;
-        private ListCollection _lists;
-        private ContentTypeCollection _contentTypes;
-        private FieldCollection _fields;
 
         public override string ID
         {
@@ -38,25 +34,13 @@ namespace SP2013Access.ViewModels
             get { return _web; }
         }
 
-        public WebCollection SubWebs
-        {
-            get { return _subWebs; }
-        }
+        public WebCollection SubWebs { get; private set; }
 
-        public ListCollection Lists
-        {
-            get { return _lists; }
-        }
+        public ListCollection Lists { get; private set; }
 
-        public ContentTypeCollection ContentTypes
-        {
-            get { return _contentTypes; }
-        }
+        public ContentTypeCollection ContentTypes { get; private set; }
 
-        public FieldCollection Fields
-        {
-            get { return _fields; }
-        }
+        public FieldCollection Fields { get; private set; }
 
         public SPWebViewModel(SPClientWeb web, TreeViewItemViewModel parent)
             : this(parent, true)
@@ -77,49 +61,57 @@ namespace SP2013Access.ViewModels
         {
             base.LoadChildren();
 
-            _subWebs = _web.GetWebCollection();
-            _lists = _web.GetListCollection();
-            _contentTypes = _web.GetContentTypeCollection();
-            _fields = _web.GetFieldCollection();
+            SubWebs = _web.GetWebCollection();
+            Lists = _web.GetListCollection();
+            ContentTypes = _web.GetContentTypeCollection();
+            Fields = _web.GetFieldCollection();
 
             var promise = Utility.ExecuteAsync(_web.Context.ExecuteQueryAsync());
 
             promise.Done(() =>
             {
-                var websViewModel = new SPWebCollectionViewModel(_web, this);
-                websViewModel.Name = string.Format("Webs ({0})", _subWebs.Count);
+                var websViewModel = new SPWebCollectionViewModel(_web, this)
+                {
+                    Name = string.Format("Webs ({0})", SubWebs.Count)
+                };
 
-                if (_subWebs.Count == 0)
+                if (SubWebs.Count == 0)
                 {
                     websViewModel.IsExpanded = true;
                 }
 
                 this.Children.Add(websViewModel);
 
-                var listsViewModel = new SPListCollectionViewModel(_web, this);
-                listsViewModel.Name = string.Format("Lists ({0})", _lists.Count);
+                var listsViewModel = new SPListCollectionViewModel(_web, this)
+                {
+                    Name = string.Format("Lists ({0})", Lists.Count)
+                };
 
-                if (_lists.Count == 0)
+                if (Lists.Count == 0)
                 {
                     listsViewModel.IsExpanded = true;
                 }
 
                 this.Children.Add(listsViewModel);
 
-                var contentTypesViewModel = new SPWebContentTypeCollectionViewModel(_web, this);
-                contentTypesViewModel.Name = string.Format("Content Types ({0})", _contentTypes.Count);
+                var contentTypesViewModel = new SPWebContentTypeCollectionViewModel(_web, this)
+                {
+                    Name = string.Format("Content Types ({0})", ContentTypes.Count)
+                };
 
-                if (_contentTypes.Count == 0)
+                if (ContentTypes.Count == 0)
                 {
                     contentTypesViewModel.IsExpanded = true;
                 }
 
                 this.Children.Add(contentTypesViewModel);
 
-                var fieldsViewModel = new SPSiteFieldCollectionViewModel(_web, this);
-                fieldsViewModel.Name = string.Format("Site Fields ({0})", _fields.Count);
+                var fieldsViewModel = new SPSiteFieldCollectionViewModel(_web, this)
+                {
+                    Name = string.Format("Site Fields ({0})", Fields.Count)
+                };
 
-                if (_fields.Count == 0)
+                if (Fields.Count == 0)
                 {
                     fieldsViewModel.IsExpanded = true;
                 }
@@ -142,74 +134,38 @@ namespace SP2013Access.ViewModels
         {
             base.Refresh();
 
+            var context = _web.Context;
             _web.RefreshLoad();
+            context.Load(_web);
 
-            if (_subWebs != null)
+            if (SubWebs != null)
             {
-                _subWebs.RefreshLoad();
+                SubWebs.RefreshLoad();
+                context.Load(SubWebs);
             }
 
-            if (_lists != null)
+            if (Lists != null)
             {
-                _lists.RefreshLoad();
+                Lists.RefreshLoad();
+                context.Load(Lists);
             }
 
-            if (_contentTypes != null)
+            if (ContentTypes != null)
             {
-                _contentTypes.RefreshLoad();
+                ContentTypes.RefreshLoad();
+                context.Load(ContentTypes);
             }
 
-            if (_fields != null)
+            if (Fields != null)
             {
-                _fields.RefreshLoad();
+                Fields.RefreshLoad();
+                context.Load(Fields);
             }
 
             var promise = Utility.ExecuteAsync(_web.Context.ExecuteQueryAsync());
 
             promise.Done(() =>
             {
-                if (!this.HasDummyChild)
-                {
-                    var websViewModel = new SPWebCollectionViewModel(_web, this);
-                    websViewModel.Name = string.Format("Webs ({0})", _subWebs.Count);
-
-                    if (_subWebs.Count == 0)
-                    {
-                        websViewModel.IsExpanded = true;
-                    }
-
-                    this.Children.Add(websViewModel);
-
-                    var listsViewModel = new SPListCollectionViewModel(_web, this);
-                    listsViewModel.Name = string.Format("Lists ({0})", _lists.Count);
-
-                    if (_lists.Count == 0)
-                    {
-                        listsViewModel.IsExpanded = true;
-                    }
-
-                    this.Children.Add(listsViewModel);
-
-                    var contentTypesViewModel = new SPWebContentTypeCollectionViewModel(_web, this);
-                    contentTypesViewModel.Name = string.Format("Content Types ({0})", _contentTypes.Count);
-
-                    if (_contentTypes.Count == 0)
-                    {
-                        contentTypesViewModel.IsExpanded = true;
-                    }
-
-                    this.Children.Add(contentTypesViewModel);
-
-                    var fieldsViewModel = new SPSiteFieldCollectionViewModel(_web, this);
-                    fieldsViewModel.Name = string.Format("Site Fields ({0})", _fields.Count);
-
-                    if (_fields.Count == 0)
-                    {
-                        fieldsViewModel.IsExpanded = true;
-                    }
-
-                    this.Children.Add(fieldsViewModel);
-                }
             });
 
             promise.Fail((ex) =>

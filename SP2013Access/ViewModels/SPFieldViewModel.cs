@@ -1,5 +1,4 @@
-﻿using SharePoint.Remote.Access.Extensions;
-using SharePoint.Remote.Access.Helpers;
+﻿using SharePoint.Remote.Access.Helpers;
 using System;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -16,15 +15,22 @@ namespace SP2013Access.ViewModels
             {
                 if (_field.IsSiteField)
                 {
-                    return string.Format("SiteField_{0}_{1}", _field.ClientWeb.Id, _field.Id);
+                    return string.Format("SiteField_{0}_{1}", _field.ClientWeb.Web.Id, _field.Field.Id);
                 }
-                return string.Format("Field_{0}_{1}_{2}", _field.ClientWeb.Id, _field.ClientList.Id, _field.Id);
+                return string.Format("Field_{0}_{1}_{2}", _field.ClientWeb.Web.Id, _field.ClientList.List.Id, _field.Field.Id);
             }
         }
 
         public override string Name
         {
-            get { return string.Format("{0} ({1})", _field.Title, _field.InternalName); }
+            get
+            {
+                if (string.IsNullOrEmpty(base.Name))
+                {
+                    return string.Format("{0} ({1})", _field.Field.Title, _field.Field.InternalName);
+                }
+                return base.Name;
+            }
         }
 
         public override ImageSource ImageSource
@@ -50,34 +56,31 @@ namespace SP2013Access.ViewModels
         {
         }
 
-        public override void LoadChildren()
-        {
-            base.LoadChildren();
-            this.IsBusy = false;
-            this.IsLoaded = true;
-            this.IsExpanded = true;
-        }
+        //public override void LoadChildren()
+        //{
+        //    base.LoadChildren();
+        //}
 
         public override void Refresh()
         {
             base.Refresh();
 
-            _field.RefreshLoad();
+            //_field.RefreshLoad();
 
-            var promise = Utility.ExecuteAsync(_field.Context.ExecuteQueryAsync());
+            //var promise = Utility.ExecuteAsync(_field.Field.Context.ExecuteQueryAsync());
 
-            promise.Done(() =>
-            {
-            });
-            promise.Fail((ex) =>
-            {
-            });
+            //promise.Done(() =>
+            //{
+            //});
+            //promise.Fail((ex) =>
+            //{
+            //});
 
-            promise.Always(() =>
-            {
-                this.IsBusy = false;
-                this.IsLoaded = true;
-            });
+            //promise.Always(() =>
+            //{
+            //    this.IsBusy = false;
+            //    this.IsLoaded = true;
+            //});
         }
     }
 }

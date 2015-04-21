@@ -1,171 +1,109 @@
 ﻿using Microsoft.SharePoint.Client;
 using SharePoint.Remote.Access.Extensions;
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using List = Microsoft.SharePoint.Client.List;
 
 namespace SharePoint.Remote.Access.Helpers
 {
-    public sealed class SPClientList : List, IClientObject
+    public sealed class SPClientList
     {
-        internal SPClientList(SPClientContext context, ObjectPath objectPath)
-            : base(context, objectPath)
+        private bool _executeQuery;
+        public List List { get; private set; }
+
+        internal SPClientList(List list)
         {
+            if (list == null) throw new ArgumentNullException("list");
+            this.List = list;
         }
 
         public bool IsLoaded { get; internal set; }
 
         public SPClientWeb ClientWeb { get; internal set; }
 
-        private IEnumerable<ContentType> LoadContentTypes(ContentTypeCollection contentTypes)
+        public SPClientList IncludeContentTypes(params Expression<Func<ContentTypeCollection, object>>[] retrievals)
         {
-            var cts = new List<ContentType>();
-            if (contentTypes != null && contentTypes.Count > 0)
+            ContentTypeCollection contentTypes = this.List.ContentTypes;
+            this.List.Context.Load(contentTypes, retrievals);
+            _executeQuery = true;
+            return this;
+        }
+
+        public SPClientContentType[] GetContentTypes()
+        {
+            ContentTypeCollection contentTypes = this.List.ContentTypes;
+            if (contentTypes.AreItemsAvailable)
             {
-                foreach (ContentType contentType in contentTypes)
+                return contentTypes.ToList().Select(ct =>
                 {
-                    this.Context.Load(contentType);
-                    cts.Add(contentType);
-                }
-
-                this.Context.ExecuteQuery();
+                    var clientContentType = SPClientContentType.FromContentType(ct);
+                    clientContentType.IsSiteContentType = false;
+                    clientContentType.ClientList = this;
+                    clientContentType.ClientWeb = this.ClientWeb;
+                    return clientContentType;
+                }).ToArray();
             }
-            return cts;
+            throw new SPAccessException("Content Type collection are not available.");
         }
 
-        private async Task<List<ContentType>> LoadContentTypesAsync(ContentTypeCollection contentTypes)
+        public SPClientList IncludeFields(params Expression<Func<FieldCollection, object>>[] retrievals)
         {
-            var cts = new List<ContentType>();
-            if (contentTypes != null && contentTypes.Count > 0)
+            FieldCollection fields = this.List.Fields;
+            this.List.Context.Load(fields, retrievals);
+            _executeQuery = true;
+            return this;
+        }
+
+        public SPClientField[] GetFields()
+        {
+            FieldCollection fields = this.List.Fields;
+
+            if (fields.AreItemsAvailable)
             {
-                foreach (ContentType contentType in contentTypes)
+                return fields.ToList().Select(field =>
                 {
-                    this.Context.Load(contentType);
-                    cts.Add(contentType);
-                }
-
-                await this.Context.ExecuteQueryAsync();
+                    var clientField = SPClientField.FromField(field);
+                    clientField.ClientList = this;
+                    clientField.ClientWeb = this.ClientWeb;
+                    clientField.IsSiteField = false;
+                    return clientField;
+                }).ToArray();
             }
-            return cts;
+            throw new SPAccessException("Field collection are not available.");
         }
 
-        private SPClientField LoadField(Field field, bool executeQuery = false)
+        public void Load()
         {
-            SPClientField clientField = SPClientField.FromField(field);
-            this.Context.Load(clientField);
-            clientField.ClientWeb = this.ClientWeb;
-            clientField.ClientList = this;
-            if (executeQuery)
+            if (!IsLoaded)
             {
-                this.Context.ExecuteQuery();
-                clientField.IsLoaded = true;
+                this.List.Context.Load(this.List);
+                _executeQuery = true;
             }
-            return clientField;
-        }
 
-        private IEnumerable<SPClientField> LoadFields(FieldCollection fields)
-        {
-            var clientFields = new List<SPClientField>();
-            if (fields != null && fields.Count > 0)
+            if (_executeQuery)
             {
-                foreach (Field field in fields)
-                {
-                    SPClientField clientField = LoadField(field, false);
-                    clientFields.Add(clientField);
-                }
-
-                this.Context.ExecuteQuery();
+                this.List.Context.ExecuteQuery();
+                this.IsLoaded = true;
             }
-            return clientFields;
+            _executeQuery = false;
         }
 
-        private async Task<List<SPClientField>> LoadFieldsAsync(FieldCollection fields)
+        public async Task LoadAsync()
         {
-            var clientFields = new List<SPClientField>();
-            if (fields != null && fields.Count > 0)
+            if (!IsLoaded)
             {
-                foreach (Field field in fields)
-                {
-                    SPClientField clientField = LoadField(field, false);
-                    clientFields.Add(clientField);
-                }
-
-                await this.Context.ExecuteQueryAsync();
+                this.List.Context.Load(this.List);
+                _executeQuery = true;
             }
-            return clientFields;
-        }
 
-        public ContentTypeCollection GetContentTypeCollection()
-        {
-            ContentTypeCollection contentTypes = this.ContentTypes;
-
-            if (!contentTypes.AreItemsAvailable)
+            if (_executeQuery)
             {
-                this.Context.Load(contentTypes);
+                await this.List.Context.ExecuteQueryAsync();
+                this.IsLoaded = true;
             }
-            return contentTypes;
-        }
-
-        public async Task<ContentTypeCollection> GetContentTypeCollectionAsync()
-        {
-            ContentTypeCollection contentTypes = this.ContentTypes;
-
-            if (!contentTypes.AreItemsAvailable)
-            {
-                this.Context.Load(contentTypes);
-                await this.Context.ExecuteQueryAsync();
-            }
-            return contentTypes;
-        }
-
-        public IEnumerable<ContentType> LoadContentTypes(out int count)
-        {
-            ContentTypeCollection contentTypes = this.GetContentTypeCollection();
-            this.Context.ExecuteQuery();
-            count = contentTypes.Count;
-            return LoadContentTypes(contentTypes).Where(ct => ct != null);
-        }
-
-        public async Task<IEnumerable<ContentType>> LoadContentTypesAsync()
-        {
-            ContentTypeCollection contentTypes = await this.GetContentTypeCollectionAsync();
-            List<ContentType> cts = await LoadContentTypesAsync(contentTypes);
-            return cts.Where(clientList => clientList != null);
-        }
-
-        public async Task<FieldCollection> GetFieldCollectionAsync()
-        {
-            FieldCollection fields = this.Fields;
-
-            if (!fields.AreItemsAvailable)
-            {
-                this.Context.Load(fields);
-                await this.Context.ExecuteQueryAsync();
-            }
-            return fields;
-        }
-
-        public IEnumerable<SPClientField> LoadFields()
-        {
-            int count;
-            return LoadFields(out count);
-        }
-
-        public IEnumerable<SPClientField> LoadFields(out int count)
-        {
-            FieldCollection fields = this.GetFieldCollection();
-            this.Context.ExecuteQuery();
-            count = fields.Count;
-            return LoadFields(fields).Where(clientField => clientField != null);
-        }
-
-        public async Task<IEnumerable<SPClientField>> LoadFieldsAsync()
-        {
-            FieldCollection fields = await this.GetFieldCollectionAsync();
-            List<SPClientField> clientFields = await LoadFieldsAsync(fields);
-            return clientFields.Where(clientField => clientField != null);
+            _executeQuery = false;
         }
 
         public string GetListUrl()
@@ -175,40 +113,41 @@ namespace SharePoint.Remote.Access.Helpers
 
         public string GetSettingsUrl()
         {
-            return string.Format("{0}/_layouts/{1}/listedit.aspx?List={2}", this.ClientWeb.GetUrl().TrimEnd('/'), this.ClientWeb.UIVersion, this.Id);
+            return string.Format("{0}/_layouts/{1}/listedit.aspx?List={2}", this.ClientWeb.GetUrl().TrimEnd('/'), this.ClientWeb.Web.UIVersion, this.List.Id);
         }
 
         public string GetRestUrl()
         {
-            return string.Format("{0}/_api/web/lists(guid'{1}')", this.ClientWeb.GetUrl().TrimEnd('/'), this.Id);
+            return string.Format("{0}/_api/web/lists(guid'{1}')", this.ClientWeb.GetUrl().TrimEnd('/'), this.List.Id);
         }
 
         public string GetUrl()
         {
-            return Utility.CombineUrls(new Uri(this.Context.Url.ToLower()), this.ParentWebUrl.ToLower());
+            return Utility.CombineUrls(new Uri(this.List.Context.Url.ToLower()), this.List.ParentWebUrl.ToLower());
         }
 
         public FieldCollection GetFieldCollection()
         {
-            FieldCollection fields = this.Fields;
+            FieldCollection fields = this.List.Fields;
 
             if (!fields.AreItemsAvailable)
             {
-                this.Context.Load(fields);
+                this.List.Context.Load(fields);
             }
             return fields;
         }
 
         internal static SPClientList FromList(List list)
         {
-            return new SPClientList(list.Context as SPClientContext, list.Path);
+            return new SPClientList(list);
         }
 
-        public override void RefreshLoad()
+        public void RefreshLoad()
         {
-            if (!this.IsLoaded)
+            if (this.IsLoaded)
             {
-                base.RefreshLoad();
+                this.IsLoaded = false;
+                this.List.RefreshLoad();
             }
         }
     }

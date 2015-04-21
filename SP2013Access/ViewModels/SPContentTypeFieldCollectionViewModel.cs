@@ -1,20 +1,18 @@
-﻿using SharePoint.Remote.Access.Extensions;
-using SharePoint.Remote.Access.Helpers;
+﻿using SharePoint.Remote.Access.Helpers;
 using System;
 using System.Linq;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using ContentType = Microsoft.SharePoint.Client.ContentType;
 
 namespace SP2013Access.ViewModels
 {
     public class SPContentTypeFieldCollectionViewModel : TreeViewItemViewModel
     {
-        private readonly ContentType _contentType;
+        private readonly SPClientContentType _contentType;
 
         public override string ID
         {
-            get { return string.Format("ContentTypeFieldCollection_{0}", _contentType.Id); }
+            get { return string.Format("ContentTypeFieldCollection_{0}", _contentType.ContentType.Id); }
         }
 
         public override ImageSource ImageSource
@@ -25,8 +23,8 @@ namespace SP2013Access.ViewModels
             }
         }
 
-        public SPContentTypeFieldCollectionViewModel(ContentType contentType, SPContentTypeViewModel parent)
-            : this(parent, true)
+        public SPContentTypeFieldCollectionViewModel(SPClientContentType contentType, SPContentTypeViewModel parent)
+            : this(parent, false)
         {
             if (contentType == null) throw new ArgumentNullException("contentType");
             _contentType = contentType;
@@ -44,109 +42,20 @@ namespace SP2013Access.ViewModels
         {
             base.LoadChildren();
 
-            var promise = Utility.ExecuteAsync(_contentType.LoadFieldsAsync());
-
-            promise.Done((fields) =>
+            if (Parent != null)
             {
-                int count = fields.Count();
-                this.Name = string.Format("Fields ({0})", count);
-                if (count == 0)
-                {
-                    this.IsExpanded = true;
-                }
+                var fields = (Parent as SPContentTypeViewModel).Fields;
+
                 foreach (SPClientField field in fields)
                 {
-                    var viewModel = new SPFieldViewModel(field, this);
-                    viewModel.IsExpanded = true;
-                    this.Children.Add(viewModel);
-                }
-            });
-
-            promise.Fail((ex) =>
-            {
-            });
-
-            promise.Always(() =>
-            {
-                this.IsBusy = false;
-                this.IsLoaded = true;
-            });
-        }
-
-        public override void Refresh()
-        {
-            base.Refresh();
-
-            if (this.HasDummyChild)
-            {
-                if (Parent != null)
-                {
-                    var fields = (Parent as SPContentTypeViewModel).Fields;
-
-                    if (fields != null)
-                    {
-                        fields.RefreshLoad();
-
-                        var promise = Utility.ExecuteAsync(_contentType.Context.ExecuteQueryAsync());
-
-                        promise.Done(() =>
-                        {
-                            int count = fields.Count();
-                            this.Name = string.Format("Fields ({0})", count);
-                            if (count == 0)
-                            {
-                                this.IsExpanded = true;
-                            }
-                        }).Always(() =>
-                        {
-                            this.IsBusy = false;
-                            this.IsLoaded = true;
-                        });
-                    }
-                    else
-                    {
-                        this.IsBusy = false;
-                        this.IsLoaded = true;
-                    }
-                }
-                else
-                {
-                    this.IsBusy = false;
-                    this.IsLoaded = true;
+                    this.Children.Add(new SPFieldViewModel(field, this));
                 }
             }
-            else
-            {
-                this.Children.Clear();
-
-                var promise = Utility.ExecuteAsync(_contentType.LoadFieldsAsync());
-
-                promise.Done((fields) =>
-                {
-                    int count = fields.Count();
-                    this.Name = string.Format("Fields ({0})", count);
-                    if (count == 0)
-                    {
-                        this.IsExpanded = true;
-                    }
-                    foreach (SPClientField field in fields)
-                    {
-                        var viewModel = new SPFieldViewModel(field, this);
-                        viewModel.IsExpanded = true;
-                        this.Children.Add(viewModel);
-                    }
-                });
-
-                promise.Fail((ex) =>
-                {
-                });
-
-                promise.Always(() =>
-                {
-                    this.IsBusy = false;
-                    this.IsLoaded = true;
-                });
-            }
         }
+
+        //public override void Refresh()
+        //{
+        //    base.Refresh();
+        //}
     }
 }

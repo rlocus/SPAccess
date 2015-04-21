@@ -27,8 +27,8 @@ namespace SP2013Access.ViewModels
             }
         }
 
-        public SPSiteViewModel(SPClientSite site, SPContextViewModel parent)
-            : this(parent, false)
+        public SPSiteViewModel(SPClientSite site)
+            : this(null, false)
         {
             if (site == null) throw new ArgumentNullException("site");
             _site = site;
@@ -46,9 +46,15 @@ namespace SP2013Access.ViewModels
         {
             base.LoadChildren();
 
-            var promise = Utility.ExecuteAsync(_site.LoadRootWebAsync());
+            var promise = Utility.ExecuteAsync(_site.IncludeRootWeb().LoadAsync());
 
-            promise.Done((rootWeb) => this.Children.Add(new SPWebViewModel(rootWeb, this)));
+            promise.Done(() =>
+            {
+                var rootWeb = _site.GetRootWeb();
+                var viewModel = new SPWebViewModel(rootWeb, this);
+                //viewModel.LoadChildren();
+                this.Children.Add(viewModel);
+            });
 
             promise.Fail((ex) =>
             {
@@ -65,27 +71,27 @@ namespace SP2013Access.ViewModels
         {
             base.Refresh();
 
-            Deferred.When(Utility.ExecuteAsync((_site.Context as SPClientContext).ConnectAsync())).Done(() =>
-            {
-                var promise = Utility.ExecuteAsync(_site.LoadRootWebAsync());
+            //Deferred.When(Utility.ExecuteAsync((_site.Context as SPClientContext).ConnectAsync())).Done(() =>
+            //{
+            //    var promise = Utility.ExecuteAsync(_site.LoadRootWebAsync());
 
-                promise.Done((rootWeb) => this.Children.Add(new SPWebViewModel(rootWeb, this)));
+            //    promise.Done((rootWeb) => this.Children.Add(new SPWebViewModel(rootWeb, this)));
 
-                promise.Fail((ex) =>
-                {
-                });
+            //    promise.Fail((ex) =>
+            //    {
+            //    });
 
-                promise.Always(() =>
-                {
-                    this.IsBusy = false;
-                    this.IsLoaded = true;
-                });
+            //    promise.Always(() =>
+            //    {
+            //        this.IsBusy = false;
+            //        this.IsLoaded = true;
+            //    });
 
-            }).Always(() =>
-            {
-                this.IsBusy = false;
-                this.IsLoaded = false;
-            });
+            //}).Always(() =>
+            //{
+            //    this.IsBusy = false;
+            //    this.IsLoaded = false;
+            //});
         }
     }
 }

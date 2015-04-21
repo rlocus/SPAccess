@@ -31,9 +31,9 @@ namespace SP2013Access.Controls
             }
             else
             {
-                var viewModel = new SPContextViewModel(clientContext);
-                viewModel.LoadChildren();
-                base.DataContext = viewModel;
+                //var viewModel = new SPContextViewModel(clientContext);
+                //viewModel.LoadChildren();
+                //base.DataContext = viewModel;
             }
         }
 

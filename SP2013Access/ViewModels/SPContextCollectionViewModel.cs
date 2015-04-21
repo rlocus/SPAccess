@@ -46,7 +46,7 @@ namespace SP2013Access.ViewModels
 
             foreach (SPClientContext clientContext in _clientContexts)
             {
-                var viewModel = new SPSiteViewModel(clientContext.ClientSite, null);
+                var viewModel = new SPSiteViewModel(clientContext.ClientSite);
                 this.Children.Add(viewModel);
                 viewModel.LoadChildren();
             }
@@ -55,9 +55,10 @@ namespace SP2013Access.ViewModels
         public void Add(SPClientContext clientContext)
         {
             _clientContexts.Add(clientContext);
-            var viewModel = new SPSiteViewModel(clientContext.ClientSite, null);
+            var viewModel = new SPSiteViewModel(clientContext.ClientSite);
             this.Children.Add(viewModel);
             viewModel.LoadChildren();
+            viewModel.IsExpanded = true;
 
             viewModel.Commands.Add(new CommandEntity()
             {

@@ -1,7 +1,5 @@
-﻿using SharePoint.Remote.Access.Extensions;
-using SharePoint.Remote.Access.Helpers;
+﻿using SharePoint.Remote.Access.Helpers;
 using System;
-using System.Linq;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
@@ -13,7 +11,7 @@ namespace SP2013Access.ViewModels
 
         public override string ID
         {
-            get { return string.Format("SiteFieldCollection_{0}", _web.Id); }
+            get { return string.Format("SiteFieldCollection_{0}", _web.Web.Id); }
         }
 
         public override ImageSource ImageSource
@@ -21,6 +19,18 @@ namespace SP2013Access.ViewModels
             get
             {
                 return new BitmapImage(new Uri("pack://application:,,,/images/SiteColumn.png"));
+            }
+        }
+
+        public override string Name
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(base.Name))
+                {
+                    return "Fields";
+                }
+                return base.Name;
             }
         }
 
@@ -43,16 +53,13 @@ namespace SP2013Access.ViewModels
         {
             base.LoadChildren();
 
-            var promise = Utility.ExecuteAsync(_web.LoadFieldsAsync());
+            var promise = Utility.ExecuteAsync(_web.IncludeFields().LoadAsync());
 
-            promise.Done((fields) =>
+            promise.Done(() =>
             {
-                int count = fields.Count();
-                this.Name = string.Format("Site Fields ({0})", count);
-                if (count == 0)
-                {
-                    this.IsExpanded = true;
-                }
+                var fields = _web.GetFields();
+                Name = string.Format("Fields ({0})", fields.Length);
+
                 foreach (SPClientField field in fields)
                 {
                     var viewModel = new SPFieldViewModel(field, this);
@@ -60,16 +67,24 @@ namespace SP2013Access.ViewModels
                     this.Children.Add(viewModel);
                 }
             });
-
             promise.Fail((ex) =>
             {
             });
-
             promise.Always(() =>
             {
                 this.IsBusy = false;
                 this.IsLoaded = true;
             });
+
+            //if (Parent != null)
+            //{
+            //    var fields = (Parent as SPWebViewModel).Fields;
+
+            //    foreach (SPClientField field in fields)
+            //    {
+            //        this.Children.Add(new SPFieldViewModel(field, this));
+            //    }
+            //}
         }
 
         public override void Refresh()
@@ -83,76 +98,76 @@ namespace SP2013Access.ViewModels
             //    return;
             //}
 
-            if (this.HasDummyChild)
-            {
-                if (Parent != null)
-                {
-                    var fields = (Parent as SPWebViewModel).Fields;
+            //if (this.HasDummyChild)
+            //{
+            //    if (Parent != null)
+            //    {
+            //        var fields = (Parent as SPWebViewModel).Fields;
 
-                    if (fields != null)
-                    {
-                        fields.RefreshLoad();
+            //        if (fields != null)
+            //        {
+            //            fields.RefreshLoad();
 
-                        var promise = Utility.ExecuteAsync(_web.Context.ExecuteQueryAsync());
+            //            var promise = Utility.ExecuteAsync(_web.Context.ExecuteQueryAsync());
 
-                        promise.Done(() =>
-                        {
-                            int count = fields.Count();
-                            this.Name = string.Format("Site Fields ({0})", count);
-                            if (count == 0)
-                            {
-                                this.IsExpanded = true;
-                            }
-                        }).Always(() =>
-                        {
-                            this.IsBusy = false;
-                            this.IsLoaded = true;
-                        });
-                    }
-                    else
-                    {
-                        this.IsBusy = false;
-                        this.IsLoaded = true;
-                    }
-                }
-                else
-                {
-                    this.IsBusy = false;
-                    this.IsLoaded = true;
-                }
-            }
-            else
-            {
-                this.Children.Clear();
+            //            promise.Done(() =>
+            //            {
+            //                int count = fields.Count();
+            //                this.Name = string.Format("Site Fields ({0})", count);
+            //                if (count == 0)
+            //                {
+            //                    this.IsExpanded = true;
+            //                }
+            //            }).Always(() =>
+            //            {
+            //                this.IsBusy = false;
+            //                this.IsLoaded = true;
+            //            });
+            //        }
+            //        else
+            //        {
+            //            this.IsBusy = false;
+            //            this.IsLoaded = true;
+            //        }
+            //    }
+            //    else
+            //    {
+            //        this.IsBusy = false;
+            //        this.IsLoaded = true;
+            //    }
+            //}
+            //else
+            //{
+            //    this.Children.Clear();
 
-                var promise = Utility.ExecuteAsync(_web.LoadFieldsAsync());
+            //    var promise = Utility.ExecuteAsync(_web.LoadFieldsAsync());
 
-                promise.Done((fields) =>
-                {
-                    int count = fields.Count();
-                    this.Name = string.Format("Site Fields ({0})", count);
-                    if (count == 0)
-                    {
-                        this.IsExpanded = true;
-                    }
-                    foreach (SPClientField field in fields)
-                    {
-                        var viewModel = new SPFieldViewModel(field, this);
-                        viewModel.LoadChildren();
-                        this.Children.Add(viewModel);
-                    }
-                });
+            //    promise.Done((fields) =>
+            //    {
+            //        int count = fields.Count();
+            //        this.Name = string.Format("Site Fields ({0})", count);
+            //        if (count == 0)
+            //        {
+            //            this.IsExpanded = true;
+            //        }
+            //        foreach (SPClientField field in fields)
+            //        {
+            //            var viewModel = new SPFieldViewModel(field, this);
+            //            viewModel.LoadChildren();
+            //            this.Children.Add(viewModel);
+            //        }
+            //    });
 
-                promise.Fail((ex) =>
-                {
-                });
+            //    promise.Fail((ex) =>
+            //    {
+            //    });
 
-                promise.Always(() =>
-                {
-                    this.IsBusy = false;
-                    this.IsLoaded = true;
-                });
-            }
+            //    promise.Always(() =>
+            //    {
+            //        this.IsBusy = false;
+            //        this.IsLoaded = true;
+            //    });
+            //}
         }
     }
 }

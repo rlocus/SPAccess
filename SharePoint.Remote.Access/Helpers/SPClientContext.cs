@@ -1,5 +1,4 @@
 ﻿using Microsoft.SharePoint.Client;
-using SharePoint.Remote.Access.Extensions;
 using System;
 using System.Net;
 using System.Threading.Tasks;
@@ -26,13 +25,20 @@ namespace SharePoint.Remote.Access.Helpers
         /// </summary>
         public AuthType Authentication { get; private set; }
 
+
+        private SPClientContext(Uri webFullUrl)
+            : base(webFullUrl)
+        {
+            _site = SPClientSite.FromSite(this.Site);
+        }
+
         public SPClientContext(string webFullUrl, AuthType authType = AuthType.Default, string userName = null, string password = null)
             : this(Utility.RemoveTrailingSlash(new Uri(webFullUrl)), authType, userName, password)
         {
         }
 
         public SPClientContext(Uri webFullUrl, AuthType authType = AuthType.Default, string userName = null, string password = null)
-            : base(webFullUrl)
+            : this(webFullUrl)
         {
             this.Authentication = authType;
             this.UserName = userName;
@@ -60,25 +66,18 @@ namespace SharePoint.Remote.Access.Helpers
                     this.FormsAuthenticationLoginInfo = new FormsAuthenticationLoginInfo(this.UserName, password);
                     break;
             }
-
-            // Try connection, to ensure site is available
-            _site = SPClientSite.FromSite(this.Site);
         }
 
         public void Connect()
         {
             if (!_site.IsLoaded)
             {
-                this.Load(_site);
-                this.ExecuteQuery();
-                _site.IsLoaded = true;
+                _site.Load();
             }
             else
             {
-                _site.IsLoaded = false;
                 _site.RefreshLoad();
-                this.ExecuteQuery();
-                _site.IsLoaded = true;
+                _site.Load();
             }
         }
 
@@ -86,17 +85,25 @@ namespace SharePoint.Remote.Access.Helpers
         {
             if (!_site.IsLoaded)
             {
-                this.Load(_site);
-                await this.ExecuteQueryAsync();
-                _site.IsLoaded = true;
+                await _site.LoadAsync();
             }
             else
             {
-                _site.IsLoaded = false;
                 _site.RefreshLoad();
-                await this.ExecuteQueryAsync();
-                _site.IsLoaded = true;
+                await _site.LoadAsync();
             }
+        }
+
+        public SPClientContext Clone()
+        {
+            return new SPClientContext(this.Url)
+             {
+                 Authentication = this.Authentication,
+                 UserName = this.UserName,
+                 AuthenticationMode = this.AuthenticationMode,
+                 Credentials = this.Credentials,
+                 FormsAuthenticationLoginInfo = this.FormsAuthenticationLoginInfo
+             };
         }
     }
 }

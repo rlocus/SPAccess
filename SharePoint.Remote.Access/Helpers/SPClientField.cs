@@ -1,13 +1,14 @@
-﻿using Microsoft.SharePoint.Client;
-using Field = Microsoft.SharePoint.Client.Field;
+﻿using Field = Microsoft.SharePoint.Client.Field;
 
 namespace SharePoint.Remote.Access.Helpers
 {
-    public sealed class SPClientField : Field, IClientObject
+    public sealed class SPClientField
     {
-        internal SPClientField(SPClientContext context, ObjectPath objectPath)
-            : base(context, objectPath)
+        public Field Field { get; private set; }
+
+        internal SPClientField(Field field)
         {
+            this.Field = field;
         }
 
         public bool IsLoaded { get; internal set; }
@@ -23,17 +24,17 @@ namespace SharePoint.Remote.Access.Helpers
             return null;
         }
 
-        public override void RefreshLoad()
+        public void RefreshLoad()
         {
             if (!this.IsLoaded)
             {
-                base.RefreshLoad();
+                this.Field.RefreshLoad();
             }
         }
 
         internal static SPClientField FromField(Field field)
         {
-            return new SPClientField(field.Context as SPClientContext, field.Path);
+            return new SPClientField(field);
         }
     }
 }

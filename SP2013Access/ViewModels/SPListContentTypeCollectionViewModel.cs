@@ -14,7 +14,7 @@ namespace SP2013Access.ViewModels
 
         public override string ID
         {
-            get { return string.Format("ContentTypeCollection_{0}", _list.Id); }
+            get { return string.Format("ContentTypeCollection_{0}", _list.List.Id); }
         }
 
         public override ImageSource ImageSource
@@ -26,7 +26,7 @@ namespace SP2013Access.ViewModels
         }
 
         public SPListContentTypeCollectionViewModel(SPClientList list, SPListViewModel parent)
-            : this(parent, true)
+            : this(parent, false)
         {
             if (list == null) throw new ArgumentNullException("list");
             _list = list;
@@ -44,32 +44,14 @@ namespace SP2013Access.ViewModels
         {
             base.LoadChildren();
 
-            var promise = Utility.ExecuteAsync(_list.LoadContentTypesAsync());
-
-            promise.Done((contentTypes) =>
+            if (Parent != null)
             {
-                int count = contentTypes.Count();
-                this.Name = string.Format("Content Types ({0})", count);
-                if (count == 0)
+                SPClientContentType[] contentTypes = (Parent as SPListViewModel).ContentTypes;
+                foreach (SPClientContentType contentType in contentTypes)
                 {
-                    this.IsExpanded = true;
+                    this.Children.Add(new SPContentTypeViewModel(contentType, this));
                 }
-                foreach (ContentType contentType in contentTypes.OrderBy(ct => ct.Name))
-                {
-                    var viewModel = new SPContentTypeViewModel(contentType, this);
-                    this.Children.Add(viewModel);
-                }
-            });
-
-            promise.Fail((ex) =>
-            {
-            });
-
-            promise.Always(() =>
-            {
-                this.IsBusy = false;
-                this.IsLoaded = true;
-            });
+            }
         }
 
         public override void Refresh()
@@ -83,76 +65,76 @@ namespace SP2013Access.ViewModels
             //    return;
             //}
 
-            if (this.HasDummyChild)
-            {
-                if (Parent != null)
-                {
-                    var contentTypes = (Parent as SPListViewModel).ContentTypes;
+            //if (this.HasDummyChild)
+            //{
+            //    if (Parent != null)
+            //    {
+            //        var contentTypes = (Parent as SPListViewModel).ContentTypes;
 
-                    if (contentTypes != null)
-                    {
-                        contentTypes.RefreshLoad();
+            //        if (contentTypes != null)
+            //        {
+            //            contentTypes.RefreshLoad();
 
-                        var promise = Utility.ExecuteAsync(_list.Context.ExecuteQueryAsync());
+            //            var promise = Utility.ExecuteAsync(_list.Context.ExecuteQueryAsync());
 
-                        promise.Done(() =>
-                        {
-                            int count = contentTypes.Count();
-                            this.Name = string.Format("Content Types ({0})", count);
-                            if (count == 0)
-                            {
-                                this.IsExpanded = true;
-                            }
-                        }).Always(() =>
-                        {
-                            this.IsBusy = false;
-                            this.IsLoaded = true;
-                        });
-                    }
-                    else
-                    {
-                        this.IsBusy = false;
-                        this.IsLoaded = true;
-                    }
-                }
-                else
-                {
-                    this.IsBusy = false;
-                    this.IsLoaded = true;
-                }
-            }
-            else
-            {
-                this.Children.Clear();
+            //            promise.Done(() =>
+            //            {
+            //                int count = contentTypes.Count();
+            //                this.Name = string.Format("Content Types ({0})", count);
+            //                if (count == 0)
+            //                {
+            //                    this.IsExpanded = true;
+            //                }
+            //            }).Always(() =>
+            //            {
+            //                this.IsBusy = false;
+            //                this.IsLoaded = true;
+            //            });
+            //        }
+            //        else
+            //        {
+            //            this.IsBusy = false;
+            //            this.IsLoaded = true;
+            //        }
+            //    }
+            //    else
+            //    {
+            //        this.IsBusy = false;
+            //        this.IsLoaded = true;
+            //    }
+            //}
+            //else
+            //{
+            //    this.Children.Clear();
 
-                var promise = Utility.ExecuteAsync(_list.LoadContentTypesAsync());
+            //    var promise = Utility.ExecuteAsync(_list.LoadContentTypesAsync());
 
-                promise.Done((contentTypes) =>
-                {
-                    int count = contentTypes.Count();
-                    this.Name = string.Format("Content Types ({0})", count);
-                    if (count == 0)
-                    {
-                        this.IsExpanded = true;
-                    }
+            //    promise.Done((contentTypes) =>
+            //    {
+            //        int count = contentTypes.Count();
+            //        this.Name = string.Format("Content Types ({0})", count);
+            //        if (count == 0)
+            //        {
+            //            this.IsExpanded = true;
+            //        }
 
-                    foreach (ContentType contentType in contentTypes.OrderBy(ct => ct.Name))
-                    {
-                        var viewModel = new SPContentTypeViewModel(contentType, this);
-                        this.Children.Add(viewModel);
-                    }
-                });
+            //        foreach (ContentType contentType in contentTypes.OrderBy(ct => ct.Name))
+            //        {
+            //            var viewModel = new SPContentTypeViewModel(contentType, this);
+            //            this.Children.Add(viewModel);
+            //        }
+            //    });
 
-                promise.Fail((ex) =>
-                {
-                });
+            //    promise.Fail((ex) =>
+            //    {
+            //    });
 
-                promise.Always(() =>
-                {
-                    this.IsBusy = false;
-                    this.IsLoaded = true;
-                });
-            }
+            //    promise.Always(() =>
+            //    {
+            //        this.IsBusy = false;
+            //        this.IsLoaded = true;
+            //    });
+            //}
         }
     }
 }

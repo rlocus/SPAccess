@@ -133,22 +133,27 @@ namespace SP2013Access.ViewModels
                     //this.RaisePropertyChanged("IsExpanded");
                 }
 
-                // Expand all the way up to the root.
-                if (_isExpanded && _parent != null)
+                if (_isExpanded && _lazyLoadChildren)
                 {
-                    _parent.IsExpanded = true;
-
                     // Lazy load the child items, if necessary.
                     if (this.HasDummyChild)
                     {
                         this.Children.Remove(DummyChild);
-                        this.LoadChildren();
+
+                        if (!IsBusy)
+                        {
+                            this.LoadChildren();
+                        }
                     }
 
                     if (this.IsDirty)
                     {
                         this.Children.Clear();
-                        this.LoadChildren();
+
+                        if (!IsBusy)
+                        {
+                            this.LoadChildren();
+                        }
                     }
                 }
             }
@@ -219,25 +224,33 @@ namespace SP2013Access.ViewModels
         /// </summary>
         public virtual void LoadChildren()
         {
-            this.IsBusy = true;
-            this.IsLoaded = false;
+            if (_lazyLoadChildren)
+            {
+                this.IsBusy = true;
+                this.IsLoaded = false;
+            }
         }
 
         public virtual void Refresh()
         {
-            this.IsBusy = true;
-            this.IsLoaded = false;
-            this.IsExpanded = false;
-
-            if (!this.HasDummyChild)
+            if (_lazyLoadChildren)
             {
-                if (this.Children.Count > 0)
+                if (!this.HasDummyChild)
                 {
-                    this.Children.Clear();
-                }
-                if (_lazyLoadChildren)
+                    if (this.Children.Count > 0)
+                    {
+                        this.Children.Clear();
+                    }
+
                     Children.Add(DummyChild);
+                }
             }
+            else
+            {
+                this.Children.Clear();
+                LoadChildren();
+            }
+            this.IsExpanded = true;
         }
 
         #region INotifyPropertyChanged Members

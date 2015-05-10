@@ -11,12 +11,12 @@ namespace SP2013Access.ViewModels
 
         public override string ID
         {
-            get { return string.Format("Site_{0}", _site.Id); }
+            get { return string.Format("Site_{0}", _site.Site.Id); }
         }
 
         public override string Name
         {
-            get { return _site.Url; }
+            get { return _site.Site.Url; }
         }
 
         public override ImageSource ImageSource

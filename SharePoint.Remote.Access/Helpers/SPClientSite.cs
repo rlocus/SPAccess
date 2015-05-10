@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Microsoft.SharePoint.Client;
 using SharePoint.Remote.Access.Extensions;
 using System.Collections.Generic;
@@ -7,36 +8,36 @@ using Site = Microsoft.SharePoint.Client.Site;
 
 namespace SharePoint.Remote.Access.Helpers
 {
-    public sealed class SPClientSite : Site, IClientObject
+    public sealed class SPClientSite
     {
+        public Site Site { get; set; }
         private bool _executeQuery = true;
-        private readonly SPClientWeb _rootWeb;
 
-        internal SPClientSite(SPClientContext context, ObjectPath objectPath)
-            : base(context, objectPath)
+        internal SPClientSite(Site site)
         {
-            _rootWeb = SPClientWeb.FromWeb(this.RootWeb);
-            _rootWeb.ClientSite = this;
+            if (site == null) throw new ArgumentNullException("site");
+            Site = site;
         }
 
         internal static SPClientSite FromSite(Site site)
         {
-            return new SPClientSite(site.Context as SPClientContext, site.Path);
+            return new SPClientSite(site);
         }
 
         public SPClientWeb[] LoadAllWebs()
         {
             var allClientWebs = new List<SPClientWeb>();
-            this.Context.Load(_rootWeb.Web.Webs);
-            this.Context.ExecuteQuery();
-            allClientWebs.Add(_rootWeb);
-            var webs = _rootWeb.Web.Webs.ToList().RecursiveSelect(web => web.Webs);
+            var rootWeb = GetRootWeb();
+            this.Site.Context.Load(rootWeb.Web.Webs);
+            this.Site.Context.ExecuteQuery();
+            allClientWebs.Add(rootWeb);
+            var webs = rootWeb.Web.Webs.ToList().RecursiveSelect(web => web.Webs);
             foreach (Web web in webs)
             {
-                this.Context.Load(web.Webs);
+                this.Site.Context.Load(web.Webs);
                 var clientweb = SPClientWeb.FromWeb(web);
                 clientweb.ClientSite = this;
-                this.Context.ExecuteQuery();
+                this.Site.Context.ExecuteQuery();
                 allClientWebs.Add(clientweb);
             }
             return allClientWebs.ToArray();
@@ -45,13 +46,15 @@ namespace SharePoint.Remote.Access.Helpers
         public async Task<SPClientWeb[]> LoadAllWebsAsync()
         {
             var allClientWebs = new List<SPClientWeb>();
-            this.Context.Load(_rootWeb.Web.Webs);
-            await _rootWeb.LoadAsync();
-            allClientWebs.Add(_rootWeb);
-            var webs = _rootWeb.Web.Webs.ToList().RecursiveSelect(web => web.Webs);
+            var rootWeb = GetRootWeb();
+            await rootWeb.LoadAsync();
+            allClientWebs.Add(rootWeb);
+            this.Site.Context.Load(rootWeb.Web.Webs);
+          
+            var webs = rootWeb.Web.Webs.ToList().RecursiveSelect(web => web.Webs);
             foreach (Web web in webs)
             {
-                this.Context.Load(web.Webs);
+                this.Site.Context.Load(web.Webs);
                 var clientweb = SPClientWeb.FromWeb(web);
                 clientweb.ClientSite = this;
                 await clientweb.LoadAsync();
@@ -62,12 +65,12 @@ namespace SharePoint.Remote.Access.Helpers
 
         public SPClientWeb GetRootWeb()
         {
-            return _rootWeb;
+            return new SPClientWeb(this.Site.RootWeb);
         }
 
         public SPClientSite IncludeRootWeb()
         {
-            this.Context.Load(this.RootWeb);
+            this.Site.Context.Load(Site.RootWeb);
             _executeQuery = true;
             return this;
         }
@@ -76,12 +79,12 @@ namespace SharePoint.Remote.Access.Helpers
         {
             if (!IsLoaded)
             {
-                this.Context.Load(this);
+                this.Site.Context.Load(this.Site);
                 _executeQuery = true;
             }
             if (_executeQuery)
             {
-                this.Context.ExecuteQuery();
+                this.Site.Context.ExecuteQuery();
                 this.IsLoaded = true;
             }
             _executeQuery = false;
@@ -91,12 +94,12 @@ namespace SharePoint.Remote.Access.Helpers
         {
             if (!IsLoaded)
             {
-                this.Context.Load(this);
+                this.Site.Context.Load(this.Site);
                 _executeQuery = true;
             }
             if (_executeQuery)
             {
-                await this.Context.ExecuteQueryAsync();
+                await this.Site.Context.ExecuteQueryAsync();
                 this.IsLoaded = true;
             }
             _executeQuery = false;
@@ -130,17 +133,17 @@ namespace SharePoint.Remote.Access.Helpers
 
         public string GetRestUrl()
         {
-            return string.Format("{0}/_api/site", this.Url.TrimEnd('/'));
+            return string.Format("{0}/_api/site", this.Site.Url.TrimEnd('/'));
         }
 
         public bool IsLoaded { get; private set; }
 
-        public override void RefreshLoad()
+        public void RefreshLoad()
         {
             if (this.IsLoaded)
             {
                 this.IsLoaded = false;
-                base.RefreshLoad();
+                this.Site.RefreshLoad();
             }
         }
     }

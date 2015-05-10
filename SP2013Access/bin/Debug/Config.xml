@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <RecentSites>
-    <RecentSite Url="https://artezio.sharepoint.com/sites/dev" UseCurrentUserCredentials="false" UserName="rpohomenko@artezio.com" Authentication="SharePointOnline" />
     <RecentSite Url="https://artezio.sharepoint.com/sites/art_dev1" UseCurrentUserCredentials="false" UserName="rpohomenko@artezio.com" Authentication="SharePointOnline" />
     <RecentSite Url="https://artezio.sharepoint.com/" UseCurrentUserCredentials="false" UserName="rpohomenko@artezio.com" Authentication="SharePointOnline" />
+    <RecentSite Url="https://artezio.sharepoint.com/sites/dev" UseCurrentUserCredentials="false" UserName="rpohomenko@artezio.com" Authentication="SharePointOnline" />
     <RecentSite Url="https://artezio.sharepoint.com/sites/art_dev3" UseCurrentUserCredentials="false" UserName="rpohomenko@artezio.com" Authentication="SharePointOnline" />
   </RecentSites>
 </Configuration>

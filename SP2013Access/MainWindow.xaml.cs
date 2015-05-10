@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using SharePoint.Remote.Access.Helpers;
 using System;
 using System.Collections.ObjectModel;
@@ -14,6 +15,12 @@ namespace SP2013Access
     /// </summary>
     public partial class MainWindow : Window
     {
+        private readonly List<SPClientContext> _clientContexts;
+        public SPClientContext[] ClientContexts
+        {
+            get { return _clientContexts.ToArray(); }
+        }
+
         public ObservableCollection<RecentSite> RecentSites
         {
             get;
@@ -31,6 +38,7 @@ namespace SP2013Access
             InitializeComponent();
             this.Loaded += new RoutedEventHandler(MainWindow_Loaded);
             RecentSites = new ObservableCollection<RecentSite>();
+            _clientContexts = new List<SPClientContext>();
             LoadMenu();
         }
 
@@ -77,15 +85,18 @@ namespace SP2013Access
             if (openSiteWindow.ShowDialog() == true)
             {
                 SPClientContext clientContext = openSiteWindow.ClientContext;
+                _clientContexts.Add(clientContext);
                 ClientTreeView.Fill(clientContext);
                 LoadMenu();
 
-                PropertyItems = new ObservableCollection<CustomPropertyItem>();
-                PropertyItems.Add(new CustomPropertyItem() {DisplayName = "Url", Value = clientContext.Url});
-                PropertyItems.Add(new CustomPropertyItem() { DisplayName = "UserName", Value = clientContext.UserName });
+                PropertyItems = new ObservableCollection<CustomPropertyItem>
+                {
+                    new CustomPropertyItem() {DisplayName = "Url", Value = clientContext.Url},
+                    new CustomPropertyItem() {DisplayName = "UserName", Value = clientContext.UserName}
+                };
                 PropertyGrid.PropertiesSource = PropertyItems;
             }
-        
+
         }
 
         private void RecentMenuItem_OnClick(object sender, RoutedEventArgs e)
@@ -93,6 +104,15 @@ namespace SP2013Access
             var menuItem = e.OriginalSource as MenuItem;
             var recentSite = menuItem.DataContext as RecentSite;
             LoadSite(recentSite);
+        }
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            base.OnClosing(e);
+            foreach (SPClientContext clientContext in ClientContexts)
+            {
+                clientContext.Dispose();
+            }
         }
     }
 }

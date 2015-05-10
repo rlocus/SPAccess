@@ -63,7 +63,11 @@ namespace SP2013Access.ViewModels
             viewModel.Commands.Add(new CommandEntity()
             {
                 Name = "Close",
-                Command = new DelegateCommand<object>(arg => this.Children.Remove(viewModel), null)
+                Command = new DelegateCommand<object>(arg =>
+                {
+                    clientContext.Dispose();
+                    this.Children.Remove(viewModel);
+                }, null)
             });
         }
     }

@@ -59,10 +59,12 @@ namespace SP2013Access.ViewModels
         {
             base.LoadChildren();
 
+            //_web.RefreshLoad();
             var promise = Utility.ExecuteAsync(_web.LoadAsync());
 
             promise.Done(() =>
             {
+                //_web.RefreshLoad();
                 var websViewModel = new SPWebCollectionViewModel(_web, this);
                 this.Children.Add(websViewModel);
 

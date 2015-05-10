@@ -33,7 +33,7 @@ namespace SharePoint.Remote.Access.Helpers
         {
             if (web == null) throw new ArgumentNullException("web");
             this.Web = web;
-            WebsForCurrentUser = this.Web.GetSubwebsForCurrentUser(null);
+            //WebsForCurrentUser = this.Web.GetSubwebsForCurrentUser(null);
         }
 
         internal static SPClientWeb FromWeb(Web web)
@@ -43,6 +43,7 @@ namespace SharePoint.Remote.Access.Helpers
 
         public SPClientWeb IncludeWebs(params Expression<Func<WebCollection, object>>[] retrievals)
         {
+            WebsForCurrentUser = this.Web.GetSubwebsForCurrentUser(null);
             this.Web.Context.Load(WebsForCurrentUser, retrievals);
             _executeQuery = true;
             return this;
@@ -152,6 +153,7 @@ namespace SharePoint.Remote.Access.Helpers
         {
             if (!IsLoaded)
             {
+                //this.Web.RefreshLoad();
                 this.Web.Context.Load(this.Web);
                 _executeQuery = true;
             }
@@ -194,6 +196,9 @@ namespace SharePoint.Remote.Access.Helpers
             {
                 this.IsLoaded = false;
                 this.Web.RefreshLoad();
+                //var newCtx = (ClientSite.Context as SPClientContext).Clone();
+                //this.Web = newCtx.Site.OpenWebById(this.Web.Id);
+                //this.WebsForCurrentUser = this.Web.GetSubwebsForCurrentUser(null);
             }
         }
     }

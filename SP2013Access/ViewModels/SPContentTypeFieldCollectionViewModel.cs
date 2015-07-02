@@ -24,7 +24,7 @@ namespace SP2013Access.ViewModels
         }
 
         public SPContentTypeFieldCollectionViewModel(SPClientContentType contentType, SPContentTypeViewModel parent)
-            : this(parent, false)
+            : this(parent, true)
         {
             if (contentType == null) throw new ArgumentNullException("contentType");
             _contentType = contentType;
@@ -42,15 +42,38 @@ namespace SP2013Access.ViewModels
         {
             base.LoadChildren();
 
-            if (Parent != null)
+            //if (Parent != null)
+            //{
+            //    var fields = (Parent as SPContentTypeViewModel).Fields;
+
+            //    foreach (SPClientField field in fields)
+            //    {
+            //        this.Children.Add(new SPFieldViewModel(field, this));
+            //    }
+            //}
+
+            var promise = Utility.ExecuteAsync(_contentType.IncludeFields().LoadAsync());
+
+            promise.Done(() =>
             {
-                var fields = (Parent as SPContentTypeViewModel).Fields;
+                var fields = _contentType.GetFields();
+                Name = string.Format("Fields ({0})", fields.Length);
 
                 foreach (SPClientField field in fields)
                 {
-                    this.Children.Add(new SPFieldViewModel(field, this));
+                    var viewModel = new SPFieldViewModel(field, this);
+                    viewModel.LoadChildren();
+                    this.Children.Add(viewModel);
                 }
-            }
+            });
+            promise.Fail((ex) =>
+            {
+            });
+            promise.Always(() =>
+            {
+                this.IsBusy = false;
+                this.IsLoaded = true;
+            });
         }
 
         //public override void Refresh()

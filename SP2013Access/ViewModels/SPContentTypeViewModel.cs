@@ -26,7 +26,7 @@ namespace SP2013Access.ViewModels
             }
         }
 
-        public SPClientField[] Fields { get; private set; }
+        //public SPClientField[] Fields { get; private set; }
 
         public override ImageSource ImageSource
         {
@@ -54,16 +54,16 @@ namespace SP2013Access.ViewModels
         public override void LoadChildren()
         {
             base.LoadChildren();
-            var promise = Utility.ExecuteAsync(_contentType.IncludeFields().LoadAsync());
+            var promise = Utility.ExecuteAsync(_contentType./*IncludeFields().*/LoadAsync());
 
             promise.Done(() =>
             {
-                Fields = _contentType.GetFields();
+                //Fields = _contentType.GetFields();
                 var viewModel = new SPContentTypeFieldCollectionViewModel(_contentType, this)
                 {
-                    Name = string.Format("Fields ({0})", Fields.Length)
+                    Name = string.Format("Fields ({0})", /*Fields.Length*/ 0)
                 };
-                viewModel.LoadChildren();
+                //viewModel.LoadChildren();
                 this.Children.Add(viewModel);
             });
 

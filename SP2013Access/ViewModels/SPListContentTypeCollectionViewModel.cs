@@ -26,7 +26,7 @@ namespace SP2013Access.ViewModels
         }
 
         public SPListContentTypeCollectionViewModel(SPClientList list, SPListViewModel parent)
-            : this(parent, false)
+            : this(parent, true)
         {
             if (list == null) throw new ArgumentNullException("list");
             _list = list;
@@ -44,14 +44,37 @@ namespace SP2013Access.ViewModels
         {
             base.LoadChildren();
 
-            if (Parent != null)
+            //if (Parent != null)
+            //{
+            //    SPClientContentType[] contentTypes = (Parent as SPListViewModel).ContentTypes;
+            //    foreach (SPClientContentType contentType in contentTypes)
+            //    {
+            //        this.Children.Add(new SPContentTypeViewModel(contentType, this));
+            //    }
+            //}
+
+            var promise = Utility.ExecuteAsync(_list.IncludeContentTypes().LoadAsync());
+
+            promise.Done(() =>
             {
-                SPClientContentType[] contentTypes = (Parent as SPListViewModel).ContentTypes;
+                var contentTypes = _list.GetContentTypes();
+                Name = string.Format("Content Types ({0})", contentTypes.Length);
+
                 foreach (SPClientContentType contentType in contentTypes)
                 {
-                    this.Children.Add(new SPContentTypeViewModel(contentType, this));
+                    var viewModel = new SPContentTypeViewModel(contentType, this);
+                    //viewModel.LoadChildren();
+                    this.Children.Add(viewModel);
                 }
-            }
+            });
+            promise.Fail((ex) =>
+            {
+            });
+            promise.Always(() =>
+            {
+                this.IsBusy = false;
+                this.IsLoaded = true;
+            });
         }
 
         public override void Refresh()

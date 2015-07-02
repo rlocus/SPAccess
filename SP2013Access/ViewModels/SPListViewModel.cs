@@ -1,6 +1,4 @@
-﻿using Microsoft.SharePoint.Client;
-using SharePoint.Remote.Access.Extensions;
-using SharePoint.Remote.Access.Helpers;
+﻿using SharePoint.Remote.Access.Helpers;
 using System;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -36,9 +34,9 @@ namespace SP2013Access.ViewModels
             }
         }
 
-        public SPClientContentType[] ContentTypes { get; private set; }
+        //public SPClientContentType[] ContentTypes { get; private set; }
 
-        public SPClientField[] Fields { get; private set; }
+        //public SPClientField[] Fields { get; private set; }
 
         public SPListViewModel(SPClientList list, SPListCollectionViewModel parent)
             : this(parent, true)
@@ -59,38 +57,39 @@ namespace SP2013Access.ViewModels
         {
             base.LoadChildren();
 
-            var promise = Utility.ExecuteAsync(_list.IncludeContentTypes().IncludeFields().LoadAsync());
+            //var promise = Utility.ExecuteAsync(_list.IncludeContentTypes().IncludeFields().LoadAsync());
+            var promise = Utility.ExecuteAsync(_list.LoadAsync());
 
             promise.Done(() =>
             {
-                ContentTypes = _list.GetContentTypes();
+                //ContentTypes = _list.GetContentTypes();
                 var contentTypesViewModel = new SPListContentTypeCollectionViewModel(_list, this)
                 {
-                    Name = string.Format("Content Types ({0})", ContentTypes.Length)
+                    Name = string.Format("Content Types ({0})", /*ContentTypes.Length*/ 0)
                 };
 
-                contentTypesViewModel.LoadChildren();
+                //contentTypesViewModel.LoadChildren();
 
-                if (ContentTypes.Length == 0)
-                {
-                    contentTypesViewModel.IsExpanded = true;
-                }
+                //if (ContentTypes.Length == 0)
+                //{
+                //    contentTypesViewModel.IsExpanded = true;
+                //}
                 
                 this.Children.Add(contentTypesViewModel);
 
-                Fields = _list.GetFields();
+                //Fields = _list.GetFields();
 
                 var fieldsViewModel = new SPFieldCollectionViewModel(_list, this)
                 {
-                    Name = string.Format("Fields ({0})", Fields.Length)
+                    Name = string.Format("Fields ({0})", /*Fields.Length*/ 0)
                 };
 
-                fieldsViewModel.LoadChildren();
+                //fieldsViewModel.LoadChildren();
 
-                if (Fields.Length == 0)
-                {
-                    fieldsViewModel.IsExpanded = true;
-                }
+                //if (Fields.Length == 0)
+                //{
+                //    fieldsViewModel.IsExpanded = true;
+                //}
 
                 this.Children.Add(fieldsViewModel);
             });

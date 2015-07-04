@@ -79,7 +79,7 @@ namespace SP2013Access.Commands
             {
                 foreach (WeakReference handlerRef in handlers)
                 {
-                    EventHandler handler = handlerRef.Target as EventHandler;
+                    var handler = handlerRef.Target as EventHandler;
                     if (handler != null)
                     {
                         CommandManager.RequerySuggested -= handler;

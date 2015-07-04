@@ -1,8 +1,9 @@
-﻿using SharePoint.Remote.Access.Helpers;
+﻿using System.Linq;
+using SharePoint.Remote.Access.Helpers;
 using System;
-using System.Linq;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using SP2013Access.Commands;
 
 namespace SP2013Access.ViewModels
 {
@@ -20,6 +21,18 @@ namespace SP2013Access.ViewModels
             get
             {
                 return new BitmapImage(new Uri("pack://application:,,,/images/SiteColumn.png"));
+            }
+        }
+
+        public override string Name
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(base.Name))
+                {
+                    return "Fields";
+                }
+                return base.Name;
             }
         }
 
@@ -41,34 +54,23 @@ namespace SP2013Access.ViewModels
         public override void LoadChildren()
         {
             base.LoadChildren();
-
-            //if (Parent != null)
-            //{
-            //    var fields = (Parent as SPContentTypeViewModel).Fields;
-
-            //    foreach (SPClientField field in fields)
-            //    {
-            //        this.Children.Add(new SPFieldViewModel(field, this));
-            //    }
-            //}
-
             var promise = Utility.ExecuteAsync(_contentType.IncludeFields().LoadAsync());
-
             promise.Done(() =>
             {
                 var fields = _contentType.GetFields();
                 Name = string.Format("Fields ({0})", fields.Length);
-
-                foreach (SPClientField field in fields)
+                foreach (SPClientField field in fields.OrderBy(f => f.Field.Title))
                 {
                     var viewModel = new SPFieldViewModel(field, this);
+                    //viewModel.OnExceptionCommand = new DelegateCommand<Exception>((ex) =>
+                    //{
+
+                    //});
                     viewModel.LoadChildren();
                     this.Children.Add(viewModel);
                 }
             });
-            promise.Fail((ex) =>
-            {
-            });
+            promise.Fail((ex) => { if (OnExceptionCommand != null) OnExceptionCommand.Execute(ex); });
             promise.Always(() =>
             {
                 this.IsBusy = false;
@@ -76,9 +78,10 @@ namespace SP2013Access.ViewModels
             });
         }
 
-        //public override void Refresh()
-        //{
-        //    base.Refresh();
-        //}
+        public override void Refresh()
+        {
+            base.Refresh();
+            base.IsExpanded = true;
+        }
     }
 }

@@ -56,31 +56,29 @@ namespace SP2013Access.ViewModels
         {
         }
 
-        //public override void LoadChildren()
-        //{
-        //    base.LoadChildren();
-        //}
+        public override void LoadChildren()
+        {
+            base.LoadChildren();
+        }
 
         public override void Refresh()
         {
             base.Refresh();
-
-            //_field.RefreshLoad();
-
-            //var promise = Utility.ExecuteAsync(_field.Field.Context.ExecuteQueryAsync());
-
-            //promise.Done(() =>
-            //{
-            //});
-            //promise.Fail((ex) =>
-            //{
-            //});
-
-            //promise.Always(() =>
-            //{
-            //    this.IsBusy = false;
-            //    this.IsLoaded = true;
-            //});
+            this.IsBusy = true;
+            this.IsLoaded = false;
+            _field.RefreshLoad();
+            var promise = Utility.ExecuteAsync(_field.LoadAsync());
+            promise.Done(() =>
+            {
+                IsExpanded = true;
+                Name = string.Format("{0} ({1})", _field.Field.Title, _field.Field.InternalName);
+            });
+            promise.Fail((ex) => { if (OnExceptionCommand != null) OnExceptionCommand.Execute(ex); });
+            promise.Always(() =>
+            {
+                this.IsBusy = false;
+                this.IsLoaded = true;
+            });
         }
     }
 }

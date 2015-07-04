@@ -4,13 +4,9 @@
         WindowStartupLocation="CenterScreen" WindowState="Normal"
         Title="SharePoint Access 2013" Height="500" Width="800"
         xmlns:uc="clr-namespace:SP2013Access.Controls"
-        xmlns:pg="clr-namespace:SP2013Access.Controls.PropertyGrid"
         Icon="pack://application:,,,/images/FAVICON.ICO">
     <Window.Resources>
         <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="Controls/PropertyGrid/Themes/Generic.xaml" />
-            </ResourceDictionary.MergedDictionaries>
             </ResourceDictionary>
         </Window.Resources>
             <Grid x:Name="LayoutRoot">
@@ -44,15 +40,14 @@
             <uc:SPClientTreeView x:Name="ClientTreeView" Grid.Row="1" Grid.Column="0" HorizontalContentAlignment="Stretch"  VerticalContentAlignment="Stretch"  Margin="0,0,0,10" IsMulti="True" />
 
             <GridSplitter Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="5" />
-            <!--<ListView Grid.Column="2" HorizontalContentAlignment="Stretch" Grid.Row="1" VerticalContentAlignment="Stretch" Margin="0,0,0,10">
+            <ListView Grid.Column="2" HorizontalContentAlignment="Stretch" Grid.Row="1" VerticalContentAlignment="Stretch" Margin="0,0,0,10">
                 <ListView.View>
                     <GridView>
                         <GridViewColumn Header="Property" />
                         <GridViewColumn Header="Value" />
                     </GridView>
                 </ListView.View>
-            </ListView>-->
-            <pg:PropertyGridView x:Name="PropertyGrid" Grid.Column="2" HorizontalContentAlignment="Stretch" Grid.Row="1" VerticalContentAlignment="Stretch" ShowSearchBox="False" IsReadOnly="False" IsCategorized="False" ShowSortOptions="False"></pg:PropertyGridView>
+            </ListView>
         </Grid>
     </Grid>
 </Window>

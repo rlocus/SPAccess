@@ -42,14 +42,13 @@ namespace SP2013Access.ViewModels
 
         public override void LoadChildren()
         {
-            base.LoadChildren();
-
             foreach (SPClientContext clientContext in _clientContexts)
             {
                 var viewModel = new SPSiteViewModel(clientContext.ClientSite);
                 this.Children.Add(viewModel);
                 viewModel.LoadChildren();
-            }
+            } 
+            base.LoadChildren();
         }
 
         public void Add(SPClientContext clientContext)
@@ -59,7 +58,6 @@ namespace SP2013Access.ViewModels
             this.Children.Add(viewModel);
             viewModel.LoadChildren();
             viewModel.IsExpanded = true;
-
             viewModel.Commands.Add(new CommandEntity()
             {
                 Name = "Close",
@@ -69,6 +67,12 @@ namespace SP2013Access.ViewModels
                     this.Children.Remove(viewModel);
                 }, null)
             });
+        }
+
+        public override void Refresh()
+        {
+            base.Refresh();
+            base.IsExpanded = true;
         }
     }
 }

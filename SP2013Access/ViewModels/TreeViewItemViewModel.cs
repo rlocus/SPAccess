@@ -214,6 +214,8 @@ namespace SP2013Access.ViewModels
 
         public ObservableCollection<CommandEntity> Commands { get; private set; }
 
+        public DelegateCommand<System.Exception> OnExceptionCommand { get; set; }
+
         #endregion Properties
 
         #region Methods
@@ -229,6 +231,16 @@ namespace SP2013Access.ViewModels
                 this.IsBusy = true;
                 this.IsLoaded = false;
             }
+            else
+            {
+                foreach (TreeViewItemViewModel child in this.Children)
+                {
+                    if (!child._lazyLoadChildren)
+                    {
+                        child.LoadChildren();
+                    }
+                }
+            }
         }
 
         public virtual void Refresh()
@@ -237,6 +249,7 @@ namespace SP2013Access.ViewModels
             {
                 if (!this.HasDummyChild)
                 {
+                    this.IsExpanded = false;
                     if (this.Children.Count > 0)
                     {
                         this.Children.Clear();
@@ -250,7 +263,7 @@ namespace SP2013Access.ViewModels
                 this.Children.Clear();
                 LoadChildren();
             }
-            this.IsExpanded = true;
+            //this.IsExpanded = true;
         }
 
         #region INotifyPropertyChanged Members

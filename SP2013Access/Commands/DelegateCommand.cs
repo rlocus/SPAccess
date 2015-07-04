@@ -82,7 +82,7 @@ namespace SP2013Access.Commands
 
         public virtual void Execute(object parameter)
         {
-            if (_execute != null)
+            if (_execute != null && CanExecute(parameter))
             {
                 _execute((T)parameter);
             }

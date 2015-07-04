@@ -45,21 +45,17 @@ namespace SP2013Access.ViewModels
         public override void LoadChildren()
         {
             base.LoadChildren();
-
             var promise = Utility.ExecuteAsync(_site.IncludeRootWeb().LoadAsync());
-
             promise.Done(() =>
             {
                 var rootWeb = _site.GetRootWeb();
                 var viewModel = new SPWebViewModel(rootWeb, this);
-                //viewModel.LoadChildren();
+                viewModel.LoadChildren();
+                viewModel.IsExpanded = true;
                 this.Children.Add(viewModel);
+                //this.IsExpanded = true;
             });
-
-            promise.Fail((ex) =>
-            {
-            });
-
+            promise.Fail((ex) => { if (OnExceptionCommand != null) OnExceptionCommand.Execute(ex); });
             promise.Always(() =>
             {
                 this.IsBusy = false;
@@ -70,28 +66,6 @@ namespace SP2013Access.ViewModels
         public override void Refresh()
         {
             base.Refresh();
-
-            //Deferred.When(Utility.ExecuteAsync((_site.Context as SPClientContext).ConnectAsync())).Done(() =>
-            //{
-            //    var promise = Utility.ExecuteAsync(_site.LoadRootWebAsync());
-
-            //    promise.Done((rootWeb) => this.Children.Add(new SPWebViewModel(rootWeb, this)));
-
-            //    promise.Fail((ex) =>
-            //    {
-            //    });
-
-            //    promise.Always(() =>
-            //    {
-            //        this.IsBusy = false;
-            //        this.IsLoaded = true;
-            //    });
-
-            //}).Always(() =>
-            //{
-            //    this.IsBusy = false;
-            //    this.IsLoaded = false;
-            //});
         }
     }
 }

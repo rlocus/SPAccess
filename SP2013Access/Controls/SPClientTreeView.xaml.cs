@@ -39,19 +39,21 @@ namespace SP2013Access.Controls
 
         private void MenuItem_Refresh(object sender, RoutedEventArgs e)
         {
-            TreeViewItemViewModel treeViewItemViewModel = ((sender as MenuItem).DataContext) as TreeViewItemViewModel;
-            treeViewItemViewModel.Refresh();
+            var menuItem = sender as MenuItem;
+            if (menuItem != null)
+            {
+                var treeViewItemViewModel = (menuItem.DataContext) as TreeViewItemViewModel;
+                if (treeViewItemViewModel != null) treeViewItemViewModel.Refresh();
+            }
         }
 
         private void MenuItem_Expand(object sender, RoutedEventArgs e)
         {
             MenuItem menuItem = sender as MenuItem;
-            TreeViewItemViewModel treeViewItemViewModel = ((sender as MenuItem).DataContext) as TreeViewItemViewModel;
-
             if (menuItem != null)
             {
+                TreeViewItemViewModel treeViewItemViewModel = (menuItem.DataContext) as TreeViewItemViewModel;
                 ContentPresenter cp = menuItem.TemplatedParent as ContentPresenter;
-
                 if (cp != null)
                 {
                     TreeViewItem tvi = cp.TemplatedParent as TreeViewItem;

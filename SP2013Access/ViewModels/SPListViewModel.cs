@@ -34,12 +34,8 @@ namespace SP2013Access.ViewModels
             }
         }
 
-        //public SPClientContentType[] ContentTypes { get; private set; }
-
-        //public SPClientField[] Fields { get; private set; }
-
         public SPListViewModel(SPClientList list, SPListCollectionViewModel parent)
-            : this(parent, true)
+            : this(parent, false)
         {
             if (list == null) throw new ArgumentNullException("list");
             _list = list;
@@ -55,109 +51,31 @@ namespace SP2013Access.ViewModels
 
         public override void LoadChildren()
         {
+            var contentTypesViewModel = new SPListContentTypeCollectionViewModel(_list, this);
+            this.Children.Add(contentTypesViewModel);
+            var fieldsViewModel = new SPFieldCollectionViewModel(_list, this);
+            this.Children.Add(fieldsViewModel);
             base.LoadChildren();
-
-            //var promise = Utility.ExecuteAsync(_list.IncludeContentTypes().IncludeFields().LoadAsync());
-            var promise = Utility.ExecuteAsync(_list.LoadAsync());
-
-            promise.Done(() =>
-            {
-                //ContentTypes = _list.GetContentTypes();
-                var contentTypesViewModel = new SPListContentTypeCollectionViewModel(_list, this)
-                {
-                    Name = string.Format("Content Types ({0})", /*ContentTypes.Length*/ 0)
-                };
-
-                //contentTypesViewModel.LoadChildren();
-
-                //if (ContentTypes.Length == 0)
-                //{
-                //    contentTypesViewModel.IsExpanded = true;
-                //}
-                
-                this.Children.Add(contentTypesViewModel);
-
-                //Fields = _list.GetFields();
-
-                var fieldsViewModel = new SPFieldCollectionViewModel(_list, this)
-                {
-                    Name = string.Format("Fields ({0})", /*Fields.Length*/ 0)
-                };
-
-                //fieldsViewModel.LoadChildren();
-
-                //if (Fields.Length == 0)
-                //{
-                //    fieldsViewModel.IsExpanded = true;
-                //}
-
-                this.Children.Add(fieldsViewModel);
-            });
-
-            promise.Fail((ex) =>
-            {
-            });
-
-            promise.Always(() =>
-            {
-                this.IsBusy = false;
-                this.IsLoaded = true;
-            });
         }
 
         public override void Refresh()
         {
             base.Refresh();
-
-            //_list.RefreshLoad();
-
-            //if (ContentTypes != null)
-            //{
-            //    ContentTypes.RefreshLoad();
-            //}
-
-            //if (Fields != null)
-            //{
-            //    Fields.RefreshLoad();
-            //}
-
-            //var promise = Utility.ExecuteAsync(_list.List.Context.ExecuteQueryAsync());
-
-            //promise.Done(() =>
-            //{
-            //    if (!this.HasDummyChild)
-            //    {
-            //        var contentTypesViewModel = new SPListContentTypeCollectionViewModel(_list, this);
-            //        contentTypesViewModel.Name = string.Format("Content Types ({0})", ContentTypes.Count);
-
-            //        if (ContentTypes.Count == 0)
-            //        {
-            //            contentTypesViewModel.IsExpanded = true;
-            //        }
-
-            //        this.Children.Add(contentTypesViewModel);
-
-            //        var fieldsViewModel = new SPFieldCollectionViewModel(_list, this);
-            //        fieldsViewModel.Name = string.Format("Fields ({0})", Fields.Count);
-
-            //        if (Fields.Count == 0)
-            //        {
-            //            fieldsViewModel.IsExpanded = true;
-            //        }
-
-            //        this.Children.Add(fieldsViewModel);
-            //    }
-            //});
-
-            //promise.Fail((ex) =>
-            //{
-            //});
-
-            //promise.Always(() =>
-            //{
-            //    this.IsBusy = false;
-            //    this.IsLoaded = true;
-            //});
+            this.IsBusy = true;
+            this.IsLoaded = false;
+            _list.RefreshLoad();
+            var promise = Utility.ExecuteAsync(_list.LoadAsync());
+            promise.Done(() =>
+            {
+                IsExpanded = true;
+                Name = string.Format("{0} ({1})", _list.List.Title, _list.List.ItemCount);
+            });
+            promise.Fail((ex) => { if (OnExceptionCommand != null) OnExceptionCommand.Execute(ex); });
+            promise.Always(() =>
+            {
+                this.IsBusy = false;
+                this.IsLoaded = true;
+            });
         }
     }
 }

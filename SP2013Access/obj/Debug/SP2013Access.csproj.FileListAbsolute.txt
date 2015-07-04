@@ -23,7 +23,6 @@ D:\Git\SP2013Access\obj\Debug\App.g.cs
 D:\Git\SP2013Access\obj\Debug\GeneratedInternalTypeHelper.g.cs
 D:\Git\SP2013Access\obj\Debug\SP2013Access_MarkupCompile.cache
 D:\Git\SP2013Access\obj\Debug\SP2013Access_MarkupCompile.lref
-D:\Git\SP2013Access\obj\Debug\Controls\PropertyGrid\Themes\Generic.baml
 D:\Git\SP2013Access\obj\Debug\Controls\SPClientTreeView.baml
 D:\Git\SP2013Access\obj\Debug\MainWindow.baml
 D:\Git\SP2013Access\obj\Debug\OpenSiteWindow.baml

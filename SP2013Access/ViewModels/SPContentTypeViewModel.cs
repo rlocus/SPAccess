@@ -26,8 +26,6 @@ namespace SP2013Access.ViewModels
             }
         }
 
-        //public SPClientField[] Fields { get; private set; }
-
         public override ImageSource ImageSource
         {
             get
@@ -37,7 +35,7 @@ namespace SP2013Access.ViewModels
         }
 
         public SPContentTypeViewModel(SPClientContentType contentType, TreeViewItemViewModel parent)
-            : this(parent, true)
+            : this(parent, false)
         {
             if (contentType == null) throw new ArgumentNullException("contentType");
             _contentType = contentType;
@@ -53,35 +51,29 @@ namespace SP2013Access.ViewModels
 
         public override void LoadChildren()
         {
+            var viewModel = new SPContentTypeFieldCollectionViewModel(_contentType, this);
+            this.Children.Add(viewModel);
             base.LoadChildren();
-            var promise = Utility.ExecuteAsync(_contentType./*IncludeFields().*/LoadAsync());
+        }
 
+        public override void Refresh()
+        { 
+            base.Refresh();
+            this.IsBusy = true;
+            this.IsLoaded = false;
+            _contentType.RefreshLoad();
+            var promise = Utility.ExecuteAsync(_contentType.LoadAsync());
             promise.Done(() =>
             {
-                //Fields = _contentType.GetFields();
-                var viewModel = new SPContentTypeFieldCollectionViewModel(_contentType, this)
-                {
-                    Name = string.Format("Fields ({0})", /*Fields.Length*/ 0)
-                };
-                //viewModel.LoadChildren();
-                this.Children.Add(viewModel);
+                IsExpanded = true;
+                Name = _contentType.ContentType.Name;
             });
-
-            promise.Fail((ex) =>
-            {
-            });
-
+            promise.Fail((ex) => { if (OnExceptionCommand != null) OnExceptionCommand.Execute(ex); });
             promise.Always(() =>
             {
                 this.IsBusy = false;
                 this.IsLoaded = true;
             });
-        }
-
-        public override void Refresh()
-        {
-            _contentType.RefreshLoad();
-            base.Refresh();
         }
     }
 }

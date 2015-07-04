@@ -6,7 +6,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using SP2013Access.Controls.PropertyGrid;
 
 namespace SP2013Access
 {
@@ -26,13 +25,7 @@ namespace SP2013Access
             get;
             private set;
         }
-
-        public ObservableCollection<CustomPropertyItem> PropertyItems
-        {
-            get;
-            private set;
-        }
-
+        
         public MainWindow()
         {
             InitializeComponent();
@@ -88,13 +81,6 @@ namespace SP2013Access
                 _clientContexts.Add(clientContext);
                 ClientTreeView.Fill(clientContext);
                 LoadMenu();
-
-                PropertyItems = new ObservableCollection<CustomPropertyItem>
-                {
-                    new CustomPropertyItem() {DisplayName = "Url", Value = clientContext.Url},
-                    new CustomPropertyItem() {DisplayName = "UserName", Value = clientContext.UserName}
-                };
-                PropertyGrid.PropertiesSource = PropertyItems;
             }
 
         }
@@ -102,8 +88,11 @@ namespace SP2013Access
         private void RecentMenuItem_OnClick(object sender, RoutedEventArgs e)
         {
             var menuItem = e.OriginalSource as MenuItem;
-            var recentSite = menuItem.DataContext as RecentSite;
-            LoadSite(recentSite);
+            if (menuItem != null)
+            {
+                var recentSite = menuItem.DataContext as RecentSite;
+                LoadSite(recentSite);
+            }
         }
 
         protected override void OnClosing(CancelEventArgs e)

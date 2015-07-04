@@ -10,12 +10,6 @@
 //------------------------------------------------------------------------------
 
 using SP2013Access.Commands;
-using SP2013Access.Controls.Converters;
-using SP2013Access.Controls.PropertyGrid;
-using SP2013Access.Controls.PropertyGrid.Commands;
-using SP2013Access.Controls.PropertyGrid.Converters;
-using SP2013Access.Controls.PropertyGrid.Editors;
-using SP2013Access.Controls.Utilities;
 using SP2013Access.Extensions;
 using SP2013Access.ViewModels;
 using System;

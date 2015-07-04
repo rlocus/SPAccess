@@ -1,4 +1,5 @@
-﻿using SharePoint.Remote.Access.Helpers;
+﻿using System.Linq;
+using SharePoint.Remote.Access.Helpers;
 using System;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -52,63 +53,31 @@ namespace SP2013Access.ViewModels
         public override void LoadChildren()
         {
             base.LoadChildren();
-
             var promise = Utility.ExecuteAsync(_web.IncludeLists().LoadAsync());
-
             promise.Done(() =>
             {
                 var lists = _web.GetLists();
                 Name = string.Format("Lists ({0})", lists.Length);
-
-                foreach (SPClientList list in lists)
+                foreach (SPClientList list in lists.OrderBy(l => l.List.Title))
                 {
                     var viewModel = new SPListViewModel(list, this);
-                    //viewModel.LoadChildren();
+                    viewModel.LoadChildren();
                     this.Children.Add(viewModel);
                 }
             });
-            promise.Fail((ex) =>
-            {
-            });
+            promise.Fail((ex) => { if (OnExceptionCommand != null) OnExceptionCommand.Execute(ex); });
             promise.Always(() =>
             {
                 this.IsBusy = false;
                 this.IsLoaded = true;
             });
-
-            //if (Parent != null)
-            //{
-            //    var lists = (Parent as SPWebViewModel).Lists;
-
-            //    foreach (SPClientList list in lists)
-            //    {
-            //        this.Children.Add(new SPListViewModel(list, this));
-            //    }
-            //}
         }
 
 
         public override void Refresh()
         {
             base.Refresh();
-
-            //var lists = _web.Lists;
-            //lists.RefreshLoad();
-            //_web.Context.Load(lists);
-            //var promise = Utility.ExecuteAsync(_web.Context.ExecuteQueryAsync());
-
-            //promise.Done(() =>
-            //{
-            //    this.Name = string.Format("Lists ({0})", lists.Count);
-            //    if (lists.Count == 0)
-            //    {
-            //        this.IsExpanded = true;
-            //    }
-            //}).Always(() =>
-            //{
-            //    this.IsBusy = false;
-            //    this.IsLoaded = true;
-            //});
+            base.IsExpanded = true;
         }
     }
 }

@@ -9,6 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Assembly", "Assembly", "{EF
 	ProjectSection(SolutionItems) = preProject
 		Assembly\Microsoft.SharePoint.Client.dll = Assembly\Microsoft.SharePoint.Client.dll
 		Assembly\Microsoft.SharePoint.Client.Runtime.dll = Assembly\Microsoft.SharePoint.Client.Runtime.dll
+		Assembly\NLog.dll = Assembly\NLog.dll
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharePoint.Remote.Access", "SharePoint.Remote.Access\SharePoint.Remote.Access.csproj", "{CDE4C77F-ACF4-4D04-8C6C-0F8165AEAF21}"

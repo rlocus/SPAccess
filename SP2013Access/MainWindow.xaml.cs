@@ -1,11 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
+using NLog;
+using NLog.Config;
+using NLog.Targets.Wrappers;
 using SharePoint.Remote.Access.Helpers;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using SP2013Access.Controls;
+using SP2013Access.Logging;
 
 namespace SP2013Access
 {
@@ -15,6 +20,8 @@ namespace SP2013Access
     public partial class MainWindow : Window
     {
         private readonly List<SPClientContext> _clientContexts;
+        private Logger _logger;
+
         public SPClientContext[] ClientContexts
         {
             get { return _clientContexts.ToArray(); }
@@ -25,7 +32,7 @@ namespace SP2013Access
             get;
             private set;
         }
-        
+
         public MainWindow()
         {
             InitializeComponent();
@@ -39,7 +46,22 @@ namespace SP2013Access
         {
             ClientTreeView.SiteLoading += ClientTreeView_SiteOpening;
             Globals.SplashScreen.LoadComplete();
-            LoadSite();
+
+            LogViewer logViewer = this.LogViewer;
+            _logger = LogManager.GetLogger("Logger");
+
+            Dispatcher.Invoke(() =>
+            {
+                var target = new LogViewerTarget
+                {
+                    Name = "LogViewer",
+                    Layout = "[${longdate:useUTC=false}] :: [${level:uppercase=true}] :: ${logger}:${callsite} :: ${message} ${exception:innerFormat=tostring:maxInnerExceptionLevel=10:separator=,:format=tostring}",
+                    TargetLogViewer = logViewer
+                };
+                SimpleConfigurator.ConfigureForTargetLogging(target, LogLevel.Trace);
+                _logger.Info("Ready");
+                LoadSite();
+            });
         }
 
         private void LoadMenu()
@@ -79,7 +101,7 @@ namespace SP2013Access
             {
                 SPClientContext clientContext = openSiteWindow.ClientContext;
                 _clientContexts.Add(clientContext);
-                ClientTreeView.Fill(clientContext);
+                ClientTreeView.Fill(clientContext, _logger);
                 LoadMenu();
             }
 

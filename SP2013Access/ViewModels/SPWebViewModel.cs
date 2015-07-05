@@ -72,7 +72,7 @@ namespace SP2013Access.ViewModels
                 this.IsExpanded = true;
                 Name = _web.Web.Title;
             });
-            promise.Fail((ex) => { if (OnExceptionCommand != null) OnExceptionCommand.Execute(ex); });
+            promise.Fail(OnFail);
             promise.Always(() =>
             {
                 this.IsBusy = false;

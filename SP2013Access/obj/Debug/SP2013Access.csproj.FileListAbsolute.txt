@@ -31,3 +31,6 @@ D:\Git\SP2013Access\obj\Debug\SP2013Access.g.resources
 D:\Git\SP2013Access\obj\Debug\SP2013Access.Properties.Resources.resources
 D:\Git\SP2013Access\obj\Debug\SP2013Access.csproj.GenerateResource.Cache
 D:\Git\SP2013Access\obj\Debug\SP2013Access.exe
+D:\Git\SP2013Access\bin\Debug\NLog.dll
+D:\Git\SP2013Access\obj\Debug\Controls\LogViewer.g.cs
+D:\Git\SP2013Access\obj\Debug\Controls\LogViewer.baml

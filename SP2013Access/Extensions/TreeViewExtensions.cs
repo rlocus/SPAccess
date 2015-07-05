@@ -55,7 +55,6 @@ namespace SP2013Access.Extensions
         {
             while (source != null && !(source is TreeViewItem))
                 source = VisualTreeHelper.GetParent(source);
-
             return source as TreeViewItem;
         }
 
@@ -149,12 +148,10 @@ namespace SP2013Access.Extensions
         {
             Visual visual = element as Visual;
             DependencyObject parent = (visual == null) ? null : VisualTreeHelper.GetParent(visual);
-
             if (parent == null)
             {
                 // No Visual parent. Check in the logical tree.
                 var fe = element as FrameworkElement;
-
                 if (fe != null)
                 {
                     parent = fe.Parent ?? fe.TemplatedParent;
@@ -162,14 +159,12 @@ namespace SP2013Access.Extensions
                 else
                 {
                     var fce = element as FrameworkContentElement;
-
                     if (fce != null)
                     {
                         parent = fce.Parent ?? fce.TemplatedParent;
                     }
                 }
             }
-
             return parent;
         }
 
@@ -209,11 +204,9 @@ namespace SP2013Access.Extensions
         public static T FindParent<T>(DependencyObject startingObject, bool checkStartingObject, Func<T, bool> additionalCheck) where T : DependencyObject
         {
             DependencyObject parent = (checkStartingObject ? startingObject : GetParent(startingObject));
-
             while (parent != null)
             {
                 var foundElement = parent as T;
-
                 if (foundElement != null)
                 {
                     if (additionalCheck == null)
@@ -228,7 +221,6 @@ namespace SP2013Access.Extensions
 
                 parent = GetParent(parent);
             }
-
             return null;
         }
 
@@ -303,7 +295,6 @@ namespace SP2013Access.Extensions
                 }
                 element = GetParent(element);
             }
-
             return false;
         }
     }

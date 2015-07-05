@@ -4,7 +4,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Threading;
 
-namespace SP2013Access.ViewModels
+namespace SP2013Access.Extensions
 {
     public class AsyncObservableCollection<T> : ObservableCollection<T>
     {

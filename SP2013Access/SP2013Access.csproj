@@ -42,7 +42,12 @@
       <HintPath>..\Assembly\Microsoft.SharePoint.Client.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.SharePoint.Client.Runtime, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL" />
+    <Reference Include="NLog">
+      <HintPath>..\Assembly\NLog.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xaml">
@@ -60,11 +65,20 @@
     <Compile Include="Commands\CommandEntity.cs" />
     <Compile Include="Commands\DelegateCommand.cs" />
     <Compile Include="Commands\WeakRefEventManager.cs" />
+    <Compile Include="Controls\AutoScrollingListView.cs" />
+    <Compile Include="Controls\LogViewer.xaml.cs">
+      <DependentUpon>LogViewer.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\SPClientTreeView.xaml.cs">
       <DependentUpon>SPClientTreeView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Converters\LogItemBgColorConverter.cs" />
+    <Compile Include="Converters\LogItemFgColorConverter.cs" />
     <Compile Include="DynamicSplashScreen.cs" />
+    <Compile Include="Extensions\ListViewExtensions.cs" />
+    <Compile Include="Extensions\ObservableCollectionEx.cs" />
     <Compile Include="Globals.cs" />
+    <Compile Include="Logging\LogViewerTarget.cs" />
     <Compile Include="RecentSite.cs" />
     <Compile Include="SplashWindow.xaml.cs">
       <DependentUpon>SplashWindow.xaml</DependentUpon>
@@ -72,7 +86,7 @@
     <Compile Include="Extensions\TreeViewExtensions.cs" />
     <Compile Include="Validation\RequiredValidationRule.cs" />
     <Compile Include="Validation\UrlValidationRule.cs" />
-    <Compile Include="ViewModels\AsyncObservableCollection.cs" />
+    <Compile Include="Extensions\AsyncObservableCollection.cs" />
     <Compile Include="ViewModels\ITreeViewItemViewModel.cs" />
     <Compile Include="ViewModels\SPContentTypeFieldCollectionViewModel.cs" />
     <Compile Include="ViewModels\SPContextCollectionViewModel.cs" />
@@ -88,6 +102,10 @@
     <Compile Include="ViewModels\SPListViewModel.cs" />
     <Compile Include="ViewModels\SPSiteViewModel.cs" />
     <Compile Include="ViewModels\TreeViewItemViewModel.cs" />
+    <Page Include="Controls\LogViewer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\SPClientTreeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

@@ -1,9 +1,11 @@
-﻿using SP2013Access.Commands;
+﻿using System;
+using SP2013Access.Commands;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 
 //using GalaSoft.MvvmLight;
 using System.Windows.Media;
+using SP2013Access.Extensions;
 
 namespace SP2013Access.ViewModels
 {
@@ -32,8 +34,8 @@ namespace SP2013Access.ViewModels
         // This is used to create the DummyChild instance.
         private TreeViewItemViewModel()
         {
-            Children = new AsyncObservableCollection<TreeViewItemViewModel>();
-            Commands = new AsyncObservableCollection<CommandEntity>();
+            Children = new ObservableCollection<TreeViewItemViewModel>();
+            Commands = new ObservableCollection<CommandEntity>();
         }
 
         protected TreeViewItemViewModel(TreeViewItemViewModel parent, bool lazyLoadChildren)
@@ -43,7 +45,15 @@ namespace SP2013Access.ViewModels
             _lazyLoadChildren = lazyLoadChildren;
 
             if (_lazyLoadChildren)
+            {
                 Children.Add(DummyChild);
+            }
+
+            if (_parent != null)
+            {
+                this.FailEvent = _parent.FailEvent;
+                this.SuccessEvent = _parent.SuccessEvent;
+            }
         }
 
         #endregion Constructors
@@ -266,6 +276,22 @@ namespace SP2013Access.ViewModels
             //this.IsExpanded = true;
         }
 
+        public event EventHandler<LogEventArgs> FailEvent;
+
+        protected virtual void OnFail(Exception ex)
+        {
+            EventHandler<LogEventArgs> handler = FailEvent;
+            if (handler != null) handler(this, new LogEventArgs { Message = ex.Message });
+        }
+
+        public event EventHandler<LogEventArgs> SuccessEvent;
+
+        protected virtual void OnSuccess(string message)
+        {
+            EventHandler<LogEventArgs> handler = SuccessEvent;
+            if (handler != null) handler(this, new LogEventArgs { Message = message });
+        }
+
         #region INotifyPropertyChanged Members
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -284,5 +310,10 @@ namespace SP2013Access.ViewModels
         }
 
         #endregion Methods
+    }
+
+    public class LogEventArgs : EventArgs
+    {
+        public string Message;
     }
 }

@@ -27,8 +27,8 @@ namespace SP2013Access.ViewModels
             }
         }
 
-        public SPSiteViewModel(SPClientSite site)
-            : this(null, false)
+        public SPSiteViewModel(SPClientSite site, TreeViewItemViewModel parent)
+            : this(parent, false)
         {
             if (site == null) throw new ArgumentNullException("site");
             _site = site;
@@ -55,7 +55,7 @@ namespace SP2013Access.ViewModels
                 this.Children.Add(viewModel);
                 //this.IsExpanded = true;
             });
-            promise.Fail((ex) => { if (OnExceptionCommand != null) OnExceptionCommand.Execute(ex); });
+            promise.Fail(OnFail);
             promise.Always(() =>
             {
                 this.IsBusy = false;

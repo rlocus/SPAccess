@@ -1,4 +1,5 @@
-﻿using SharePoint.Remote.Access.Helpers;
+﻿using NLog;
+using SharePoint.Remote.Access.Helpers;
 using SP2013Access.Extensions;
 using SP2013Access.ViewModels;
 using System;
@@ -22,19 +23,17 @@ namespace SP2013Access.Controls
 
         public bool IsMulti { get; set; }
 
-        public void Fill(SPClientContext clientContext)
+        public void Fill(SPClientContext clientContext, Logger logger)
         {
-            if (IsMulti)
+            if (logger != null)
             {
-                _viewModel.Add(clientContext);
-                base.DataContext = _viewModel;
+                _viewModel.FailEvent += (senser, e) => logger.Error(e.Message);
             }
-            else
-            {
-                //var viewModel = new SPContextViewModel(clientContext);
-                //viewModel.LoadChildren();
-                //base.DataContext = viewModel;
-            }
+            //if (IsMulti)
+            //{
+            _viewModel.Add(clientContext);
+            base.DataContext = _viewModel;
+            //}
         }
 
         private void MenuItem_Refresh(object sender, RoutedEventArgs e)

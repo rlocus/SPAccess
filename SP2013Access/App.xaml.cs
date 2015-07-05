@@ -29,15 +29,10 @@ namespace SP2013Access
 
             Globals.SplashScreen.AddMessage("Configuration loading...");
             Globals.Configuration.Load();
-            //Globals.SplashScreen.LoadComplete();
         }
 
         private void ShowSplash()
         {
-            // Create the window
-            //SplashWindow splashScreenWindow = new SplashWindow();
-            //SplashScreen = splashScreenWindow;
-
             // Show it
             Globals.SplashScreen.Show();
 

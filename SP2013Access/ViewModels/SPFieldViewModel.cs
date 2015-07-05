@@ -73,7 +73,7 @@ namespace SP2013Access.ViewModels
                 IsExpanded = true;
                 Name = string.Format("{0} ({1})", _field.Field.Title, _field.Field.InternalName);
             });
-            promise.Fail((ex) => { if (OnExceptionCommand != null) OnExceptionCommand.Execute(ex); });
+            promise.Fail(OnFail);
             promise.Always(() =>
             {
                 this.IsBusy = false;

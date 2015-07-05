@@ -19,6 +19,8 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="20" />
                 <RowDefinition />
+                <RowDefinition Height="5" />
+                <RowDefinition Height="150" />
             </Grid.RowDefinitions>
             <Menu IsMainMenu="True" HorizontalAlignment="Stretch" VerticalAlignment="Top" Grid.Row="0" Grid.ColumnSpan="3">
                 <MenuItem Header="File">
@@ -38,7 +40,6 @@
                 </MenuItem>
             </Menu>
             <uc:SPClientTreeView x:Name="ClientTreeView" Grid.Row="1" Grid.Column="0" HorizontalContentAlignment="Stretch"  VerticalContentAlignment="Stretch"  Margin="0,0,0,10" IsMulti="True" />
-
             <GridSplitter Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="5" />
             <ListView Grid.Column="2" HorizontalContentAlignment="Stretch" Grid.Row="1" VerticalContentAlignment="Stretch" Margin="0,0,0,10">
                 <ListView.View>
@@ -48,6 +49,8 @@
                     </GridView>
                 </ListView.View>
             </ListView>
+            <GridSplitter Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"  ResizeDirection="Rows" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" />
+            <uc:LogViewer x:Name="LogViewer" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3"/>
         </Grid>
     </Grid>
 </Window>

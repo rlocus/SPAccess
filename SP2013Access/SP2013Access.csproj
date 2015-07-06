@@ -66,6 +66,9 @@
     <Compile Include="Commands\DelegateCommand.cs" />
     <Compile Include="Commands\WeakRefEventManager.cs" />
     <Compile Include="Controls\AutoScrollingListView.cs" />
+    <Compile Include="Controls\CheckableListView.cs" />
+    <Compile Include="Controls\FixedWidthGridViewColumn.cs" />
+    <Compile Include="Controls\GridViewColumnResize.cs" />
     <Compile Include="Controls\LogViewer.xaml.cs">
       <DependentUpon>LogViewer.xaml</DependentUpon>
     </Compile>

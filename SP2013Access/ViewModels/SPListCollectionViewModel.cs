@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Windows.Threading;
 using SharePoint.Remote.Access.Helpers;
 using System;
 using System.Windows.Media;
@@ -60,9 +61,13 @@ namespace SP2013Access.ViewModels
                 Name = string.Format("Lists ({0})", lists.Length);
                 foreach (SPClientList list in lists.OrderBy(l => l.List.Title))
                 {
-                    var viewModel = new SPListViewModel(list, this);
-                    viewModel.LoadChildren();
-                    this.Children.Add(viewModel);
+                    SPClientList l = list;
+                    Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() =>
+                    {
+                        var viewModel = new SPListViewModel(l, this);
+                        viewModel.LoadChildren();
+                        this.Children.Add(viewModel);
+                    }));
                 }
             });
             promise.Fail(OnFail);
@@ -72,8 +77,7 @@ namespace SP2013Access.ViewModels
                 this.IsLoaded = true;
             });
         }
-
-
+        
         public override void Refresh()
         {
             base.Refresh();

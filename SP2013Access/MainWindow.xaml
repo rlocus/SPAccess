@@ -6,10 +6,17 @@
         xmlns:uc="clr-namespace:SP2013Access.Controls"
         Icon="pack://application:,,,/images/FAVICON.ICO">
     <Window.Resources>
+        <!--<DataTemplate x:Key="CheckBoxCell">
+            <StackPanel Orientation="Horizontal">
+                <CheckBox IsChecked="{Binding Path=IsChecked, 
+            RelativeSource={RelativeSource FindAncestor, 
+            AncestorType={x:Type uc:CheckableListViewItem}}}" />
+            </StackPanel>
+        </DataTemplate>-->
         <ResourceDictionary>
-            </ResourceDictionary>
-        </Window.Resources>
-            <Grid x:Name="LayoutRoot">
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid x:Name="LayoutRoot">
         <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="50*" />
@@ -41,14 +48,23 @@
             </Menu>
             <uc:SPClientTreeView x:Name="ClientTreeView" Grid.Row="1" Grid.Column="0" HorizontalContentAlignment="Stretch"  VerticalContentAlignment="Stretch"  Margin="0,0,0,10" IsMulti="True" />
             <GridSplitter Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="5" />
-            <ListView Grid.Column="2" HorizontalContentAlignment="Stretch" Grid.Row="1" VerticalContentAlignment="Stretch" Margin="0,0,0,10">
+            <uc:CheckableListView Grid.Column="2" HorizontalContentAlignment="Stretch" Grid.Row="1" VerticalContentAlignment="Stretch" Margin="0,0,0,10">
                 <ListView.View>
                     <GridView>
-                        <GridViewColumn Header="Property" />
-                        <GridViewColumn Header="Value" />
+                        <uc:FixedWidthGridViewColumn FixedWidth="30">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <CheckBox IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource FindAncestor,    AncestorType={x:Type uc:CheckableListViewItem}}}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </uc:FixedWidthGridViewColumn>
+                        <!--<GridViewColumn Header="Property" />
+                        <GridViewColumn Header="Value" />-->
                     </GridView>
                 </ListView.View>
-            </ListView>
+            </uc:CheckableListView>
             <GridSplitter Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"  ResizeDirection="Rows" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" />
             <uc:LogViewer x:Name="LogViewer" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3"/>
         </Grid>

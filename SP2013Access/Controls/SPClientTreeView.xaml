@@ -45,7 +45,6 @@
                 </Style>
             </TreeView.ItemContainerStyle>
             <TreeView.Resources>
-
                 <LinearGradientBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" EndPoint="0,1" StartPoint="0,0">
                     <GradientStop Color="Transparent" Offset="0" />
                     <GradientStop Color="Transparent" Offset="1" />

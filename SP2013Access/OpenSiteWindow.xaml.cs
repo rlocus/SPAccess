@@ -72,6 +72,7 @@ namespace SP2013Access
 
                 this.AuthenticationModeComboBox.SelectedIndex =
                     authenticationModes.Select(auth => auth.Type).ToList().IndexOf(recentSite.Authentication);
+                UserPasswordTextBox.Focus();
             }
             else
             {
@@ -87,24 +88,6 @@ namespace SP2013Access
 
         private void OK_OnClick(object sender, RoutedEventArgs e)
         {
-            OKButton.IsEnabled = false;
-            CancelButton.IsEnabled = false;
-            SiteUrlTextBox.IsEnabled = false;
-            AuthenticationModeComboBox.IsEnabled = false;
-
-            if (!UseCurrentUserCredentialsCheckBox.IsEnabled)
-            {
-                UserNameTextBox.IsEnabled = false;
-                UserPasswordTextBox.IsEnabled = false;
-            }
-
-            AuthType authType = ((AuthenticationModeComboBoxItem)this.AuthenticationModeComboBox.SelectedValue).Type;
-
-            if (authType == AuthType.Default)
-            {
-                UseCurrentUserCredentialsCheckBox.IsEnabled = false;
-            }
-
             var site = new RecentSite
             {
                 Url = this.SiteUrlTextBox.Text,
@@ -113,7 +96,7 @@ namespace SP2013Access
                 Authentication = ((AuthenticationModeComboBoxItem)this.AuthenticationModeComboBox.SelectedValue).Type
             };
 
-            MessageLabel.Content = string.Format("Connecting to {0}", site.Url);
+            MessageLabel.Content = string.Format("Connecting to {0} ...", site.Url);
 
             try
             {
@@ -126,30 +109,21 @@ namespace SP2013Access
             catch (Exception ex)
             {
                 MessageLabel.Content = ex.Message;
-                OKButton.IsEnabled = true;
-                CancelButton.IsEnabled = true;
-                SiteUrlTextBox.IsEnabled = true;
-                AuthenticationModeComboBox.IsEnabled = true;
-
-                if (!UseCurrentUserCredentialsCheckBox.IsEnabled)
-                {
-                    UserNameTextBox.IsEnabled = true;
-                    UserPasswordTextBox.IsEnabled = true;
-                }
-
-                if (authType == AuthType.Default)
-                {
-                    UseCurrentUserCredentialsCheckBox.IsEnabled = true;
-                }
-
                 return;
             }
-            //finally
-            //{
-            //}
+
+            OKButton.IsEnabled = false;
+            CancelButton.IsEnabled = false;
+            SiteUrlTextBox.IsEnabled = false;
+            AuthenticationModeComboBox.IsEnabled = false;
+
+            if (UseCurrentUserCredentialsCheckBox.IsEnabled)
+            {
+                UserNameTextBox.IsEnabled = false;
+                UserPasswordTextBox.IsEnabled = false;
+            }
 
             IPromise<object, Exception> promise = Utility.ExecuteAsync(this.ClientContext.ConnectAsync());
-
             promise.Done(() =>
             {
                 MessageLabel.Content = "Done";
@@ -162,7 +136,6 @@ namespace SP2013Access
             promise.Fail((ex) =>
             {
                 MessageLabel.Content = ex.Message;
-                //MessageBox.Show(ex.Message, "Failed Connection", MessageBoxButton.OK, MessageBoxImage.Warning);
             });
 
             promise.Always(() =>
@@ -172,15 +145,10 @@ namespace SP2013Access
                 SiteUrlTextBox.IsEnabled = true;
                 AuthenticationModeComboBox.IsEnabled = true;
 
-                if (!UseCurrentUserCredentialsCheckBox.IsEnabled)
+                if (UseCurrentUserCredentialsCheckBox.IsEnabled)
                 {
                     UserNameTextBox.IsEnabled = true;
                     UserPasswordTextBox.IsEnabled = true;
-                }
-
-                if (authType == AuthType.Default)
-                {
-                    UseCurrentUserCredentialsCheckBox.IsEnabled = true;
                 }
             });
         }
@@ -220,6 +188,7 @@ namespace SP2013Access
             if (authType == AuthType.Anonymous)
             {
                 UseCurrentUserCredentialsCheckBox.IsEnabled = false;
+                UseCurrentUserCredentialsCheckBox.IsChecked = false;
                 UserNameTextBox.IsEnabled = false;
                 UserPasswordTextBox.IsEnabled = false;
             }
@@ -228,6 +197,7 @@ namespace SP2013Access
                 if (authType == AuthType.Forms || authType == AuthType.SharePointOnline)
                 {
                     UseCurrentUserCredentialsCheckBox.IsEnabled = false;
+                    UseCurrentUserCredentialsCheckBox.IsChecked = false;
                     UserNameTextBox.IsEnabled = true;
                     UserPasswordTextBox.IsEnabled = true;
                 }

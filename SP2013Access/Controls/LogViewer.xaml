@@ -13,7 +13,7 @@
         <converters:LogItemFgColorConverter x:Key="LogItemFgColorConverter" />
     </UserControl.Resources>
     <Grid>
-        <controls:AutoScrollingListView ItemsSource="{Binding}" x:Name="LogView" IsSynchronizedWithCurrentItem="True" extensions:ListViewExtensions.AutoScrollToCurrentItem="False" HorizontalContentAlignment="Stretch">
+        <controls:AutoScrollingListView ItemsSource="{Binding}" x:Name="LogView" IsSynchronizedWithCurrentItem="True" extensions:ListViewExtensions.AutoScrollToCurrentItem="False" controls:GridViewColumnResize.Enabled="False">
             <ListView.ItemContainerStyle>
                 <Style TargetType="{x:Type ListViewItem}">
                     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
@@ -37,7 +37,7 @@
                     <GridView.Columns>
                         <GridViewColumn DisplayMemberBinding="{Binding Level}" Width="50" Header="Level" />
                         <GridViewColumn DisplayMemberBinding="{Binding TimeStamp}" Width="80" Header="Time" />
-                        <GridViewColumn DisplayMemberBinding="{Binding FormattedMessage}" Header="Message" />
+                        <GridViewColumn DisplayMemberBinding="{Binding FormattedMessage}" Width="Auto" Header="Message" />
                     </GridView.Columns>
                 </GridView>
             </ListView.View>

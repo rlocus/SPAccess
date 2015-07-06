@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Windows.Threading;
 using SharePoint.Remote.Access.Helpers;
 using System;
 using System.Windows.Media;
@@ -61,9 +62,13 @@ namespace SP2013Access.ViewModels
 
                 foreach (SPClientContentType contentType in contentTypes.OrderBy(ct => ct.ContentType.Name))
                 {
-                    var viewModel = new SPContentTypeViewModel(contentType, this);
-                    viewModel.LoadChildren();
-                    this.Children.Add(viewModel);
+                    SPClientContentType ct = contentType;
+                    Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() =>
+                    {
+                        var viewModel = new SPContentTypeViewModel(ct, this);
+                        viewModel.LoadChildren();
+                        this.Children.Add(viewModel);
+                    }));
                 }
             });
             promise.Fail(OnFail);

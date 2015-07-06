@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.ComponentModel;
 using System.Threading;
 
 namespace SP2013Access.Extensions
@@ -19,44 +18,41 @@ namespace SP2013Access.Extensions
         {
         }
 
-        protected override void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
+        private void ExecuteOnSyncContext(Action action)
         {
             if (SynchronizationContext.Current == _synchronizationContext)
             {
-                // Execute the CollectionChanged event on the current thread
-                RaiseCollectionChanged(e);
+                action();
             }
             else
             {
-                // Post the CollectionChanged event on the creator thread
-                _synchronizationContext.Send(RaiseCollectionChanged, e);
+                _synchronizationContext.Send(_ => action(), null);
             }
         }
 
-        private void RaiseCollectionChanged(object param)
+        protected override void InsertItem(int index, T item)
         {
-            // We are in the creator thread, call the base implementation directly
-            base.OnCollectionChanged((NotifyCollectionChangedEventArgs)param);
+            ExecuteOnSyncContext(() => base.InsertItem(index, item));
         }
 
-        protected override void OnPropertyChanged(PropertyChangedEventArgs e)
+        protected override void RemoveItem(int index)
         {
-            if (SynchronizationContext.Current == _synchronizationContext)
-            {
-                // Execute the PropertyChanged event on the current thread
-                RaisePropertyChanged(e);
-            }
-            else
-            {
-                // Post the PropertyChanged event on the creator thread
-                _synchronizationContext.Post(RaisePropertyChanged, e);
-            }
+            ExecuteOnSyncContext(() => base.RemoveItem(index));
         }
 
-        private void RaisePropertyChanged(object param)
+        protected override void SetItem(int index, T item)
         {
-            // We are in the creator thread, call the base implementation directly
-            base.OnPropertyChanged((PropertyChangedEventArgs)param);
+            ExecuteOnSyncContext(() => base.SetItem(index, item));
+        }
+
+        protected override void MoveItem(int oldIndex, int newIndex)
+        {
+            ExecuteOnSyncContext(() => base.MoveItem(oldIndex, newIndex));
+        }
+
+        protected override void ClearItems()
+        {
+            ExecuteOnSyncContext(() => base.ClearItems());
         }
     }
 }

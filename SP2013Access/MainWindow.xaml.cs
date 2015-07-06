@@ -100,8 +100,12 @@ namespace SP2013Access
             if (openSiteWindow.ShowDialog() == true)
             {
                 SPClientContext clientContext = openSiteWindow.ClientContext;
-                _clientContexts.Add(clientContext);
-                ClientTreeView.Fill(clientContext, _logger);
+                if (clientContext != null)
+                {
+                    _logger.Info("Connected to {0}", clientContext.Url);
+                    _clientContexts.Add(clientContext);
+                    ClientTreeView.Fill(clientContext, _logger);
+                }
                 LoadMenu();
             }
 
@@ -122,7 +126,7 @@ namespace SP2013Access
             base.OnClosing(e);
             foreach (SPClientContext clientContext in ClientContexts)
             {
-                clientContext.Dispose();
+                if (clientContext != null) clientContext.Dispose();
             }
         }
     }

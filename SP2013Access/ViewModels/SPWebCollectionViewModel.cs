@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Windows.Threading;
 using SharePoint.Remote.Access.Helpers;
 using System;
 using System.Windows.Media;
@@ -60,9 +61,13 @@ namespace SP2013Access.ViewModels
                 Name = string.Format("Webs ({0})", webs.Length);
                 foreach (SPClientWeb web in webs.OrderBy(w => w.Web.Title))
                 {
-                    var viewModel = new SPWebViewModel(web, this);
-                    viewModel.LoadChildren();
-                    this.Children.Add(viewModel);
+                    SPClientWeb w = web;
+                    Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() =>
+                    {
+                        var viewModel = new SPWebViewModel(w, this);
+                        viewModel.LoadChildren();
+                        this.Children.Add(viewModel);
+                    }));
                 }
             });
             promise.Fail(OnFail);

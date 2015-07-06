@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Windows.Threading;
 using SharePoint.Remote.Access.Helpers;
 using System;
 using System.Windows.Media;
@@ -61,13 +62,13 @@ namespace SP2013Access.ViewModels
                 Name = string.Format("Fields ({0})", fields.Length);
                 foreach (SPClientField field in fields.OrderBy(f => f.Field.Title))
                 {
-                    var viewModel = new SPFieldViewModel(field, this);
-                    //viewModel.OnExceptionCommand = new DelegateCommand<Exception>((ex) =>
-                    //{
-
-                    //});
-                    viewModel.LoadChildren();
-                    this.Children.Add(viewModel);
+                    SPClientField f = field;
+                    Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() =>
+                    {
+                        var viewModel = new SPFieldViewModel(f, this);
+                        viewModel.LoadChildren();
+                        this.Children.Add(viewModel);
+                    }));
                 }
             });
             promise.Fail(OnFail);

@@ -47,8 +47,9 @@ namespace SP2013Access.ViewModels
         {
         }
 
-        public override void LoadChildren()
+        protected override void LoadChildren()
         {
+            if (IsLoaded) return;
             var websViewModel = new SPWebCollectionViewModel(_web, this);
             this.Children.Add(websViewModel);
             var listsViewModel = new SPListCollectionViewModel(_web, this);
@@ -61,23 +62,19 @@ namespace SP2013Access.ViewModels
         }
 
         public override void Refresh()
-        { 
-            base.Refresh();
+        {
+            if (!IsLoaded) return;
+            this.IsDirty = true;
             this.IsBusy = true;
             this.IsLoaded = false;
             _web.RefreshLoad();
             var promise = Utility.ExecuteAsync(_web.LoadAsync());
             promise.Done(() =>
             {
-                this.IsExpanded = true;
                 Name = _web.Web.Title;
+                this.LoadChildren();
             });
             promise.Fail(OnFail);
-            promise.Always(() =>
-            {
-                this.IsBusy = false;
-                this.IsLoaded = true;
-            });
         }
     }
 }

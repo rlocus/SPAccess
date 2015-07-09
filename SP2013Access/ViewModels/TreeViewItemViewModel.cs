@@ -1,4 +1,5 @@
 ﻿using System;
+using SharePoint.Remote.Access.Helpers;
 using SP2013Access.Commands;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -143,27 +144,15 @@ namespace SP2013Access.ViewModels
                     //this.RaisePropertyChanged("IsExpanded");
                 }
 
-                if (_isExpanded && _lazyLoadChildren)
+                if (_isExpanded)
                 {
-                    // Lazy load the child items, if necessary.
-                    if (this.HasDummyChild)
+                    if (HasDummyChild)
                     {
                         this.Children.Remove(DummyChild);
-
-                        if (!IsBusy)
-                        {
-                            this.LoadChildren();
-                        }
                     }
-
-                    if (this.IsDirty)
+                    if (!IsLoaded && !IsBusy)
                     {
-                        this.Children.Clear();
-
-                        if (!IsBusy)
-                        {
-                            this.LoadChildren();
-                        }
+                        this.LoadChildren();
                     }
                 }
             }
@@ -172,18 +161,21 @@ namespace SP2013Access.ViewModels
         public bool IsDirty
         {
             get { return _isdirty; }
-            set
+            protected set
             {
-                if (value != _isdirty)
+                if (value == _isdirty) return;
+                _isdirty = value;
+                this.OnPropertyChanged("IsDirty");
+                //this.RaisePropertyChanged("IsDirty");
+                if (!this._isdirty) return;
+                if (this.HasDummyChild) return;
+                if (this.Children.Count > 0)
                 {
-                    _isdirty = value;
-                    if (this._isdirty)
-                    {
-                        this.Children.Clear();
-                        this.Children.Add(DummyChild);
-                    }
-                    this.OnPropertyChanged("IsDirty");
-                    //this.RaisePropertyChanged("IsDirty");
+                    this.Children.Clear();
+                }
+                if (_lazyLoadChildren)
+                {
+                    Children.Add(DummyChild);
                 }
             }
         }
@@ -234,62 +226,77 @@ namespace SP2013Access.ViewModels
         /// Invoked when the child items need to be loaded on demand.
         /// Subclasses can override this to populate the Children collection.
         /// </summary>
-        public virtual void LoadChildren()
+        protected virtual void LoadChildren()
         {
+            this.IsBusy = true;
+            this.IsLoaded = false;
+
             if (_lazyLoadChildren)
             {
-                this.IsBusy = true;
-                this.IsLoaded = false;
+                var promise = this.LoadChildrenAsync();
+                promise.Done(o =>
+                {
+                    foreach (TreeViewItemViewModel child in this.Children)
+                    {
+                        if (!child._lazyLoadChildren && !child.IsLoaded)
+                        {
+                            child.LoadChildren();
+                        }
+                    }
+                    OnSuccess(o);
+                });
+                promise.Fail(OnFail);
+                promise.Always(() =>
+                {
+                    this.IsBusy = false;
+                    this.IsLoaded = true;
+                    this.IsDirty = false;
+                });
             }
             else
             {
                 foreach (TreeViewItemViewModel child in this.Children)
                 {
-                    if (!child._lazyLoadChildren)
+                    if (!child._lazyLoadChildren && !child.IsLoaded)
                     {
                         child.LoadChildren();
                     }
                 }
+                this.IsBusy = false;
+                this.IsLoaded = true;
+                this.IsDirty = false;
             }
+        }
+
+        protected virtual IPromise<object, Exception> LoadChildrenAsync()
+        {
+            throw new NotImplementedException();
         }
 
         public virtual void Refresh()
         {
-            if (_lazyLoadChildren)
+            this.IsDirty = true;
+            this.IsExpanded = !_lazyLoadChildren;
+            if (IsLoaded)
             {
-                if (!this.HasDummyChild)
-                {
-                    this.IsExpanded = false;
-                    if (this.Children.Count > 0)
-                    {
-                        this.Children.Clear();
-                    }
-
-                    Children.Add(DummyChild);
-                }
+                IsLoaded = false;
             }
-            else
-            {
-                this.Children.Clear();
-                LoadChildren();
-            }
-            //this.IsExpanded = true;
         }
 
-        public event EventHandler<LogEventArgs> FailEvent;
+        public event EventHandler<ResultEventArgs> FailEvent;
 
-        protected virtual void OnFail(Exception ex)
+        protected void OnFail(Exception ex)
         {
-            EventHandler<LogEventArgs> handler = FailEvent;
-            if (handler != null) handler(this, new LogEventArgs { Message = ex.Message });
+            EventHandler<ResultEventArgs> handler = FailEvent;
+            if (handler != null) handler(this, new ResultEventArgs { Exception = ex });
         }
 
-        public event EventHandler<LogEventArgs> SuccessEvent;
+        public event EventHandler<ResultEventArgs> SuccessEvent;
 
-        protected virtual void OnSuccess(string message)
+        protected void OnSuccess(object obj)
         {
-            EventHandler<LogEventArgs> handler = SuccessEvent;
-            if (handler != null) handler(this, new LogEventArgs { Message = message });
+            EventHandler<ResultEventArgs> handler = SuccessEvent;
+            if (handler != null) handler(this, new ResultEventArgs { Source = obj });
         }
 
         #region INotifyPropertyChanged Members
@@ -312,8 +319,9 @@ namespace SP2013Access.ViewModels
         #endregion Methods
     }
 
-    public class LogEventArgs : EventArgs
+    public class ResultEventArgs : EventArgs
     {
-        public string Message;
+        public object Source;
+        public Exception Exception;
     }
 }

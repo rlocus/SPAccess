@@ -49,8 +49,9 @@ namespace SP2013Access.ViewModels
         {
         }
 
-        public override void LoadChildren()
+        protected override void LoadChildren()
         {
+            if (IsLoaded) return;
             var contentTypesViewModel = new SPListContentTypeCollectionViewModel(_list, this);
             this.Children.Add(contentTypesViewModel);
             var fieldsViewModel = new SPFieldCollectionViewModel(_list, this);
@@ -60,22 +61,18 @@ namespace SP2013Access.ViewModels
 
         public override void Refresh()
         {
-            base.Refresh();
+            if (!IsLoaded) return;
+            this.IsDirty = true;
             this.IsBusy = true;
             this.IsLoaded = false;
             _list.RefreshLoad();
             var promise = Utility.ExecuteAsync(_list.LoadAsync());
             promise.Done(() =>
             {
-                IsExpanded = true;
                 Name = string.Format("{0} ({1})", _list.List.Title, _list.List.ItemCount);
+                LoadChildren();
             });
             promise.Fail(OnFail);
-            promise.Always(() =>
-            {
-                this.IsBusy = false;
-                this.IsLoaded = true;
-            });
         }
     }
 }

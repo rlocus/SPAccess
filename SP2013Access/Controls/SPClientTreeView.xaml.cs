@@ -27,7 +27,7 @@ namespace SP2013Access.Controls
         {
             if (logger != null)
             {
-                _viewModel.FailEvent += (senser, e) => logger.Error(e.Message);
+                _viewModel.FailEvent += (senser, e) => logger.Error(e.Exception.Message);
             }
             //if (IsMulti)
             //{
@@ -65,17 +65,22 @@ namespace SP2013Access.Controls
             }
         }
 
-        public event EventHandler SiteLoading;
+        public event EventHandler SiteLoadingEvent;
 
         protected virtual void OnSiteLoading(EventArgs e)
         {
-            EventHandler handler = SiteLoading;
+            EventHandler handler = SiteLoadingEvent;
             if (handler != null) handler(this, e);
         }
 
         private void LoadSiteButton_Click(object sender, RoutedEventArgs e)
         {
             OnSiteLoading(e);
+        }
+
+        public void Unload()
+        {
+            _viewModel.Dispose();
         }
     }
 }

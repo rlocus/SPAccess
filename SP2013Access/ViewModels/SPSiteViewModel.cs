@@ -28,7 +28,7 @@ namespace SP2013Access.ViewModels
         }
 
         public SPSiteViewModel(SPClientSite site, TreeViewItemViewModel parent)
-            : this(parent, false)
+            : this(parent, true)
         {
             if (site == null) throw new ArgumentNullException("site");
             _site = site;
@@ -42,30 +42,23 @@ namespace SP2013Access.ViewModels
         {
         }
 
-        public override void LoadChildren()
+        protected override IPromise<object, Exception> LoadChildrenAsync()
         {
-            base.LoadChildren();
             var promise = Utility.ExecuteAsync(_site.IncludeRootWeb().LoadAsync());
             promise.Done(() =>
             {
                 var rootWeb = _site.GetRootWeb();
-                var viewModel = new SPWebViewModel(rootWeb, this);
-                viewModel.LoadChildren();
-                viewModel.IsExpanded = true;
+                var viewModel = new SPWebViewModel(rootWeb, this) {IsExpanded = true};
                 this.Children.Add(viewModel);
-                //this.IsExpanded = true;
             });
             promise.Fail(OnFail);
-            promise.Always(() =>
-            {
-                this.IsBusy = false;
-                this.IsLoaded = true;
-            });
+            return promise;
         }
 
         public override void Refresh()
         {
             base.Refresh();
+            this.IsExpanded = true;
         }
     }
 }

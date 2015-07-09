@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace SP2013Access.ViewModels
 {
-    public class SPContextCollectionViewModel : TreeViewItemViewModel
+    public class SPContextCollectionViewModel : TreeViewItemViewModel, IDisposable
     {
         private readonly List<SPClientContext> _clientContexts;
 
@@ -40,23 +40,21 @@ namespace SP2013Access.ViewModels
         {
         }
 
-        public override void LoadChildren()
+        protected override void LoadChildren()
         {
+            if (IsLoaded) return;
             foreach (SPClientContext clientContext in _clientContexts)
             {
                 var viewModel = new SPSiteViewModel(clientContext.ClientSite, this);
                 this.Children.Add(viewModel);
-                viewModel.LoadChildren();
             } 
             base.LoadChildren();
         }
 
         public void Add(SPClientContext clientContext)
         {
-            _clientContexts.Add(clientContext);
             var viewModel = new SPSiteViewModel(clientContext.ClientSite, this);
             this.Children.Add(viewModel);
-            viewModel.LoadChildren();
             viewModel.IsExpanded = true;
             viewModel.Commands.Add(new CommandEntity()
             {
@@ -64,15 +62,22 @@ namespace SP2013Access.ViewModels
                 Command = new DelegateCommand<object>(arg =>
                 {
                     clientContext.Dispose();
+                    _clientContexts.Remove(clientContext);
                     this.Children.Remove(viewModel);
                 }, null)
             });
         }
 
-        public override void Refresh()
+        public void Dispose()
         {
-            base.Refresh();
-            base.IsExpanded = true;
+            foreach (SPClientContext clientContext in _clientContexts)
+            {
+                if (clientContext != null)
+                {
+                    clientContext.Dispose();
+                    _clientContexts.Remove(clientContext);
+                }
+            }
         }
     }
 }

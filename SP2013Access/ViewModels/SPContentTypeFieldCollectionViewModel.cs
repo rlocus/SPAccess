@@ -4,7 +4,6 @@ using SharePoint.Remote.Access.Helpers;
 using System;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using SP2013Access.Commands;
 
 namespace SP2013Access.ViewModels
 {
@@ -52,9 +51,8 @@ namespace SP2013Access.ViewModels
         {
         }
 
-        public override void LoadChildren()
-        {
-            base.LoadChildren();
+        protected override IPromise<object, Exception> LoadChildrenAsync()
+        {            
             var promise = Utility.ExecuteAsync(_contentType.IncludeFields().LoadAsync());
             promise.Done(() =>
             {
@@ -66,17 +64,11 @@ namespace SP2013Access.ViewModels
                     Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() =>
                     {
                         var viewModel = new SPFieldViewModel(f, this);
-                        viewModel.LoadChildren();
                         this.Children.Add(viewModel);
                     }));
                 }
             });
-            promise.Fail(OnFail);
-            promise.Always(() =>
-            {
-                this.IsBusy = false;
-                this.IsLoaded = true;
-            });
+            return promise;
         }
 
         public override void Refresh()

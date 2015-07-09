@@ -19,13 +19,13 @@ namespace SP2013Access
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly List<SPClientContext> _clientContexts;
+        //private readonly List<SPClientContext> _clientContexts;
         private Logger _logger;
 
-        public SPClientContext[] ClientContexts
-        {
-            get { return _clientContexts.ToArray(); }
-        }
+        //public SPClientContext[] ClientContexts
+        //{
+        //    get { return _clientContexts.ToArray(); }
+        //}
 
         public ObservableCollection<RecentSite> RecentSites
         {
@@ -38,13 +38,13 @@ namespace SP2013Access
             InitializeComponent();
             this.Loaded += new RoutedEventHandler(MainWindow_Loaded);
             RecentSites = new ObservableCollection<RecentSite>();
-            _clientContexts = new List<SPClientContext>();
+            //_clientContexts = new List<SPClientContext>();
             LoadMenu();
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            ClientTreeView.SiteLoading += ClientTreeView_SiteOpening;
+            ClientTreeView.SiteLoadingEvent += ClientTreeView_SiteOpening;
             Globals.SplashScreen.LoadComplete();
 
             LogViewer logViewer = this.LogViewer;
@@ -103,7 +103,7 @@ namespace SP2013Access
                 if (clientContext != null)
                 {
                     _logger.Info("Connected to {0}", clientContext.Url);
-                    _clientContexts.Add(clientContext);
+                    //_clientContexts.Add(clientContext);
                     ClientTreeView.Fill(clientContext, _logger);
                 }
                 LoadMenu();
@@ -124,10 +124,11 @@ namespace SP2013Access
         protected override void OnClosing(CancelEventArgs e)
         {
             base.OnClosing(e);
-            foreach (SPClientContext clientContext in ClientContexts)
-            {
-                if (clientContext != null) clientContext.Dispose();
-            }
+            ClientTreeView.Unload();
+            //foreach (SPClientContext clientContext in ClientContexts)
+            //{
+            //    if (clientContext != null) clientContext.Dispose();
+            //}
         }
     }
 }

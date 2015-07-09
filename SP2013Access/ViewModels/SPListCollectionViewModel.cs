@@ -51,9 +51,8 @@ namespace SP2013Access.ViewModels
         {
         }
 
-        public override void LoadChildren()
+        protected override IPromise<object, Exception> LoadChildrenAsync()
         {
-            base.LoadChildren();
             var promise = Utility.ExecuteAsync(_web.IncludeLists().LoadAsync());
             promise.Done(() =>
             {
@@ -65,23 +64,17 @@ namespace SP2013Access.ViewModels
                     Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() =>
                     {
                         var viewModel = new SPListViewModel(l, this);
-                        viewModel.LoadChildren();
                         this.Children.Add(viewModel);
                     }));
                 }
             });
-            promise.Fail(OnFail);
-            promise.Always(() =>
-            {
-                this.IsBusy = false;
-                this.IsLoaded = true;
-            });
+            return promise;
         }
-        
+
         public override void Refresh()
         {
             base.Refresh();
-            base.IsExpanded = true;
+            this.IsExpanded = true;
         }
     }
 }

@@ -62,7 +62,6 @@ namespace SharePoint.Remote.Access.Helpers
         {
             if (!IsLoaded)
             {
-                //this.Web.RefreshLoad();
                 this.Field.Context.Load(this.Field);
                 _executeQuery = true;
             }

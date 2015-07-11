@@ -58,7 +58,7 @@ namespace SP2013Access.ViewModels
 
         public override void Refresh()
         {
-            if (!IsLoaded) return;
+            //if (!IsLoaded) return;
             this.IsDirty = true;
             this.IsBusy = true;
             this.IsLoaded = false;

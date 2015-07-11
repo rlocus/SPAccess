@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using SharePoint.Remote.Access.Helpers;
 using SP2013Access.Commands;
 using System.Collections.ObjectModel;
@@ -236,7 +237,7 @@ namespace SP2013Access.ViewModels
                 var promise = this.LoadChildrenAsync();
                 promise.Done(o =>
                 {
-                    foreach (TreeViewItemViewModel child in this.Children)
+                    foreach (TreeViewItemViewModel child in this.Children.OrderBy(c => c.Name))
                     {
                         if (!child._lazyLoadChildren && !child.IsLoaded)
                         {
@@ -246,12 +247,12 @@ namespace SP2013Access.ViewModels
                     OnSuccess(o);
                 });
                 promise.Fail(OnFail);
-                promise.Always(() =>
-                {
-                    this.IsBusy = false;
-                    this.IsLoaded = true;
-                    this.IsDirty = false;
-                });
+                //promise.Always(() =>
+                //{
+                //    this.IsBusy = false;
+                //    this.IsLoaded = true;
+                //    this.IsDirty = false;
+                //});
             }
             else
             {
@@ -287,6 +288,7 @@ namespace SP2013Access.ViewModels
 
         protected void OnFail(Exception ex)
         {
+            this.IsBusy = false;
             EventHandler<ResultEventArgs> handler = FailEvent;
             if (handler != null) handler(this, new ResultEventArgs { Exception = ex });
         }
@@ -295,6 +297,9 @@ namespace SP2013Access.ViewModels
 
         protected void OnSuccess(object obj)
         {
+            this.IsBusy = false;
+            this.IsLoaded = true;
+            this.IsDirty = false;
             EventHandler<ResultEventArgs> handler = SuccessEvent;
             if (handler != null) handler(this, new ResultEventArgs { Source = obj });
         }

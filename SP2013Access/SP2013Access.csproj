@@ -95,6 +95,8 @@
     <Compile Include="ViewModels\SPContextCollectionViewModel.cs" />
     <Compile Include="ViewModels\SPFieldViewModel.cs" />
     <Compile Include="ViewModels\SPContentTypeViewModel.cs" />
+    <Compile Include="ViewModels\SPViewViewModel.cs" />
+    <Compile Include="ViewModels\SPViewCollectionViewModel.cs" />
     <Compile Include="ViewModels\SPListContentTypeCollectionViewModel.cs" />
     <Compile Include="ViewModels\SPFieldCollectionViewModel.cs" />
     <Compile Include="ViewModels\SPSiteFieldCollectionViewModel.cs" />

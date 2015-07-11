@@ -41,7 +41,7 @@ namespace SharePoint.Remote.Access.Helpers
         public SPClientField[] GetFields()
         {
             FieldCollection fields = this.ContentType.Fields;
-            if (fields.AreItemsAvailable)
+            if (fields != null && fields.AreItemsAvailable)
             {
                 return fields.ToList().Select(field =>
                 {
@@ -52,7 +52,7 @@ namespace SharePoint.Remote.Access.Helpers
                     return clientField;
                 }).ToArray();
             }
-            throw new SPAccessException("Field collection are not available.");
+            throw new SPAccessException("Field collection is not available.");
         }
 
         public void Load()

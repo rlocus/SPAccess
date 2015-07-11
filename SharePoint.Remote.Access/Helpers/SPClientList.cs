@@ -23,6 +23,30 @@ namespace SharePoint.Remote.Access.Helpers
 
         public SPClientWeb ClientWeb { get; internal set; }
 
+        public SPClientList IncludeViews(params Expression<Func<ViewCollection, object>>[] retrievals)
+        {
+            ViewCollection views = this.List.Views;
+            this.List.Context.Load(views, retrievals);
+            _executeQuery = true;
+            return this;
+        }
+
+        public SPClientView[] GetViews()
+        {
+            ViewCollection views = this.List.Views;
+            if (views != null && views.AreItemsAvailable)
+            {
+                return views.ToList().Select(view =>
+                {
+                    var clientView = SPClientView.FromView(view);
+                    clientView.ClientList = this;
+                    clientView.ClientWeb = this.ClientWeb;
+                    return clientView;
+                }).ToArray();
+            }
+            throw new SPAccessException("View collection is not available.");
+        }
+
         public SPClientList IncludeContentTypes(params Expression<Func<ContentTypeCollection, object>>[] retrievals)
         {
             ContentTypeCollection contentTypes = this.List.ContentTypes;
@@ -34,7 +58,7 @@ namespace SharePoint.Remote.Access.Helpers
         public SPClientContentType[] GetContentTypes()
         {
             ContentTypeCollection contentTypes = this.List.ContentTypes;
-            if (contentTypes.AreItemsAvailable)
+            if (contentTypes != null && contentTypes.AreItemsAvailable)
             {
                 return contentTypes.ToList().Select(ct =>
                 {
@@ -45,7 +69,7 @@ namespace SharePoint.Remote.Access.Helpers
                     return clientContentType;
                 }).ToArray();
             }
-            throw new SPAccessException("Content Type collection are not available.");
+            throw new SPAccessException("Content Type collection is not available.");
         }
 
         public SPClientList IncludeFields(params Expression<Func<FieldCollection, object>>[] retrievals)
@@ -60,7 +84,7 @@ namespace SharePoint.Remote.Access.Helpers
         {
             FieldCollection fields = this.List.Fields;
 
-            if (fields.AreItemsAvailable)
+            if (fields != null && fields.AreItemsAvailable)
             {
                 return fields.ToList().Select(field =>
                 {
@@ -71,7 +95,7 @@ namespace SharePoint.Remote.Access.Helpers
                     return clientField;
                 }).ToArray();
             }
-            throw new SPAccessException("Field collection are not available.");
+            throw new SPAccessException("Field collection is not available.");
         }
 
         public void Load()

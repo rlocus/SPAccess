@@ -105,32 +105,6 @@ namespace SharePoint.Remote.Access.Helpers
             _executeQuery = false;
         }
 
-        //public async Task<List<SPClientWeb>> LoadAllWebsAsync()
-        //{
-        //    var allClientWebs = new List<SPClientWeb>();
-
-        //    if (!_rootWeb.IsLoaded)
-        //    {
-        //        await LoadRootWebAsync();
-        //    }
-
-        //    allClientWebs.Add(_rootWeb);
-        //    IEnumerable<SPClientWeb> clientWebs = await _rootWeb.LoadWebsAsync();
-
-        //    var webs = clientWebs.RecursiveSelect(web =>
-        //    {
-        //        IEnumerable<SPClientWeb> clientSubWebs = null;
-        //        new Action(async () =>
-        //        {
-        //            clientSubWebs = await web.LoadWebsAsync(query);
-        //        }).Invoke();
-        //        return clientSubWebs;
-        //    });
-
-        //    allClientWebs.AddRange(webs);
-        //    return allClientWebs;
-        //}
-
         public string GetRestUrl()
         {
             return string.Format("{0}/_api/site", this.Site.Url.TrimEnd('/'));

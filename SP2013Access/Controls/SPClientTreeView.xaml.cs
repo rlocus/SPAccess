@@ -27,7 +27,7 @@ namespace SP2013Access.Controls
         {
             if (logger != null)
             {
-                _viewModel.FailEvent += (senser, e) => logger.Error(e.Exception.Message);
+                _viewModel.FailEvent += (senser, e) => Dispatcher.Invoke(() => logger.Error(e.Exception.Message));
             }
             //if (IsMulti)
             //{

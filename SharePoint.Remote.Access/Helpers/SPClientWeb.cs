@@ -51,11 +51,11 @@ namespace SharePoint.Remote.Access.Helpers
 
         public SPClientWeb[] GetWebs()
         {
-            if (WebsForCurrentUser.AreItemsAvailable)
+            if (WebsForCurrentUser != null && WebsForCurrentUser.AreItemsAvailable)
             {
                 return WebsForCurrentUser.ToList().Select(FromWeb).ToArray();
             }
-            throw new SPAccessException("Web collection are not available.");
+            throw new SPAccessException("Web collection is not available.");
         }
 
         public SPClientWeb IncludeLists(params Expression<Func<ListCollection, object>>[] retrievals)
@@ -69,7 +69,7 @@ namespace SharePoint.Remote.Access.Helpers
         public SPClientList[] GetLists()
         {
             ListCollection lists = this.Web.Lists;
-            if (lists.AreItemsAvailable)
+            if (lists != null && lists.AreItemsAvailable)
             {
                 var clientLists = new List<SPClientList>(lists.Count);
                 foreach (SPClientList clientList in lists.ToList().Select(SPClientList.FromList))
@@ -80,7 +80,7 @@ namespace SharePoint.Remote.Access.Helpers
                 return clientLists.ToArray();
             }
 
-            throw new SPAccessException("List collection are not available.");
+            throw new SPAccessException("List collection is not available.");
         }
 
         public SPClientWeb IncludeContentTypes(params Expression<Func<ContentTypeCollection, object>>[] retrievals)
@@ -94,7 +94,7 @@ namespace SharePoint.Remote.Access.Helpers
         public SPClientContentType[] GetContentTypes()
         {
             ContentTypeCollection contentTypes = this.Web.ContentTypes;
-            if (contentTypes.AreItemsAvailable)
+            if (contentTypes != null && contentTypes.AreItemsAvailable)
             {
                 return contentTypes.ToList().Select(ct =>
                 {
@@ -105,7 +105,7 @@ namespace SharePoint.Remote.Access.Helpers
                     return clientContentType;
                 }).ToArray();
             }
-            throw new SPAccessException("Content Type collection are not available.");
+            throw new SPAccessException("Content Type collection is not available.");
         }
 
         public SPClientWeb IncludeFields(params Expression<Func<FieldCollection, object>>[] retrievals)
@@ -119,7 +119,7 @@ namespace SharePoint.Remote.Access.Helpers
         public SPClientField[] GetFields()
         {
             FieldCollection fields = this.Web.Fields;
-            if (fields.AreItemsAvailable)
+            if (fields != null && fields.AreItemsAvailable)
             {
                 return fields.ToList().Select(field =>
                 {
@@ -130,7 +130,7 @@ namespace SharePoint.Remote.Access.Helpers
                     return clientField;
                 }).ToArray();
             }
-            throw new SPAccessException("Field collection are not available.");
+            throw new SPAccessException("Field collection is not available.");
         }
 
         public void Load()

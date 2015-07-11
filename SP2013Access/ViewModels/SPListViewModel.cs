@@ -56,6 +56,8 @@ namespace SP2013Access.ViewModels
             this.Children.Add(contentTypesViewModel);
             var fieldsViewModel = new SPFieldCollectionViewModel(_list, this);
             this.Children.Add(fieldsViewModel);
+            var viewsViewModel = new SPViewCollectionViewModel(_list, this);
+            this.Children.Add(viewsViewModel);
             base.LoadChildren();
         }
 

@@ -48,7 +48,7 @@ namespace SP2013Access.ViewModels
             promise.Done(() =>
             {
                 var rootWeb = _site.GetRootWeb();
-                var viewModel = new SPWebViewModel(rootWeb, this) {IsExpanded = true};
+                var viewModel = new SPWebViewModel(rootWeb, this) { IsExpanded = true };
                 this.Children.Add(viewModel);
             });
             promise.Fail(OnFail);

@@ -59,7 +59,7 @@ namespace SP2013Access.ViewModels
             viewModel.Commands.Add(new CommandEntity()
             {
                 Name = "Close",
-                Command = new DelegateCommand<object>(arg =>
+                Command = new RelayCommand<object>(arg =>
                 {
                     clientContext.Dispose();
                     _clientContexts.Remove(clientContext);

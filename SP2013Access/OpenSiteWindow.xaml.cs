@@ -88,12 +88,13 @@ namespace SP2013Access
 
         private void OK_OnClick(object sender, RoutedEventArgs e)
         {
+            AuthType authType = ((AuthenticationModeComboBoxItem)this.AuthenticationModeComboBox.SelectedValue).Type;
             var site = new RecentSite
             {
                 Url = this.SiteUrlTextBox.Text,
                 UserName = UserNameTextBox.Text,
                 UseCurrentUserCredentials = UseCurrentUserCredentialsCheckBox.IsChecked ?? false,
-                Authentication = ((AuthenticationModeComboBoxItem)this.AuthenticationModeComboBox.SelectedValue).Type
+                Authentication = authType
             };
 
             MessageLabel.Content = string.Format("Connecting to {0} ...", site.Url);
@@ -116,12 +117,9 @@ namespace SP2013Access
             CancelButton.IsEnabled = false;
             SiteUrlTextBox.IsEnabled = false;
             AuthenticationModeComboBox.IsEnabled = false;
-
-            if (UseCurrentUserCredentialsCheckBox.IsEnabled)
-            {
-                UserNameTextBox.IsEnabled = false;
-                UserPasswordTextBox.IsEnabled = false;
-            }
+            UseCurrentUserCredentialsCheckBox.IsEnabled = false;
+            UserNameTextBox.IsEnabled = false;
+            UserPasswordTextBox.IsEnabled = false;
 
             IPromise<object, Exception> promise = Utility.ExecuteAsync(this.ClientContext.ConnectAsync());
             promise.Done(() =>
@@ -144,12 +142,7 @@ namespace SP2013Access
                 CancelButton.IsEnabled = true;
                 SiteUrlTextBox.IsEnabled = true;
                 AuthenticationModeComboBox.IsEnabled = true;
-
-                if (UseCurrentUserCredentialsCheckBox.IsEnabled)
-                {
-                    UserNameTextBox.IsEnabled = true;
-                    UserPasswordTextBox.IsEnabled = true;
-                }
+                SetVisiblility();
             });
         }
 
@@ -183,6 +176,11 @@ namespace SP2013Access
 
         private void AuthenticationModeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            SetVisiblility();
+        }
+
+        private void SetVisiblility()
+        {
             AuthType authType = ((AuthenticationModeComboBoxItem)this.AuthenticationModeComboBox.SelectedValue).Type;
 
             if (authType == AuthType.Anonymous)
@@ -204,7 +202,6 @@ namespace SP2013Access
                 else
                 {
                     UseCurrentUserCredentialsCheckBox.IsEnabled = true;
-
                     if (UseCurrentUserCredentialsCheckBox.IsChecked == true)
                     {
                         UserNameTextBox.IsEnabled = false;

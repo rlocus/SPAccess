@@ -217,7 +217,7 @@ namespace SP2013Access.ViewModels
 
         public ObservableCollection<CommandEntity> Commands { get; private set; }
 
-        public DelegateCommand<System.Exception> OnExceptionCommand { get; set; }
+        public RelayCommand<System.Exception> OnExceptionCommand { get; set; }
 
         #endregion Properties
 

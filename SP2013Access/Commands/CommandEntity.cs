@@ -4,6 +4,6 @@
     {
         public string Name { get; set; }
 
-        public IDelegateCommand Command { get; set; }
+        public IRelayCommand Command { get; set; }
     }
 }

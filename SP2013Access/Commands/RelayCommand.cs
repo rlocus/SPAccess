@@ -4,14 +4,14 @@ using System.Windows.Input;
 
 namespace SP2013Access.Commands
 {
-    public interface IDelegateCommand : ICommand
+    public interface IRelayCommand : ICommand
     {
         bool IsAutomaticRequeryDisabled { get; set; }
 
         void RaiseCanExecuteChanged();
     }
 
-    public class DelegateCommand<T> : IDelegateCommand
+    public class RelayCommand<T> : IRelayCommand
     {
         #region Fields
 
@@ -24,13 +24,13 @@ namespace SP2013Access.Commands
 
         #region Constructors
 
-        public DelegateCommand(Action<T> execute)
+        public RelayCommand(Action<T> execute)
             : this(execute, null, false) { }
 
-        public DelegateCommand(Action<T> execute, Predicate<T> canExecute)
+        public RelayCommand(Action<T> execute, Predicate<T> canExecute)
             : this(execute, canExecute, false) { }
 
-        public DelegateCommand(Action<T> execute, Predicate<T> canExecute, bool isAutomaticRequeryDisabled)
+        public RelayCommand(Action<T> execute, Predicate<T> canExecute, bool isAutomaticRequeryDisabled)
         {
             _execute = execute;
             _canExecute = canExecute;

@@ -34,3 +34,5 @@ D:\Git\SP2013Access\obj\Debug\SP2013Access.exe
 D:\Git\SP2013Access\bin\Debug\NLog.dll
 D:\Git\SP2013Access\obj\Debug\Controls\LogViewer.g.cs
 D:\Git\SP2013Access\obj\Debug\Controls\LogViewer.baml
+D:\Git\SP2013Access\obj\Debug\Controls\SPListViewControl.g.cs
+D:\Git\SP2013Access\obj\Debug\Controls\SPListViewControl.baml

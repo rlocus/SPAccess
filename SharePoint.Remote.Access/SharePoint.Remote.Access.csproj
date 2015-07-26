@@ -44,6 +44,7 @@
     <Compile Include="Extensions\ClientRuntimeContextExtentions.cs" />
     <Compile Include="Extensions\LinqExtensions.cs" />
     <Compile Include="Helpers\Deferred.cs" />
+    <Compile Include="Helpers\SPClientView.cs" />
     <Compile Include="Helpers\SPClientContext.cs" />
     <Compile Include="Helpers\SPClientContentType.cs" />
     <Compile Include="Helpers\SPClientField.cs" />

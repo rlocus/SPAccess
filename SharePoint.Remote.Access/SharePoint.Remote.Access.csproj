@@ -40,9 +40,47 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AuthType.cs" />
+    <Compile Include="Caml\Clauses\Clause.cs" />
+    <Compile Include="Caml\Clauses\GroupBy.cs" />
+    <Compile Include="Caml\Clauses\OrderBy.cs" />
+    <Compile Include="Caml\Clauses\Where.cs" />
+    <Compile Include="Caml\Extensions.cs" />
+    <Compile Include="Caml\FieldRef.cs" />
+    <Compile Include="Caml\Interfaces\IFieldOperator.cs" />
+    <Compile Include="Caml\Interfaces\IMultiFieldOperator.cs" />
+    <Compile Include="Caml\Interfaces\IMultipleValueOperator.cs" />
+    <Compile Include="Caml\Interfaces\IValueOperator.cs" />
+    <Compile Include="Caml\Operators\And.cs" />
+    <Compile Include="Caml\Operators\BeginsWith.cs" />
+    <Compile Include="Caml\Operators\Contains.cs" />
+    <Compile Include="Caml\Operators\DateRangesOverlap.cs" />
+    <Compile Include="Caml\Operators\Eq.cs" />
+    <Compile Include="Caml\Operators\Geq.cs" />
+    <Compile Include="Caml\Operators\Gt.cs" />
+    <Compile Include="Caml\Operators\In.cs" />
+    <Compile Include="Caml\Operators\IsNotNull.cs" />
+    <Compile Include="Caml\Operators\IsNull.cs" />
+    <Compile Include="Caml\Operators\Leq.cs" />
+    <Compile Include="Caml\Operators\Lt.cs" />
+    <Compile Include="Caml\Operators\MultipleFieldValueOperator.cs" />
+    <Compile Include="Caml\Operators\MultipleValueOperator.cs" />
+    <Compile Include="Caml\Operators\Neq.cs" />
+    <Compile Include="Caml\Operators\NestedOperator.cs" />
+    <Compile Include="Caml\Operators\Operator.cs" />
+    <Compile Include="Caml\Operators\Or.cs" />
+    <Compile Include="Caml\Operators\FieldMultipleValueOperator.cs" />
+    <Compile Include="Caml\Operators\FieldOperator.cs" />
+    <Compile Include="Caml\Operators\FieldValueOperator.cs" />
+    <Compile Include="Caml\Operators\ValueOperator.cs" />
+    <Compile Include="Caml\Query.cs" />
+    <Compile Include="Caml\QueryElement.cs" />
+    <Compile Include="Caml\Value.cs" />
+    <Compile Include="Extensions\CamlQueryExtensions.cs" />
     <Compile Include="Extensions\ClientRuntimeContextExtentions.cs" />
     <Compile Include="Extensions\LinqExtensions.cs" />
     <Compile Include="Helpers\Deferred.cs" />

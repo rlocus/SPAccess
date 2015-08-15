@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -12,13 +11,13 @@ namespace SP2013Access.Extensions
     {
         public static readonly DependencyProperty SelectItemOnRightClickProperty = DependencyProperty.RegisterAttached(
             "SelectItemOnRightClick",
-            typeof(bool),
-            typeof(TreeViewExtensions),
+            typeof (bool),
+            typeof (TreeViewExtensions),
             new UIPropertyMetadata(false, OnSelectItemOnRightClickChanged));
 
         public static bool GetSelectItemOnRightClick(DependencyObject d)
         {
-            return (bool)d.GetValue(SelectItemOnRightClickProperty);
+            return (bool) d.GetValue(SelectItemOnRightClickProperty);
         }
 
         public static void SetSelectItemOnRightClick(DependencyObject d, bool value)
@@ -28,9 +27,9 @@ namespace SP2013Access.Extensions
 
         private static void OnSelectItemOnRightClickChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            bool selectItemOnRightClick = (bool)e.NewValue;
+            var selectItemOnRightClick = (bool) e.NewValue;
 
-            TreeView treeView = d as TreeView;
+            var treeView = d as TreeView;
             if (treeView != null)
             {
                 if (selectItemOnRightClick)
@@ -42,7 +41,7 @@ namespace SP2013Access.Extensions
 
         private static void OnPreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
-            TreeViewItem treeViewItem = VisualUpwardSearch(e.OriginalSource as DependencyObject);
+            var treeViewItem = VisualUpwardSearch(e.OriginalSource as DependencyObject);
 
             if (treeViewItem != null)
             {
@@ -58,14 +57,17 @@ namespace SP2013Access.Extensions
             return source as TreeViewItem;
         }
 
-        public static void ExpandCollapseAll<T>(this TreeViewItem treeViewItem, bool expand = true, Func<T, bool> selector = null)
+        public static void ExpandCollapseAll<T>(this TreeViewItem treeViewItem, bool expand = true,
+            Func<T, bool> selector = null)
         {
             if (treeViewItem == null)
             {
                 return;
             }
-            var items = (selector != null ? treeViewItem.Items.Cast<T>().Where(selector) : treeViewItem.Items.Cast<T>()).ToArray();
-            foreach (T current in items)
+            var items =
+                (selector != null ? treeViewItem.Items.Cast<T>().Where(selector) : treeViewItem.Items.Cast<T>()).ToArray
+                    ();
+            foreach (var current in items)
             {
                 var tvi = treeViewItem.ItemContainerGenerator.ContainerFromItem(current) as TreeViewItem;
 
@@ -77,11 +79,12 @@ namespace SP2013Access.Extensions
             treeViewItem.IsExpanded = expand;
         }
 
-        public static void ExpandCollapseAll<T>(this TreeView treeView, bool expand = true, Func<T, bool> selector = null)
+        public static void ExpandCollapseAll<T>(this TreeView treeView, bool expand = true,
+            Func<T, bool> selector = null)
         {
-            IEnumerable<T> items = selector != null ? treeView.Items.Cast<T>().Where(selector) : treeView.Items.Cast<T>();
+            var items = selector != null ? treeView.Items.Cast<T>().Where(selector) : treeView.Items.Cast<T>();
 
-            foreach (T current in items.ToArray())
+            foreach (var current in items.ToArray())
             {
                 var treeViewItem = treeView.ItemContainerGenerator.ContainerFromItem(current) as TreeViewItem;
 
@@ -111,17 +114,14 @@ namespace SP2013Access.Extensions
 
         public static void ClearTreeViewSelection(this TreeView treeView)
         {
-            if (treeView != null)
-            {
-                treeView.Items.ClearTreeViewItemsControlSelection(treeView.ItemContainerGenerator);
-            }
+            treeView?.Items.ClearTreeViewItemsControlSelection(treeView.ItemContainerGenerator);
         }
 
         private static void ClearTreeViewItemsControlSelection(this ItemCollection ic, ItemContainerGenerator icg)
         {
             if (ic != null && icg != null)
             {
-                for (int i = 0; i < ic.Count; i++)
+                for (var i = 0; i < ic.Count; i++)
                 {
                     var treeViewItem = icg.ContainerFromIndex(i) as TreeViewItem;
 
@@ -135,19 +135,23 @@ namespace SP2013Access.Extensions
         }
 
         /// <summary>
-        /// Tries its best to return the specified element's parent. It will
-        /// try to find, in this order, the VisualParent, LogicalParent, LogicalTemplatedParent.
-        /// It only works for Visual, FrameworkElement or FrameworkContentElement.
+        ///     Tries its best to return the specified element's parent. It will
+        ///     try to find, in this order, the VisualParent, LogicalParent, LogicalTemplatedParent.
+        ///     It only works for Visual, FrameworkElement or FrameworkContentElement.
         /// </summary>
-        /// <param name="element">The element to which to return the parent. It will only
-        /// work if element is a Visual, a FrameworkElement or a FrameworkContentElement.</param>
-        /// <remarks>If the logical parent is not found (Parent), we check the TemplatedParent
-        /// (see FrameworkElement.Parent documentation). But, we never actually witnessed
-        /// this situation.</remarks>
+        /// <param name="element">
+        ///     The element to which to return the parent. It will only
+        ///     work if element is a Visual, a FrameworkElement or a FrameworkContentElement.
+        /// </param>
+        /// <remarks>
+        ///     If the logical parent is not found (Parent), we check the TemplatedParent
+        ///     (see FrameworkElement.Parent documentation). But, we never actually witnessed
+        ///     this situation.
+        /// </remarks>
         public static DependencyObject GetParent(DependencyObject element)
         {
-            Visual visual = element as Visual;
-            DependencyObject parent = (visual == null) ? null : VisualTreeHelper.GetParent(visual);
+            var visual = element as Visual;
+            var parent = (visual == null) ? null : VisualTreeHelper.GetParent(visual);
             if (parent == null)
             {
                 // No Visual parent. Check in the logical tree.
@@ -169,7 +173,7 @@ namespace SP2013Access.Extensions
         }
 
         /// <summary>
-        /// This will search for a parent of the specified type.
+        ///     This will search for a parent of the specified type.
         /// </summary>
         /// <typeparam name="T">The type of the element to find</typeparam>
         /// <param name="startingObject">The node where the search begins. This element is not checked.</param>
@@ -180,30 +184,34 @@ namespace SP2013Access.Extensions
         }
 
         /// <summary>
-        /// This will search for a parent of the specified type.
+        ///     This will search for a parent of the specified type.
         /// </summary>
         /// <typeparam name="T">The type of the element to find</typeparam>
         /// <param name="startingObject">The node where the search begins.</param>
         /// <param name="checkStartingObject">Should the specified startingObject be checked first.</param>
         /// <returns>Returns the found element. Null if nothing is found.</returns>
-        public static T FindParent<T>(DependencyObject startingObject, bool checkStartingObject) where T : DependencyObject
+        public static T FindParent<T>(DependencyObject startingObject, bool checkStartingObject)
+            where T : DependencyObject
         {
             return FindParent<T>(startingObject, checkStartingObject, null);
         }
 
         /// <summary>
-        /// This will search for a parent of the specified type.
+        ///     This will search for a parent of the specified type.
         /// </summary>
         /// <typeparam name="T">The type of the element to find</typeparam>
         /// <param name="startingObject">The node where the search begins.</param>
         /// <param name="checkStartingObject">Should the specified startingObject be checked first.</param>
-        /// <param name="additionalCheck">Provide a callback to check additional properties
-        /// of the found elements. Can be left Null if no additional criteria are needed.</param>
+        /// <param name="additionalCheck">
+        ///     Provide a callback to check additional properties
+        ///     of the found elements. Can be left Null if no additional criteria are needed.
+        /// </param>
         /// <returns>Returns the found element. Null if nothing is found.</returns>
         /// <example>Button button = TreeHelper.FindParent&lt;Button&gt;( this, foundChild => foundChild.Focusable );</example>
-        public static T FindParent<T>(DependencyObject startingObject, bool checkStartingObject, Func<T, bool> additionalCheck) where T : DependencyObject
+        public static T FindParent<T>(DependencyObject startingObject, bool checkStartingObject,
+            Func<T, bool> additionalCheck) where T : DependencyObject
         {
-            DependencyObject parent = (checkStartingObject ? startingObject : GetParent(startingObject));
+            var parent = (checkStartingObject ? startingObject : GetParent(startingObject));
             while (parent != null)
             {
                 var foundElement = parent as T;
@@ -225,8 +233,8 @@ namespace SP2013Access.Extensions
         }
 
         /// <summary>
-        /// This will search for a child of the specified type. The search is performed
-        /// hierarchically, breadth first (as opposed to depth first).
+        ///     This will search for a child of the specified type. The search is performed
+        ///     hierarchically, breadth first (as opposed to depth first).
         /// </summary>
         /// <typeparam name="T">The type of the element to find</typeparam>
         /// <param name="parent">The root of the tree to search for. This element itself is not checked.</param>
@@ -237,21 +245,23 @@ namespace SP2013Access.Extensions
         }
 
         /// <summary>
-        /// This will search for a child of the specified type. The search is performed
-        /// hierarchically, breadth first (as opposed to depth first).
+        ///     This will search for a child of the specified type. The search is performed
+        ///     hierarchically, breadth first (as opposed to depth first).
         /// </summary>
         /// <typeparam name="T">The type of the element to find</typeparam>
         /// <param name="parent">The root of the tree to search for. This element itself is not checked.</param>
-        /// <param name="additionalCheck">Provide a callback to check additional properties
-        /// of the found elements. Can be left Null if no additional criteria are needed.</param>
+        /// <param name="additionalCheck">
+        ///     Provide a callback to check additional properties
+        ///     of the found elements. Can be left Null if no additional criteria are needed.
+        /// </param>
         /// <returns>Returns the found element. Null if nothing is found.</returns>
         /// <example>Button button = TreeHelper.FindChild&lt;Button&gt;( this, foundChild => foundChild.Focusable );</example>
         public static T FindChild<T>(DependencyObject parent, Func<T, bool> additionalCheck) where T : DependencyObject
         {
-            int childrenCount = VisualTreeHelper.GetChildrenCount(parent);
+            var childrenCount = VisualTreeHelper.GetChildrenCount(parent);
             T child;
 
-            for (int index = 0; index < childrenCount; index++)
+            for (var index = 0; index < childrenCount; index++)
             {
                 child = VisualTreeHelper.GetChild(parent, index) as T;
 
@@ -268,7 +278,7 @@ namespace SP2013Access.Extensions
                 }
             }
 
-            for (int index = 0; index < childrenCount; index++)
+            for (var index = 0; index < childrenCount; index++)
             {
                 child = FindChild(VisualTreeHelper.GetChild(parent, index), additionalCheck);
 
@@ -280,8 +290,8 @@ namespace SP2013Access.Extensions
         }
 
         /// <summary>
-        /// Returns true if the specified element is a child of parent somewhere in the visual
-        /// tree. This method will work for Visual, FrameworkElement and FrameworkContentElement.
+        ///     Returns true if the specified element is a child of parent somewhere in the visual
+        ///     tree. This method will work for Visual, FrameworkElement and FrameworkContentElement.
         /// </summary>
         /// <param name="element">The element that is potentially a child of the specified parent.</param>
         /// <param name="parent">The element that is potentially a parent of the specified element.</param>

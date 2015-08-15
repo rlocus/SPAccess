@@ -1,46 +1,38 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel;
-using NLog;
-using NLog.Config;
-using NLog.Targets.Wrappers;
-using SharePoint.Remote.Access.Helpers;
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using SP2013Access.Controls;
+using NLog;
+using NLog.Config;
 using SP2013Access.Logging;
 
 namespace SP2013Access
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    ///     Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
         private Logger _logger;
-        
-        public ObservableCollection<RecentSite> RecentSites
-        {
-            get;
-            private set;
-        }
 
         public MainWindow()
         {
             InitializeComponent();
-            this.Loaded += new RoutedEventHandler(MainWindow_Loaded);
+            Loaded += MainWindow_Loaded;
             RecentSites = new ObservableCollection<RecentSite>();
             LoadMenu();
         }
+
+        public ObservableCollection<RecentSite> RecentSites { get; }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             ClientTreeView.SiteLoadingEvent += ClientTreeView_SiteOpening;
             Globals.SplashScreen.LoadComplete();
 
-            LogViewer logViewer = this.LogViewer;
+            var logViewer = LogViewer;
             _logger = LogManager.GetLogger("Logger");
 
             Dispatcher.Invoke(() =>
@@ -48,7 +40,8 @@ namespace SP2013Access
                 var target = new LogViewerTarget
                 {
                     Name = "LogViewer",
-                    Layout = "[${longdate:useUTC=false}] :: [${level:uppercase=true}] :: ${logger}:${callsite} :: ${message} ${exception:innerFormat=tostring:maxInnerExceptionLevel=10:separator=,:format=tostring}",
+                    Layout =
+                        "[${longdate:useUTC=false}] :: [${level:uppercase=true}] :: ${logger}:${callsite} :: ${message} ${exception:innerFormat=tostring:maxInnerExceptionLevel=10:separator=,:format=tostring}",
                     TargetLogViewer = logViewer
                 };
                 SimpleConfigurator.ConfigureForTargetLogging(target, LogLevel.Trace);
@@ -62,7 +55,7 @@ namespace SP2013Access
             RecentMenuItem.DataContext = this;
             RecentSites.Clear();
 
-            foreach (RecentSite recentSite in Globals.Configuration.RecentSites.OrderBy(recentSite => recentSite.Url))
+            foreach (var recentSite in Globals.Configuration.RecentSites.OrderBy(recentSite => recentSite.Url))
             {
                 RecentSites.Add(recentSite);
             }
@@ -87,12 +80,12 @@ namespace SP2013Access
 
             var openSiteWindow = new OpenSiteWindow(recentSite)
             {
-                Owner = this,
+                Owner = this
             };
 
             if (openSiteWindow.ShowDialog() == true)
             {
-                SPClientContext clientContext = openSiteWindow.ClientContext;
+                var clientContext = openSiteWindow.ClientContext;
                 if (clientContext != null)
                 {
                     _logger.Info("Connected to {0}", clientContext.Url);
@@ -100,7 +93,6 @@ namespace SP2013Access
                 }
                 LoadMenu();
             }
-
         }
 
         private void RecentMenuItem_OnClick(object sender, RoutedEventArgs e)

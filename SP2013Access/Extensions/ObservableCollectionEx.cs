@@ -5,19 +5,17 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Reflection;
-
 
 namespace SP2013Access.Extensions
 {
     /// <summary>
-    /// Observable collection with ability to delay or suspend CollectionChanged notifications
+    ///     Observable collection with ability to delay or suspend CollectionChanged notifications
     /// </summary>
     /// <typeparam name="T"></typeparam>
     [Serializable]
-    public class ObservableCollectionEx<T> : Collection<T>, INotifyCollectionChanged, INotifyPropertyChanged, IDisposable
+    public class ObservableCollectionEx<T> : Collection<T>, INotifyCollectionChanged, INotifyPropertyChanged,
+        IDisposable
     {
         //-----------------------------------------------------
         //  Constants
@@ -32,10 +30,9 @@ namespace SP2013Access.Extensions
         private const string IndexerName = "Item[]";
 
         /// <summary>
-        /// Empty delegate used to initialize <see cref="CollectionChanged"/> event if it is empty
+        ///     Empty delegate used to initialize <see cref="CollectionChanged" /> event if it is empty
         /// </summary>
-        [field: NonSerialized()]
-        private static readonly NotifyCollectionChangedEventHandler _emptyDelegate = delegate { };
+        [field: NonSerialized] private static readonly NotifyCollectionChangedEventHandler _emptyDelegate = delegate { };
 
         #endregion
 
@@ -46,29 +43,23 @@ namespace SP2013Access.Extensions
         #region Private Fields
 
         /// <summary>
-        /// 
         /// </summary>
-        [field: NonSerialized()]
-        private readonly ReentryMonitor _monitor = new ReentryMonitor();
+        [field: NonSerialized] private readonly ReentryMonitor _monitor = new ReentryMonitor();
 
         /// <summary>
-        /// Placeholder for all data related to delayed 
-        /// notifications.
+        ///     Placeholder for all data related to delayed
+        ///     notifications.
         /// </summary>
-        [field: NonSerialized()]
-        private readonly NotificationInfo _notifyInfo;
+        [field: NonSerialized] private readonly NotificationInfo _notifyInfo;
 
         /// <summary>
-        /// Indicates if modification of container allowed during change notification.
+        ///     Indicates if modification of container allowed during change notification.
         /// </summary>
-        [field: NonSerialized()]
-        private bool _disableReentry;
+        [field: NonSerialized] private bool _disableReentry;
 
-        [field: NonSerialized()]
-        Action _fireCountAndIndexerChanged = delegate { };
+        [field: NonSerialized] private Action _fireCountAndIndexerChanged = delegate { };
 
-        [field: NonSerialized()]
-        Action _fireIndexerChanged = delegate { };
+        [field: NonSerialized] private Action _fireIndexerChanged = delegate { };
 
         #endregion Private Fields
 
@@ -78,17 +69,17 @@ namespace SP2013Access.Extensions
 
         #region Protected Fields
 
-        /// <summary> 
-        /// PropertyChanged event <see cref="INotifyPropertyChanged" />.
-        /// </summary> 
-        [field: NonSerializedAttribute()]
+        /// <summary>
+        ///     PropertyChanged event <see cref="INotifyPropertyChanged" />.
+        /// </summary>
+        [field: NonSerialized]
         private event PropertyChangedEventHandler PropertyChanged;
 
-        /// <summary> 
-        /// Occurs when the collection changes, either by adding or removing an item.
+        /// <summary>
+        ///     Occurs when the collection changes, either by adding or removing an item.
         /// </summary>
-        /// <remarks>See <seealso cref="INotifyCollectionChanged"/></remarks>
-        [field: NonSerialized()]
+        /// <remarks>See <seealso cref="INotifyCollectionChanged" /></remarks>
+        [field: NonSerialized]
         private event NotifyCollectionChangedEventHandler CollectionChanged = _emptyDelegate;
 
         #endregion Protected Fields
@@ -99,51 +90,50 @@ namespace SP2013Access.Extensions
 
         #region Constructors
 
-        /// <summary> 
-        /// Initializes a new instance of ObservableCollectionEx that is empty and has default initial capacity. 
+        /// <summary>
+        ///     Initializes a new instance of ObservableCollectionEx that is empty and has default initial capacity.
         /// </summary>
         public ObservableCollectionEx()
-            : base()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the ObservableCollectionEx class
-        /// that contains elements copied from the specified list 
+        ///     Initializes a new instance of the ObservableCollectionEx class
+        ///     that contains elements copied from the specified list
         /// </summary>
-        /// <param name="list">The list whose elements are copied to the new list.</param> 
-        /// <remarks> 
-        /// The elements are copied onto the ObservableCollectionEx in the
-        /// same order they are read by the enumerator of the list. 
+        /// <param name="list">The list whose elements are copied to the new list.</param>
+        /// <remarks>
+        ///     The elements are copied onto the ObservableCollectionEx in the
+        ///     same order they are read by the enumerator of the list.
         /// </remarks>
         /// <exception cref="ArgumentNullException"> list is a null reference </exception>
         public ObservableCollectionEx(List<T> list)
             : base((list != null) ? new List<T>(list.Count) : null)
         {
             if (list != null)
-                foreach (T item in list)
+                foreach (var item in list)
                 {
                     Items.Add(item);
                 }
         }
 
         /// <summary>
-        /// Initializes a new instance of the ObservableCollection class that contains 
-        /// elements copied from the specified collection and has sufficient capacity 
-        /// to accommodate the number of elements copied.
-        /// </summary> 
+        ///     Initializes a new instance of the ObservableCollection class that contains
+        ///     elements copied from the specified collection and has sufficient capacity
+        ///     to accommodate the number of elements copied.
+        /// </summary>
         /// <param name="collection">The collection whose elements are copied to the new list.</param>
         /// <remarks>
-        /// The elements are copied onto the ObservableCollection in the
-        /// same order they are read by the enumerator of the collection. 
+        ///     The elements are copied onto the ObservableCollection in the
+        ///     same order they are read by the enumerator of the collection.
         /// </remarks>
-        /// <exception cref="ArgumentNullException"> collection is a null reference </exception> 
+        /// <exception cref="ArgumentNullException"> collection is a null reference </exception>
         public ObservableCollectionEx(IEnumerable<T> collection)
         {
             if (collection == null)
-                throw new ArgumentNullException("collection");
+                throw new ArgumentNullException(nameof(collection));
 
-            using (IEnumerator<T> enumerator = collection.GetEnumerator())
+            using (var enumerator = collection.GetEnumerator())
             {
                 while (enumerator.MoveNext())
                 {
@@ -153,15 +143,14 @@ namespace SP2013Access.Extensions
         }
 
         /// <summary>
-        /// Constructor that configures the container to delay or disable notifications.
+        ///     Constructor that configures the container to delay or disable notifications.
         /// </summary>
         /// <param name="parent">Reference to an original collection whos events are being postponed</param>
         /// <param name="notify">Specifies if notifications needs to be delayed or disabled</param>
         public ObservableCollectionEx(ObservableCollectionEx<T> parent, bool notify)
             : base(parent.Items)
         {
-            _notifyInfo = new NotificationInfo();
-            _notifyInfo.RootCollection = parent;
+            _notifyInfo = new NotificationInfo {RootCollection = parent};
 
             if (notify)
             {
@@ -170,7 +159,7 @@ namespace SP2013Access.Extensions
         }
 
         /// <summary>
-        /// Distructor
+        ///     Distructor
         /// </summary>
         ~ObservableCollectionEx()
         {
@@ -187,8 +176,8 @@ namespace SP2013Access.Extensions
 
         #region INotifyPropertyChanged implementation
 
-        /// <summary> 
-        /// PropertyChanged event (per <see cref="INotifyPropertyChanged" />).
+        /// <summary>
+        ///     PropertyChanged event (per <see cref="INotifyPropertyChanged" />).
         /// </summary>
         event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged
         {
@@ -203,10 +192,7 @@ namespace SP2013Access.Extensions
                             OnPropertyChanged(new PropertyChangedEventArgs(CountString));
                             OnPropertyChanged(new PropertyChangedEventArgs(IndexerName));
                         };
-                        _fireIndexerChanged = delegate
-                        {
-                            OnPropertyChanged(new PropertyChangedEventArgs(IndexerName));
-                        };
+                        _fireIndexerChanged = delegate { OnPropertyChanged(new PropertyChangedEventArgs(IndexerName)); };
                     }
 
                     PropertyChanged += value;
@@ -236,11 +222,11 @@ namespace SP2013Access.Extensions
 
         #region INotifyCollectionChanged implementation
 
-        /// <summary> 
-        /// Occurs when the collection changes, either by adding or removing an item.
+        /// <summary>
+        ///     Occurs when the collection changes, either by adding or removing an item.
         /// </summary>
         /// <remarks>
-        /// see <seealso cref="INotifyCollectionChanged"/> 
+        ///     see <seealso cref="INotifyCollectionChanged" />
         /// </remarks>
         event NotifyCollectionChangedEventHandler INotifyCollectionChanged.CollectionChanged
         {
@@ -286,49 +272,22 @@ namespace SP2013Access.Extensions
         #region Public Methods
 
         /// <summary>
-        /// Move item at oldIndex to newIndex. 
-        /// </summary> 
+        ///     Move item at oldIndex to newIndex.
+        /// </summary>
         public void Move(int oldIndex, int newIndex)
         {
             MoveItem(oldIndex, newIndex);
         }
 
-        /// <summary>
-        /// Returns an instance of <see cref="ObservableCollectionEx<T>"/>
-        /// class which manipulates original collection but suppresses notifications
-        /// untill this instance has been released and Dispose() method has been called.
-        /// To supress notifications it is recommended to use this instance inside 
-        /// using() statement:
-        /// <code>
-        ///         using (var iSuppressed = collection.DelayNotifications()) 
-        ///         {
-        ///             iSuppressed.Add(x); 
-        ///             iSuppressed.Add(y); 
-        ///             iSuppressed.Add(z); 
-        ///         } 
-        /// </code>
-        /// Each delayed interface is bound to only one type of operation such as Add, Remove, etc.
-        /// Different types of operation on the same delayed interface are not allowed. In order to
-        /// do other type of opertaion you can allocate another wrapper by calling .DelayNotifications() on
-        /// either original object or any delayed instances.
-        /// </summary>
-        /// <returns><see cref="ObservableCollectionEx<T>"/></returns>
         public ObservableCollectionEx<T> DelayNotifications()
         {
             return new ObservableCollectionEx<T>((null == _notifyInfo) ? this : _notifyInfo.RootCollection, true);
         }
 
-        /// <summary>
-        /// Returns a wrapper instance of an ObservableCollectionEx class.
-        /// Calling methods of this instance will modify original collection
-        /// but will not generate any notifications.
-        /// </summary>
-        /// <returns><see cref="ObservableCollectionEx<T>"/></returns>
         public ObservableCollectionEx<T> DisableNotifications()
         {
             return new ObservableCollectionEx<T>((null == _notifyInfo) ? this : _notifyInfo.RootCollection, false);
         }
-
 
         #endregion Public Methods
 
@@ -339,8 +298,8 @@ namespace SP2013Access.Extensions
         #region Protected Methods
 
         /// <summary>
-        /// Called by base class Collection&lt;T&gt; when the list is being cleared;
-        /// raises a CollectionChanged event to any listeners. 
+        ///     Called by base class Collection&lt;T&gt; when the list is being cleared;
+        ///     raises a CollectionChanged event to any listeners.
         /// </summary>
         protected override void ClearItems()
         {
@@ -352,25 +311,26 @@ namespace SP2013Access.Extensions
             OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
         }
 
-        /// <summary> 
-        /// Called by base class Collection&lt;T&gt; when an item is removed from list; 
-        /// raises a CollectionChanged event to any listeners.
-        /// </summary> 
+        /// <summary>
+        ///     Called by base class Collection&lt;T&gt; when an item is removed from list;
+        ///     raises a CollectionChanged event to any listeners.
+        /// </summary>
         protected override void RemoveItem(int index)
         {
             CheckReentrancy();
-            T removedItem = this[index];
+            var removedItem = this[index];
 
             base.RemoveItem(index);
 
             _fireCountAndIndexerChanged();
-            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, removedItem, index));
+            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, removedItem,
+                index));
         }
 
-        /// <summary> 
-        /// Called by base class Collection&lt;T&gt; when an item is added to list;
-        /// raises a CollectionChanged event to any listeners. 
-        /// </summary> 
+        /// <summary>
+        ///     Called by base class Collection&lt;T&gt; when an item is added to list;
+        ///     raises a CollectionChanged event to any listeners.
+        /// </summary>
         protected override void InsertItem(int index, T item)
         {
             CheckReentrancy();
@@ -381,54 +341,56 @@ namespace SP2013Access.Extensions
             OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, index));
         }
 
-        /// <summary> 
-        /// Called by base class Collection&lt;T&gt; when an item is set in list;
-        /// raises a CollectionChanged event to any listeners.
+        /// <summary>
+        ///     Called by base class Collection&lt;T&gt; when an item is set in list;
+        ///     raises a CollectionChanged event to any listeners.
         /// </summary>
         protected override void SetItem(int index, T item)
         {
             CheckReentrancy();
 
-            T originalItem = this[index];
+            var originalItem = this[index];
             base.SetItem(index, item);
 
             _fireIndexerChanged();
-            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, originalItem, item, index));
+            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, originalItem,
+                item, index));
         }
 
         /// <summary>
-        /// Called by base class ObservableCollection&lt;T&gt; when an item is to be moved within the list; 
-        /// raises a CollectionChanged event to any listeners. 
+        ///     Called by base class ObservableCollection&lt;T&gt; when an item is to be moved within the list;
+        ///     raises a CollectionChanged event to any listeners.
         /// </summary>
         private void MoveItem(int oldIndex, int newIndex)
         {
             CheckReentrancy();
 
-            T removedItem = this[oldIndex];
+            var removedItem = this[oldIndex];
             base.RemoveItem(oldIndex);
             base.InsertItem(newIndex, removedItem);
 
             _fireIndexerChanged();
-            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, removedItem, newIndex, oldIndex));
+            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, removedItem,
+                newIndex, oldIndex));
         }
 
 
         /// <summary>
-        /// Raises a PropertyChanged event (per <see cref="INotifyPropertyChanged" />). 
-        /// </summary> 
+        ///     Raises a PropertyChanged event (per <see cref="INotifyPropertyChanged" />).
+        /// </summary>
         private void OnPropertyChanged(PropertyChangedEventArgs e)
         {
-            PropertyChanged(this, e);
+            PropertyChanged?.Invoke(this, e);
         }
 
-        /// <summary> 
-        /// Raise CollectionChanged event to any listeners.
-        /// Properties/methods modifying this ObservableCollection will raise 
-        /// a collection changed event through this virtual method. 
+        /// <summary>
+        ///     Raise CollectionChanged event to any listeners.
+        ///     Properties/methods modifying this ObservableCollection will raise
+        ///     a collection changed event through this virtual method.
         /// </summary>
-        /// <remarks> 
-        /// When overriding this method, either call its base implementation
-        /// or call <see cref="BlockReentrancy"/> to guard against reentrant collection changes.
+        /// <remarks>
+        ///     When overriding this method, either call its base implementation
+        ///     or call <see cref="BlockReentrancy" /> to guard against reentrant collection changes.
         /// </remarks>
         private void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
         {
@@ -438,27 +400,29 @@ namespace SP2013Access.Extensions
             }
         }
 
-        /// <summary> 
-        /// Disallow reentrant attempts to change this collection. E.g. a event handler 
-        /// of the CollectionChanged event is not allowed to make changes to this collection.
-        /// </summary> 
+        /// <summary>
+        ///     Disallow reentrant attempts to change this collection. E.g. a event handler
+        ///     of the CollectionChanged event is not allowed to make changes to this collection.
+        /// </summary>
         /// <remarks>
-        /// typical usage is to wrap e.g. a OnCollectionChanged call with a using() scope:
-        /// <code>
+        ///     typical usage is to wrap e.g. a OnCollectionChanged call with a using() scope:
+        ///     <code>
         ///         using (BlockReentrancy()) 
         ///         {
         ///             CollectionChanged(this, new NotifyCollectionChangedEventArgs(action, item, index)); 
         ///         } 
         /// </code>
-        /// </remarks> 
+        /// </remarks>
         private IDisposable BlockReentrancy()
         {
             return _monitor.Enter();
         }
 
-        /// <summary> Check and assert for reentrant attempts to change this collection. </summary> 
-        /// <exception cref="InvalidOperationException"> raised when changing the collection
-        /// while another collection change is still being notified to other listeners </exception> 
+        /// <summary> Check and assert for reentrant attempts to change this collection. </summary>
+        /// <exception cref="InvalidOperationException">
+        ///     raised when changing the collection
+        ///     while another collection change is still being notified to other listeners
+        /// </exception>
         private void CheckReentrancy()
         {
             // we can allow changes if there's only one listener - the problem
@@ -480,7 +444,7 @@ namespace SP2013Access.Extensions
         #region IDisposable
 
         /// <summary>
-        /// Called by the application code to fire all delayed notifications.
+        ///     Called by the application code to fire all delayed notifications.
         /// </summary>
         public void Dispose()
         {
@@ -489,7 +453,7 @@ namespace SP2013Access.Extensions
         }
 
         /// <summary>
-        /// Fires notification with all accumulated events
+        ///     Fires notification with all accumulated events
         /// </summary>
         /// <param name="reason">True is called by App code. False if called from GC.</param>
         private void Dispose(bool reason)
@@ -509,17 +473,18 @@ namespace SP2013Access.Extensions
 
                     using (_notifyInfo.RootCollection.BlockReentrancy())
                     {
-                        NotifyCollectionChangedEventArgs args = _notifyInfo.EventArgs;
+                        var args = _notifyInfo.EventArgs;
 
-                        foreach (Delegate delegateItem in _notifyInfo.RootCollection.CollectionChanged.GetInvocationList())
+                        foreach (var delegateItem in _notifyInfo.RootCollection.CollectionChanged.GetInvocationList())
                         {
                             try
                             {
-                                delegateItem.DynamicInvoke(new object[] { _notifyInfo.RootCollection, args });
+                                delegateItem.DynamicInvoke(_notifyInfo.RootCollection, args);
                             }
                             catch (TargetInvocationException e)
                             {
-                                if ((e.InnerException is NotSupportedException) && (delegateItem.Target is ICollectionView))
+                                if ((e.InnerException is NotSupportedException) &&
+                                    (delegateItem.Target is ICollectionView))
                                 {
                                     (delegateItem.Target as ICollectionView).Refresh();
                                 }
@@ -543,12 +508,12 @@ namespace SP2013Access.Extensions
 
         #region Private Types
 
-        [Serializable()]
+        [Serializable]
         private class ReentryMonitor : IDisposable
         {
             #region Fields
 
-            int _referenceCount;
+            private int _referenceCount;
 
             #endregion
 
@@ -566,27 +531,16 @@ namespace SP2013Access.Extensions
                 --_referenceCount;
             }
 
-            public bool IsNotifying { get { return _referenceCount != 0; } }
+            public bool IsNotifying
+            {
+                get { return _referenceCount != 0; }
+            }
 
             #endregion
         }
 
         private class NotificationInfo
         {
-            #region Fields
-
-            private NotifyCollectionChangedAction? _action;
-
-            private IList _newItems;
-
-            private IList _oldItems;
-
-            private int _newIndex;
-
-            private int _oldIndex;
-
-            #endregion
-
             #region Methods
 
             public NotifyCollectionChangedEventHandler Initialize()
@@ -599,8 +553,6 @@ namespace SP2013Access.Extensions
                 {
                     var wrapper = sender as ObservableCollectionEx<T>;
                     Debug.Assert(null != wrapper, "Calling object must be ObservableCollectionEx<T>");
-
-                    if (wrapper == null) return;
                     Debug.Assert(null != wrapper._notifyInfo, "Calling object must be Delayed wrapper.");
 
                     // Setup 
@@ -669,6 +621,35 @@ namespace SP2013Access.Extensions
 
             #endregion
 
+            #region Private Helper Methods
+
+            private void AssertActionType(NotifyCollectionChangedEventArgs e)
+            {
+                if (e.Action != _action)
+                {
+                    throw new InvalidOperationException(
+                        string.Format(
+                            "Attempting to perform {0} during {1}. Mixed actions on the same delayed interface are not allowed.",
+                            e.Action, _action));
+                }
+            }
+
+            #endregion
+
+            #region Fields
+
+            private NotifyCollectionChangedAction? _action;
+
+            private IList _newItems;
+
+            private IList _oldItems;
+
+            private int _newIndex;
+
+            private int _oldIndex;
+
+            #endregion
+
             #region Properties
 
             public ObservableCollectionEx<T> RootCollection { get; set; }
@@ -691,7 +672,8 @@ namespace SP2013Access.Extensions
                             return new NotifyCollectionChangedEventArgs(_action.Value, _oldItems);
 
                         case NotifyCollectionChangedAction.Move:
-                            return new NotifyCollectionChangedEventArgs(_action.Value, _oldItems[0], _newIndex, _oldIndex);
+                            return new NotifyCollectionChangedEventArgs(_action.Value, _oldItems[0], _newIndex,
+                                _oldIndex);
 
                         case NotifyCollectionChangedAction.Replace:
                             return new NotifyCollectionChangedEventArgs(_action.Value, _newItems, _oldItems);
@@ -701,24 +683,7 @@ namespace SP2013Access.Extensions
                 }
             }
 
-            public bool HasEventArgs
-            {
-                get { return _action.HasValue; }
-            }
-
-            #endregion
-
-            #region Private Helper Methods
-
-            private void AssertActionType(NotifyCollectionChangedEventArgs e)
-            {
-                if (e.Action != _action)
-                {
-                    throw new InvalidOperationException(
-                        string.Format("Attempting to perform {0} during {1}. Mixed actions on the same delayed interface are not allowed.",
-                        e.Action, _action));
-                }
-            }
+            public bool HasEventArgs => _action.HasValue;
 
             #endregion
         }

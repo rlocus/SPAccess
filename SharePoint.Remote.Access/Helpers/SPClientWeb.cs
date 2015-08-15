@@ -1,11 +1,10 @@
-﻿using System.Linq.Expressions;
-using Microsoft.SharePoint.Client;
-using SharePoint.Remote.Access.Extensions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Web = Microsoft.SharePoint.Client.Web;
+using Microsoft.SharePoint.Client;
+using SharePoint.Remote.Access.Extensions;
 
 namespace SharePoint.Remote.Access.Helpers
 {
@@ -13,28 +12,22 @@ namespace SharePoint.Remote.Access.Helpers
     {
         private bool _executeQuery;
 
-        public bool IsApp
-        {
-            get
-            {
-                return this.IsAppWeb();
-            }
-        }
-
-        public Web Web { get; private set; }
-
-        public bool IsLoaded { get; private set; }
-
-        public SPClientSite ClientSite { get; internal set; }
-
-        public WebCollection WebsForCurrentUser { get; private set; }
-
         internal SPClientWeb(Web web)
         {
-            if (web == null) throw new ArgumentNullException("web");
-            this.Web = web;
+            if (web == null) throw new ArgumentNullException(nameof(web));
+            Web = web;
             //WebsForCurrentUser = this.Web.GetSubwebsForCurrentUser(null);
         }
+
+        public bool IsApp
+        {
+            get { return IsAppWeb(); }
+        }
+
+        public Web Web { get; }
+        public bool IsLoaded { get; private set; }
+        public SPClientSite ClientSite { get; internal set; }
+        public WebCollection WebsForCurrentUser { get; private set; }
 
         internal static SPClientWeb FromWeb(Web web)
         {
@@ -43,8 +36,8 @@ namespace SharePoint.Remote.Access.Helpers
 
         public SPClientWeb IncludeWebs(params Expression<Func<WebCollection, object>>[] retrievals)
         {
-            WebsForCurrentUser = this.Web.GetSubwebsForCurrentUser(null);
-            this.Web.Context.Load(WebsForCurrentUser, retrievals);
+            WebsForCurrentUser = Web.GetSubwebsForCurrentUser(null);
+            Web.Context.Load(WebsForCurrentUser, retrievals);
             _executeQuery = true;
             return this;
         }
@@ -60,19 +53,19 @@ namespace SharePoint.Remote.Access.Helpers
 
         public SPClientWeb IncludeLists(params Expression<Func<ListCollection, object>>[] retrievals)
         {
-            ListCollection lists = this.Web.Lists;
-            this.Web.Context.Load(lists, retrievals);
+            var lists = Web.Lists;
+            Web.Context.Load(lists, retrievals);
             _executeQuery = true;
             return this;
         }
 
         public SPClientList[] GetLists()
         {
-            ListCollection lists = this.Web.Lists;
+            var lists = Web.Lists;
             if (lists != null && lists.AreItemsAvailable)
             {
                 var clientLists = new List<SPClientList>(lists.Count);
-                foreach (SPClientList clientList in lists.ToList().Select(SPClientList.FromList))
+                foreach (var clientList in lists.ToList().Select(SPClientList.FromList))
                 {
                     clientList.ClientWeb = this;
                     clientLists.Add(clientList);
@@ -85,15 +78,15 @@ namespace SharePoint.Remote.Access.Helpers
 
         public SPClientWeb IncludeContentTypes(params Expression<Func<ContentTypeCollection, object>>[] retrievals)
         {
-            ContentTypeCollection contentTypes = this.Web.ContentTypes;
-            this.Web.Context.Load(contentTypes, retrievals);
+            var contentTypes = Web.ContentTypes;
+            Web.Context.Load(contentTypes, retrievals);
             _executeQuery = true;
             return this;
         }
 
         public SPClientContentType[] GetContentTypes()
         {
-            ContentTypeCollection contentTypes = this.Web.ContentTypes;
+            var contentTypes = Web.ContentTypes;
             if (contentTypes != null && contentTypes.AreItemsAvailable)
             {
                 return contentTypes.ToList().Select(ct =>
@@ -110,15 +103,15 @@ namespace SharePoint.Remote.Access.Helpers
 
         public SPClientWeb IncludeFields(params Expression<Func<FieldCollection, object>>[] retrievals)
         {
-            FieldCollection fields = this.Web.Fields;
-            this.Web.Context.Load(fields, retrievals);
+            var fields = Web.Fields;
+            Web.Context.Load(fields, retrievals);
             _executeQuery = true;
             return this;
         }
 
         public SPClientField[] GetFields()
         {
-            FieldCollection fields = this.Web.Fields;
+            var fields = Web.Fields;
             if (fields != null && fields.AreItemsAvailable)
             {
                 return fields.ToList().Select(field =>
@@ -137,14 +130,14 @@ namespace SharePoint.Remote.Access.Helpers
         {
             if (!IsLoaded)
             {
-                this.Web.Context.Load(this.Web);
+                Web.Context.Load(Web);
                 _executeQuery = true;
             }
 
             if (_executeQuery)
             {
-                this.Web.Context.ExecuteQuery();
-                this.IsLoaded = true;
+                Web.Context.ExecuteQuery();
+                IsLoaded = true;
             }
             _executeQuery = false;
         }
@@ -154,48 +147,48 @@ namespace SharePoint.Remote.Access.Helpers
             if (!IsLoaded)
             {
                 //this.Web.RefreshLoad();
-                this.Web.Context.Load(this.Web);
+                Web.Context.Load(Web);
                 _executeQuery = true;
             }
 
             if (_executeQuery)
             {
-                await this.Web.Context.ExecuteQueryAsync();
-                this.IsLoaded = true;
+                await Web.Context.ExecuteQueryAsync();
+                IsLoaded = true;
             }
             _executeQuery = false;
         }
 
         public string GetUrl()
         {
-            return Utility.CombineUrls(new Uri(this.Web.Context.Url.ToLower()), this.Web.ServerRelativeUrl.ToLower());
+            return Utility.CombineUrls(new Uri(Web.Context.Url.ToLower()), Web.ServerRelativeUrl.ToLower());
         }
 
         public string GetSettingsUrl()
         {
-            return string.Format("{0}/_layouts/{1}/settings.aspx", this.GetUrl().TrimEnd('/'), this.Web.UIVersion);
+            return string.Format("{0}/_layouts/{1}/settings.aspx", GetUrl().TrimEnd('/'), Web.UIVersion);
         }
 
         /// <summary>
-        /// Returns true, if the current web is an App web
+        ///     Returns true, if the current web is an App web
         /// </summary>
         /// <returns></returns>
         public bool IsAppWeb()
         {
-            return this.Web.IsPropertyAvailable("AppInstanceId") && this.Web.AppInstanceId != Guid.Empty;
+            return Web.IsPropertyAvailable("AppInstanceId") && Web.AppInstanceId != Guid.Empty;
         }
 
         public string GetRestUrl()
         {
-            return string.Format("{0}/_api/web", this.GetUrl().TrimEnd('/'));
+            return string.Format("{0}/_api/web", GetUrl().TrimEnd('/'));
         }
 
         public void RefreshLoad()
         {
-            if (this.IsLoaded)
+            if (IsLoaded)
             {
-                this.IsLoaded = false;
-                this.Web.RefreshLoad();
+                IsLoaded = false;
+                Web.RefreshLoad();
                 //var newCtx = (ClientSite.Context as SPClientContext).Clone();
                 //this.Web = newCtx.Site.OpenWebById(this.Web.Id);
                 //this.WebsForCurrentUser = this.Web.GetSubwebsForCurrentUser(null);

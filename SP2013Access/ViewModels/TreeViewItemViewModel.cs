@@ -1,26 +1,24 @@
 ﻿using System;
-using System.Linq;
-using SharePoint.Remote.Access.Helpers;
-using SP2013Access.Commands;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
+using System.Windows.Media;
+using SharePoint.Remote.Access.Helpers;
+using SP2013Access.Commands;
 
 //using GalaSoft.MvvmLight;
-using System.Windows.Media;
-using SP2013Access.Extensions;
 
 namespace SP2013Access.ViewModels
 {
     /// <summary>
-    /// Base class for all ViewModel classes displayed by TreeViewItems.
-    /// This acts as an adapter between a raw data object and a TreeViewItem.
+    ///     Base class for all ViewModel classes displayed by TreeViewItems.
+    ///     This acts as an adapter between a raw data object and a TreeViewItem.
     /// </summary>
     public class TreeViewItemViewModel : /*ViewModelBase,*/ ITreeViewItemViewModel
     {
         #region Fields
 
         private static readonly TreeViewItemViewModel DummyChild = new TreeViewItemViewModel();
-        private readonly TreeViewItemViewModel _parent;
         private readonly bool _lazyLoadChildren;
 
         private bool _isExpanded;
@@ -43,7 +41,7 @@ namespace SP2013Access.ViewModels
         protected TreeViewItemViewModel(TreeViewItemViewModel parent, bool lazyLoadChildren)
             : this()
         {
-            _parent = parent;
+            Parent = parent;
             _lazyLoadChildren = lazyLoadChildren;
 
             if (_lazyLoadChildren)
@@ -51,10 +49,10 @@ namespace SP2013Access.ViewModels
                 Children.Add(DummyChild);
             }
 
-            if (_parent != null)
+            if (Parent != null)
             {
-                this.FailEvent = _parent.FailEvent;
-                this.SuccessEvent = _parent.SuccessEvent;
+                FailEvent = Parent.FailEvent;
+                SuccessEvent = Parent.SuccessEvent;
             }
         }
 
@@ -62,10 +60,7 @@ namespace SP2013Access.ViewModels
 
         #region Properties
 
-        public TreeViewItemViewModel Parent
-        {
-            get { return _parent; }
-        }
+        public TreeViewItemViewModel Parent { get; }
 
         public virtual string Name
         {
@@ -75,7 +70,7 @@ namespace SP2013Access.ViewModels
                 if (value != _name)
                 {
                     _name = value;
-                    this.OnPropertyChanged("Name");
+                    OnPropertyChanged("Name");
                     //this.RaisePropertyChanged("Name");
                 }
             }
@@ -91,7 +86,7 @@ namespace SP2013Access.ViewModels
                 if (value != _isBusy)
                 {
                     _isBusy = value;
-                    this.OnPropertyChanged("IsBusy");
+                    OnPropertyChanged("IsBusy");
                     //this.RaisePropertyChanged("IsBusy");
                 }
             }
@@ -105,33 +100,27 @@ namespace SP2013Access.ViewModels
                 if (value != _isLoaded)
                 {
                     _isLoaded = value;
-                    this.OnPropertyChanged("IsLoaded");
+                    OnPropertyChanged("IsLoaded");
                     //this.RaisePropertyChanged("IsLoaded");
                 }
             }
         }
 
         /// <summary>
-        /// Returns the logical child items of this object.
+        ///     Returns the logical child items of this object.
         /// </summary>
-        public ObservableCollection<TreeViewItemViewModel> Children { get; private set; }
+        public ObservableCollection<TreeViewItemViewModel> Children { get; }
 
         /// <summary>
-        /// Returns true if this object's Children have not yet been populated.
+        ///     Returns true if this object's Children have not yet been populated.
         /// </summary>
-        public bool HasDummyChild
-        {
-            get { return this.Children.Count == 1 && this.Children[0] == DummyChild; }
-        }
+        public bool HasDummyChild => Children.Count == 1 && Children[0] == DummyChild;
 
-        public bool HasChildren
-        {
-            get { return !HasDummyChild && this.Children.Count > 0; }
-        }
+        public bool HasChildren => !HasDummyChild && Children.Count > 0;
 
         /// <summary>
-        /// Gets/sets whether the TreeViewItem
-        /// associated with this object is expanded.
+        ///     Gets/sets whether the TreeViewItem
+        ///     associated with this object is expanded.
         /// </summary>
         public bool IsExpanded
         {
@@ -141,7 +130,7 @@ namespace SP2013Access.ViewModels
                 if (value != _isExpanded)
                 {
                     _isExpanded = value;
-                    this.OnPropertyChanged("IsExpanded");
+                    OnPropertyChanged("IsExpanded");
                     //this.RaisePropertyChanged("IsExpanded");
                 }
 
@@ -149,11 +138,11 @@ namespace SP2013Access.ViewModels
                 {
                     if (HasDummyChild)
                     {
-                        this.Children.Remove(DummyChild);
+                        Children.Remove(DummyChild);
                     }
                     if (!IsLoaded && !IsBusy)
                     {
-                        this.LoadChildren();
+                        LoadChildren();
                     }
                 }
             }
@@ -166,13 +155,13 @@ namespace SP2013Access.ViewModels
             {
                 if (value == _isdirty) return;
                 _isdirty = value;
-                this.OnPropertyChanged("IsDirty");
+                OnPropertyChanged("IsDirty");
                 //this.RaisePropertyChanged("IsDirty");
-                if (!this._isdirty) return;
-                if (this.HasDummyChild) return;
-                if (this.Children.Count > 0)
+                if (!_isdirty) return;
+                if (HasDummyChild) return;
+                if (Children.Count > 0)
                 {
-                    this.Children.Clear();
+                    Children.Clear();
                 }
                 if (_lazyLoadChildren)
                 {
@@ -182,8 +171,8 @@ namespace SP2013Access.ViewModels
         }
 
         /// <summary>
-        /// Gets/sets whether the TreeViewItem
-        /// associated with this object is selected.
+        ///     Gets/sets whether the TreeViewItem
+        ///     associated with this object is selected.
         /// </summary>
         public virtual bool IsSelected
         {
@@ -193,7 +182,7 @@ namespace SP2013Access.ViewModels
                 if (value != _isSelected)
                 {
                     _isSelected = value;
-                    this.OnPropertyChanged("IsSelected");
+                    OnPropertyChanged("IsSelected");
                     //this.RaisePropertyChanged("IsSelected");
                 }
             }
@@ -204,40 +193,37 @@ namespace SP2013Access.ViewModels
 
         public virtual ImageSource ImageSource
         {
-            get
-            {
-                return _imageSource;
-            }
+            get { return _imageSource; }
             protected set
             {
                 _imageSource = value;
-                this.OnPropertyChanged("ImageSource");
+                OnPropertyChanged("ImageSource");
             }
         }
 
-        public ObservableCollection<CommandEntity> Commands { get; private set; }
+        public ObservableCollection<CommandEntity> Commands { get; }
 
-        public RelayCommand<System.Exception> OnExceptionCommand { get; set; }
+        public RelayCommand<Exception> OnExceptionCommand { get; set; }
 
         #endregion Properties
 
         #region Methods
 
         /// <summary>
-        /// Invoked when the child items need to be loaded on demand.
-        /// Subclasses can override this to populate the Children collection.
+        ///     Invoked when the child items need to be loaded on demand.
+        ///     Subclasses can override this to populate the Children collection.
         /// </summary>
         protected virtual void LoadChildren()
         {
-            this.IsBusy = true;
-            this.IsLoaded = false;
+            IsBusy = true;
+            IsLoaded = false;
 
             if (_lazyLoadChildren)
             {
-                var promise = this.LoadChildrenAsync();
+                var promise = LoadChildrenAsync();
                 promise.Done(o =>
                 {
-                    foreach (TreeViewItemViewModel child in this.Children.OrderBy(c => c.Name))
+                    foreach (var child in Children.OrderBy(c => c.Name))
                     {
                         if (!child._lazyLoadChildren && !child.IsLoaded)
                         {
@@ -256,16 +242,16 @@ namespace SP2013Access.ViewModels
             }
             else
             {
-                foreach (TreeViewItemViewModel child in this.Children)
+                foreach (var child in Children)
                 {
                     if (!child._lazyLoadChildren && !child.IsLoaded)
                     {
                         child.LoadChildren();
                     }
                 }
-                this.IsBusy = false;
-                this.IsLoaded = true;
-                this.IsDirty = false;
+                IsBusy = false;
+                IsLoaded = true;
+                IsDirty = false;
             }
         }
 
@@ -276,8 +262,8 @@ namespace SP2013Access.ViewModels
 
         public virtual void Refresh()
         {
-            this.IsDirty = true;
-            this.IsExpanded = !_lazyLoadChildren;
+            IsDirty = true;
+            IsExpanded = !_lazyLoadChildren;
             if (IsLoaded)
             {
                 IsLoaded = false;
@@ -288,20 +274,20 @@ namespace SP2013Access.ViewModels
 
         protected void OnFail(Exception ex)
         {
-            this.IsBusy = false;
-            EventHandler<ResultEventArgs> handler = FailEvent;
-            if (handler != null) handler(this, new ResultEventArgs { Exception = ex });
+            IsBusy = false;
+            var handler = FailEvent;
+            handler?.Invoke(this, new ResultEventArgs {Exception = ex});
         }
 
         public event EventHandler<ResultEventArgs> SuccessEvent;
 
         protected void OnSuccess(object obj)
         {
-            this.IsBusy = false;
-            this.IsLoaded = true;
-            this.IsDirty = false;
-            EventHandler<ResultEventArgs> handler = SuccessEvent;
-            if (handler != null) handler(this, new ResultEventArgs { Source = obj });
+            IsBusy = false;
+            IsLoaded = true;
+            IsDirty = false;
+            var handler = SuccessEvent;
+            handler?.Invoke(this, new ResultEventArgs {Source = obj});
         }
 
         #region INotifyPropertyChanged Members
@@ -310,15 +296,14 @@ namespace SP2013Access.ViewModels
 
         protected virtual void OnPropertyChanged(string propertyName)
         {
-            if (this.PropertyChanged != null)
-                this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         #endregion INotifyPropertyChanged Members
 
         public override string ToString()
         {
-            return string.Format("ID: {0}, Name: {1}", this.ID, this.Name);
+            return $"ID: {ID}, Name: {Name}";
         }
 
         #endregion Methods
@@ -326,7 +311,7 @@ namespace SP2013Access.ViewModels
 
     public class ResultEventArgs : EventArgs
     {
-        public object Source;
         public Exception Exception;
+        public object Source;
     }
 }

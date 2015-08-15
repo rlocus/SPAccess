@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.SharePoint.Client;
-using System;
-using System.Linq.Expressions;
 using SharePoint.Remote.Access.Extensions;
 
 namespace SharePoint.Remote.Access.Helpers
@@ -12,17 +11,16 @@ namespace SharePoint.Remote.Access.Helpers
     {
         private bool _executeQuery;
         private ListItemCollection _items;
-        public View View { get; private set; }
 
         internal SPClientView(View view)
         {
-            this.View = view;
+            if (view == null) throw new ArgumentNullException(nameof(view));
+            View = view;
         }
 
+        public View View { get; }
         public bool IsLoaded { get; internal set; }
-
         public SPClientWeb ClientWeb { get; internal set; }
-
         public SPClientList ClientList { get; internal set; }
 
         public string GetRestUrl()
@@ -30,17 +28,19 @@ namespace SharePoint.Remote.Access.Helpers
             return null;
         }
 
-        public SPClientView IncludeItems(ListItemCollectionPosition position = null, bool datesInUtc = false, string folderServerRelativeUrl = null, params Expression<Func<ListItemCollection, object>>[] retrievals)
+        public SPClientView IncludeItems(ListItemCollectionPosition position = null, bool datesInUtc = false,
+            string folderServerRelativeUrl = null, params Expression<Func<ListItemCollection, object>>[] retrievals)
         {
-            _items = this.ClientList.List.GetItems(new CamlQuery()
-             {
-                 ListItemCollectionPosition = position,
-                 ViewXml = this.View.ListViewXml
-             });
-            this.View.Context.Load(_items, retrievals);
+            _items = ClientList.List.GetItems(new CamlQuery
+            {
+                ListItemCollectionPosition = position,
+                ViewXml = View.ListViewXml
+            });
+            View.Context.Load(_items, retrievals);
             _executeQuery = true;
             return this;
         }
+
         public ListItem[] GetItems(out ListItemCollectionPosition position)
         {
             if (_items != null && _items.AreItemsAvailable)
@@ -55,14 +55,14 @@ namespace SharePoint.Remote.Access.Helpers
         {
             if (!IsLoaded)
             {
-                this.View.Context.Load(this.View);
+                View.Context.Load(View);
                 _executeQuery = true;
             }
 
             if (_executeQuery)
             {
-                this.View.Context.ExecuteQuery();
-                this.IsLoaded = true;
+                View.Context.ExecuteQuery();
+                IsLoaded = true;
             }
             _executeQuery = false;
         }
@@ -71,24 +71,24 @@ namespace SharePoint.Remote.Access.Helpers
         {
             if (!IsLoaded)
             {
-                this.View.Context.Load(this.View);
+                View.Context.Load(View);
                 _executeQuery = true;
             }
 
             if (_executeQuery)
             {
-                await this.View.Context.ExecuteQueryAsync();
-                this.IsLoaded = true;
+                await View.Context.ExecuteQueryAsync();
+                IsLoaded = true;
             }
             _executeQuery = false;
         }
 
         public void RefreshLoad()
         {
-            if (this.IsLoaded)
+            if (IsLoaded)
             {
-                this.IsLoaded = false;
-                this.View.RefreshLoad();
+                IsLoaded = false;
+                View.RefreshLoad();
             }
         }
 

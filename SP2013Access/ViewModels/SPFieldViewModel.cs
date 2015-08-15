@@ -1,13 +1,28 @@
-﻿using SharePoint.Remote.Access.Helpers;
-using System;
+﻿using System;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using SharePoint.Remote.Access.Helpers;
 
 namespace SP2013Access.ViewModels
 {
     public class SPFieldViewModel : TreeViewItemViewModel
     {
         private readonly SPClientField _field;
+
+        public SPFieldViewModel(SPClientField field, TreeViewItemViewModel parent)
+            : this(parent, false)
+        {
+            if (field == null) throw new ArgumentNullException("field");
+            _field = field;
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the SiteItemViewModel class.
+        /// </summary>
+        protected SPFieldViewModel(TreeViewItemViewModel parent, bool lazyLoadChildren)
+            : base(parent, lazyLoadChildren)
+        {
+        }
 
         public override string ID
         {
@@ -17,7 +32,8 @@ namespace SP2013Access.ViewModels
                 {
                     return string.Format("SiteField_{0}_{1}", _field.ClientWeb.Web.Id, _field.Field.Id);
                 }
-                return string.Format("Field_{0}_{1}_{2}", _field.ClientWeb.Web.Id, _field.ClientList.List.Id, _field.Field.Id);
+                return string.Format("Field_{0}_{1}_{2}", _field.ClientWeb.Web.Id, _field.ClientList.List.Id,
+                    _field.Field.Id);
             }
         }
 
@@ -35,33 +51,15 @@ namespace SP2013Access.ViewModels
 
         public override ImageSource ImageSource
         {
-            get
-            {
-                return new BitmapImage(new Uri("pack://application:,,,/images/SiteColumn.png"));
-            }
-        }
-
-        public SPFieldViewModel(SPClientField field, TreeViewItemViewModel parent)
-            : this(parent, false)
-        {
-            if (field == null) throw new ArgumentNullException("field");
-            _field = field;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the SiteItemViewModel class.
-        /// </summary>
-        protected SPFieldViewModel(TreeViewItemViewModel parent, bool lazyLoadChildren)
-            : base(parent, lazyLoadChildren)
-        {
+            get { return new BitmapImage(new Uri("pack://application:,,,/images/SiteColumn.png")); }
         }
 
         public override void Refresh()
         {
             //if (!IsLoaded) return;
-            this.IsDirty = true;
-            this.IsBusy = true;
-            this.IsLoaded = false;
+            IsDirty = true;
+            IsBusy = true;
+            IsLoaded = false;
             _field.RefreshLoad();
             var promise = Utility.ExecuteAsync(_field.LoadAsync());
             promise.Done(() =>

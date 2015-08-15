@@ -1,24 +1,21 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.Windows;
+﻿using System.Collections.ObjectModel;
 using System.Windows.Controls;
 using NLog;
 
 namespace SP2013Access.Controls
 {
     /// <summary>
-    /// Interaction logic for LogViewer.xaml
+    ///     Interaction logic for LogViewer.xaml
     /// </summary>
     public partial class LogViewer : UserControl
     {
-        public ObservableCollection<LogEventInfo> LogEntries { get; set; }
-
         public LogViewer()
         {
             InitializeComponent();
             LogEntries = new ObservableCollection<LogEventInfo>();
-            this.DataContext = LogEntries;
+            DataContext = LogEntries;
         }
+
+        public ObservableCollection<LogEventInfo> LogEntries { get; set; }
     }
 }

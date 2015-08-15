@@ -1,15 +1,15 @@
-﻿using NLog;
+﻿using System;
+using System.Windows;
+using System.Windows.Controls;
+using NLog;
 using SharePoint.Remote.Access.Helpers;
 using SP2013Access.Extensions;
 using SP2013Access.ViewModels;
-using System;
-using System.Windows;
-using System.Windows.Controls;
 
 namespace SP2013Access.Controls
 {
     /// <summary>
-    /// Interaction logic for SPClientTreeView.xaml
+    ///     Interaction logic for SPClientTreeView.xaml
     /// </summary>
     public partial class SPClientTreeView : UserControl
     {
@@ -32,7 +32,7 @@ namespace SP2013Access.Controls
             //if (IsMulti)
             //{
             _viewModel.Add(clientContext);
-            base.DataContext = _viewModel;
+            DataContext = _viewModel;
             //}
         }
 
@@ -48,20 +48,14 @@ namespace SP2013Access.Controls
 
         private void MenuItem_Expand(object sender, RoutedEventArgs e)
         {
-            MenuItem menuItem = sender as MenuItem;
+            var menuItem = sender as MenuItem;
             if (menuItem != null)
             {
-                TreeViewItemViewModel treeViewItemViewModel = (menuItem.DataContext) as TreeViewItemViewModel;
-                ContentPresenter cp = menuItem.TemplatedParent as ContentPresenter;
-                if (cp != null)
-                {
-                    TreeViewItem tvi = cp.TemplatedParent as TreeViewItem;
-                    if (tvi != null)
-                    {
-                        tvi.ExpandCollapseAll<TreeViewItemViewModel>(!tvi.IsExpanded,
-                            item => item == treeViewItemViewModel || item.HasDummyChild == false);
-                    }
-                }
+                var treeViewItemViewModel = (menuItem.DataContext) as TreeViewItemViewModel;
+                var cp = menuItem.TemplatedParent as ContentPresenter;
+                var tvi = cp?.TemplatedParent as TreeViewItem;
+                tvi?.ExpandCollapseAll<TreeViewItemViewModel>(!tvi.IsExpanded,
+                    item => item == treeViewItemViewModel || item.HasDummyChild == false);
             }
         }
 
@@ -69,8 +63,8 @@ namespace SP2013Access.Controls
 
         protected virtual void OnSiteLoading(EventArgs e)
         {
-            EventHandler handler = SiteLoadingEvent;
-            if (handler != null) handler(this, e);
+            var handler = SiteLoadingEvent;
+            handler?.Invoke(this, e);
         }
 
         private void LoadSiteButton_Click(object sender, RoutedEventArgs e)

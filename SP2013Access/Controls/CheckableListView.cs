@@ -20,15 +20,18 @@ namespace SP2013Access.Controls
         {
             get
             {
-                return this.Items.OfType<CheckableListViewItem>().Where(checkableListViewItem => checkableListViewItem.IsChecked).ToList();
+                return
+                    Items.OfType<CheckableListViewItem>()
+                        .Where(checkableListViewItem => checkableListViewItem.IsChecked)
+                        .ToList();
             }
         }
 
         public bool IsChecked(int index)
         {
-            if (index < this.Items.Count)
+            if (index < Items.Count)
             {
-                CheckableListViewItem checkableListViewItem = this.ItemContainerGenerator.ContainerFromIndex(index) as CheckableListViewItem;
+                var checkableListViewItem = ItemContainerGenerator.ContainerFromIndex(index) as CheckableListViewItem;
                 return checkableListViewItem != null && checkableListViewItem.IsChecked;
             }
             throw new IndexOutOfRangeException();

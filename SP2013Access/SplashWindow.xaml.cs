@@ -5,14 +5,12 @@ namespace SP2013Access
     public interface ISplashScreen
     {
         void AddMessage(string message);
-
         void LoadComplete();
-
         void Show();
     }
 
     /// <summary>
-    /// Interaction logic for SplashWindow.xaml
+    ///     Interaction logic for SplashWindow.xaml
     /// </summary>
     public partial class SplashWindow : DynamicSplashScreen, ISplashScreen
     {
@@ -23,10 +21,7 @@ namespace SP2013Access
 
         public void AddMessage(string message)
         {
-            Dispatcher.Invoke(() =>
-            {
-                this.MessageTextBox.Content = message;
-            });
+            Dispatcher.Invoke(() => { MessageTextBox.Content = message; });
             Thread.Sleep(500);
         }
 

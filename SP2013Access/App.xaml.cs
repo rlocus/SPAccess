@@ -1,10 +1,11 @@
 ﻿using System.Threading;
 using System.Windows;
+using System.Windows.Threading;
 
 namespace SP2013Access
 {
     /// <summary>
-    /// Interaction logic for App.xaml
+    ///     Interaction logic for App.xaml
     /// </summary>
     public partial class App : Application
     {
@@ -38,7 +39,7 @@ namespace SP2013Access
 
             // Now that the window is created, allow the rest of the startup to run
             _resetSplashCreated.Set();
-            System.Windows.Threading.Dispatcher.Run();
+            Dispatcher.Run();
         }
     }
 }

@@ -8,7 +8,7 @@ namespace SP2013Access.Validation
     {
         public override ValidationResult Validate(object value, CultureInfo cultureInfo)
         {
-            bool isValid = true;
+            var isValid = true;
             string error = null;
 
             if (value != null)

@@ -10,7 +10,7 @@
              xmlns:commands="clr-namespace:SP2013Access.Commands">
     <UserControl.Resources>
         <Style x:Key="OpenSiteLinkButton" TargetType="Button">
-            <EventSetter Event="Click" HandledEventsToo="True" Handler="LoadSiteButton_Click"></EventSetter>
+            <EventSetter Event="Click" HandledEventsToo="True" Handler="LoadSiteButton_Click" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
@@ -35,7 +35,7 @@
                     <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
                     <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
                     <Setter Property="FontWeight" Value="Normal" />
-                    <Setter Property="BorderThickness" Value="1"></Setter>
+                    <Setter Property="BorderThickness" Value="1" />
                     <Style.Triggers>
                         <Trigger Property="IsSelected" Value="True">
                             <Setter Property="FontWeight" Value="Bold" />
@@ -56,16 +56,18 @@
                 <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="Black" />
                 <SolidColorBrush x:Key="{x:Static SystemColors.ControlTextBrushKey}" Color="Black" />
 
-                <HierarchicalDataTemplate DataType="{x:Type viewModels:TreeViewItemViewModel}" ItemsSource="{Binding Children}">
+                <HierarchicalDataTemplate DataType="{x:Type viewModels:TreeViewItemViewModel}"
+                                          ItemsSource="{Binding Children}">
                     <StackPanel Orientation="Horizontal">
                         <Image Width="16" Height="16" Source="{Binding ImageSource}" Margin="3,0" />
                         <TextBlock x:Name="TreeViewItemLabel" Text="{Binding Name}" />
-                        <TextBlock x:Name="loading" Visibility="Hidden" Width="0" Text="Loading ..." Foreground="Gray" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,0,0,0" />
+                        <TextBlock x:Name="loading" Visibility="Hidden" Width="0" Text="Loading ..." Foreground="Gray"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,0,0,0" />
                         <StackPanel.ContextMenu>
                             <ContextMenu>
                                 <MenuItem Header="Refresh" Click="MenuItem_Refresh">
                                     <MenuItem.Icon>
-                                        <Image Source="pack://application:,,,/images/Refresh.png"></Image>
+                                        <Image Source="pack://application:,,,/images/Refresh.png" />
                                     </MenuItem.Icon>
                                     <MenuItem.Style>
                                         <Style TargetType="{x:Type MenuItem}">
@@ -183,12 +185,17 @@
                                     <ControlTemplate TargetType="TreeView">
                                         <StackPanel Orientation="Vertical" Margin="5,5">
                                             <StackPanel Orientation="Horizontal">
-                                                <Image Width="16" Height="16" Margin="3,0" Source="pack://application:,,,/images/Warning.PNG" VerticalAlignment="Top" />
+                                                <Image Width="16" Height="16" Margin="3,0"
+                                                       Source="pack://application:,,,/images/Warning.PNG"
+                                                       VerticalAlignment="Top" />
                                                 <TextBlock Text="There are no sites" />
                                             </StackPanel>
                                             <StackPanel Orientation="Horizontal">
-                                                <Image Width="16" Height="16" Margin="3,0" Source="pack://application:,,,/images/SubSite.png" VerticalAlignment="Top" />
-                                                <Button x:Name="LoadSiteButton" Margin="3,0" Content="Load Site" Cursor="Hand" Style="{StaticResource OpenSiteLinkButton}" />
+                                                <Image Width="16" Height="16" Margin="3,0"
+                                                       Source="pack://application:,,,/images/SubSite.png"
+                                                       VerticalAlignment="Top" />
+                                                <Button x:Name="LoadSiteButton" Margin="3,0" Content="Load Site"
+                                                        Cursor="Hand" Style="{StaticResource OpenSiteLinkButton}" />
                                             </StackPanel>
                                         </StackPanel>
                                     </ControlTemplate>

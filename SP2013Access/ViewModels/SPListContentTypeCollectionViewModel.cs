@@ -1,15 +1,30 @@
-﻿using System.Linq;
-using System.Windows.Threading;
-using SharePoint.Remote.Access.Helpers;
-using System;
+﻿using System;
+using System.Linq;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
+using SharePoint.Remote.Access.Helpers;
 
 namespace SP2013Access.ViewModels
 {
     public class SPListContentTypeCollectionViewModel : TreeViewItemViewModel
     {
         private readonly SPClientList _list;
+
+        public SPListContentTypeCollectionViewModel(SPClientList list, SPListViewModel parent)
+            : this(parent, true)
+        {
+            if (list == null) throw new ArgumentNullException("list");
+            _list = list;
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the SiteItemViewModel class.
+        /// </summary>
+        protected SPListContentTypeCollectionViewModel(SPListViewModel parent, bool lazyLoadChildren)
+            : base(parent, lazyLoadChildren)
+        {
+        }
 
         public override string ID
         {
@@ -18,10 +33,7 @@ namespace SP2013Access.ViewModels
 
         public override ImageSource ImageSource
         {
-            get
-            {
-                return new BitmapImage(new Uri("pack://application:,,,/images/ContentType.png"));
-            }
+            get { return new BitmapImage(new Uri("pack://application:,,,/images/ContentType.png")); }
         }
 
         public override string Name
@@ -36,21 +48,6 @@ namespace SP2013Access.ViewModels
             }
         }
 
-        public SPListContentTypeCollectionViewModel(SPClientList list, SPListViewModel parent)
-            : this(parent, true)
-        {
-            if (list == null) throw new ArgumentNullException("list");
-            _list = list;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the SiteItemViewModel class.
-        /// </summary>
-        protected SPListContentTypeCollectionViewModel(SPListViewModel parent, bool lazyLoadChildren)
-            : base(parent, lazyLoadChildren)
-        {
-        }
-
         protected override IPromise<object, Exception> LoadChildrenAsync()
         {
             var promise = Utility.ExecuteAsync(_list.IncludeContentTypes().LoadAsync());
@@ -59,13 +56,13 @@ namespace SP2013Access.ViewModels
                 var contentTypes = _list.GetContentTypes();
                 Name = string.Format("Content Types ({0})", contentTypes.Length);
 
-                foreach (SPClientContentType contentType in contentTypes.OrderBy(ct => ct.ContentType.Name))
+                foreach (var contentType in contentTypes.OrderBy(ct => ct.ContentType.Name))
                 {
-                    SPClientContentType ct = contentType;
+                    var ct = contentType;
                     Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() =>
                     {
                         var viewModel = new SPContentTypeViewModel(ct, this);
-                        this.Children.Add(viewModel);
+                        Children.Add(viewModel);
                     }));
                 }
             });

@@ -9,13 +9,12 @@ namespace SP2013Access.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if ("Warn" == value.ToString())
+            switch (value.ToString())
             {
-                return Brushes.Orange;
-            }
-            if ("Error" == value.ToString())
-            {
-                return Brushes.Tomato;
+                case "Warn":
+                    return Brushes.Orange;
+                case "Error":
+                    return Brushes.Tomato;
             }
             return Brushes.White;
         }

@@ -1,13 +1,28 @@
-﻿using SharePoint.Remote.Access.Helpers;
-using System;
+﻿using System;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using SharePoint.Remote.Access.Helpers;
 
 namespace SP2013Access.ViewModels
 {
     public class SPListViewModel : TreeViewItemViewModel
     {
         private readonly SPClientList _list;
+
+        public SPListViewModel(SPClientList list, SPListCollectionViewModel parent)
+            : this(parent, false)
+        {
+            if (list == null) throw new ArgumentNullException("list");
+            _list = list;
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the SiteItemViewModel class.
+        /// </summary>
+        protected SPListViewModel(SPListCollectionViewModel parent, bool lazyLoadChildren)
+            : base(parent, lazyLoadChildren)
+        {
+        }
 
         public override string ID
         {
@@ -28,45 +43,27 @@ namespace SP2013Access.ViewModels
 
         public override ImageSource ImageSource
         {
-            get
-            {
-                return new BitmapImage(new Uri("pack://application:,,,/images/ITGEN.png"));
-            }
-        }
-
-        public SPListViewModel(SPClientList list, SPListCollectionViewModel parent)
-            : this(parent, false)
-        {
-            if (list == null) throw new ArgumentNullException("list");
-            _list = list;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the SiteItemViewModel class.
-        /// </summary>
-        protected SPListViewModel(SPListCollectionViewModel parent, bool lazyLoadChildren)
-            : base(parent, lazyLoadChildren)
-        {
+            get { return new BitmapImage(new Uri("pack://application:,,,/images/ITGEN.png")); }
         }
 
         protected override void LoadChildren()
         {
             if (IsLoaded) return;
             var contentTypesViewModel = new SPListContentTypeCollectionViewModel(_list, this);
-            this.Children.Add(contentTypesViewModel);
+            Children.Add(contentTypesViewModel);
             var fieldsViewModel = new SPFieldCollectionViewModel(_list, this);
-            this.Children.Add(fieldsViewModel);
+            Children.Add(fieldsViewModel);
             var viewsViewModel = new SPViewCollectionViewModel(_list, this);
-            this.Children.Add(viewsViewModel);
+            Children.Add(viewsViewModel);
             base.LoadChildren();
         }
 
         public override void Refresh()
         {
             if (!IsLoaded) return;
-            this.IsDirty = true;
-            this.IsBusy = true;
-            this.IsLoaded = false;
+            IsDirty = true;
+            IsBusy = true;
+            IsLoaded = false;
             _list.RefreshLoad();
             var promise = Utility.ExecuteAsync(_list.LoadAsync());
             promise.Done(() =>

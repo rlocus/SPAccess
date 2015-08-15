@@ -9,7 +9,7 @@ namespace SharePoint.Remote.Access.Extensions
     {
         public static void ForEach<T>(this IEnumerable<T> source, Action<T> action)
         {
-            foreach (T obj in source)
+            foreach (var obj in source)
                 action(obj);
         }
 
@@ -26,29 +26,29 @@ namespace SharePoint.Remote.Access.Extensions
         }
 
         public static IEnumerable<TResult> RecursiveSelect<TSource, TResult>(this IEnumerable<TSource> source,
-           Func<TSource, IEnumerable<TSource>> childSelector, Func<TSource, TResult> selector)
+            Func<TSource, IEnumerable<TSource>> childSelector, Func<TSource, TResult> selector)
         {
             return RecursiveSelect(source, childSelector, (element, index, depth) => selector(element));
         }
 
         public static IEnumerable<TResult> RecursiveSelect<TSource, TResult>(this IEnumerable<TSource> source,
-           Func<TSource, IEnumerable<TSource>> childSelector, Func<TSource, int, TResult> selector)
+            Func<TSource, IEnumerable<TSource>> childSelector, Func<TSource, int, TResult> selector)
         {
             return RecursiveSelect(source, childSelector, (element, index, depth) => selector(element, index));
         }
 
         public static IEnumerable<TResult> RecursiveSelect<TSource, TResult>(this IEnumerable<TSource> source,
-           Func<TSource, IEnumerable<TSource>> childSelector, Func<TSource, int, int, TResult> selector)
+            Func<TSource, IEnumerable<TSource>> childSelector, Func<TSource, int, int, TResult> selector)
         {
             return RecursiveSelect(source, childSelector, selector, 0);
         }
 
         public static IEnumerable<TResult> RecursiveSelect<TSource, TResult>(this IEnumerable<TSource> source,
-           Func<TSource, IEnumerable<TSource>> childSelector, Func<TSource, int, int, TResult> selector, int depth)
+            Func<TSource, IEnumerable<TSource>> childSelector, Func<TSource, int, int, TResult> selector, int depth)
         {
             return source.SelectMany((element, index) => Enumerable.Repeat(selector(element, index, depth), 1)
-               .Concat(RecursiveSelect(childSelector(element) ?? Enumerable.Empty<TSource>(),
-                  childSelector, selector, depth + 1)));
+                .Concat(RecursiveSelect(childSelector(element) ?? Enumerable.Empty<TSource>(),
+                    childSelector, selector, depth + 1)));
         }
 
         public static IEnumerable<T> RemoveDuplicates<T>(this IEnumerable<T> source)

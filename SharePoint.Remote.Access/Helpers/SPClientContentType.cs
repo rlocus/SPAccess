@@ -1,8 +1,8 @@
-﻿using System.Threading.Tasks;
-using Microsoft.SharePoint.Client;
-using System;
+﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
+using Microsoft.SharePoint.Client;
 using SharePoint.Remote.Access.Extensions;
 
 namespace SharePoint.Remote.Access.Helpers
@@ -10,19 +10,16 @@ namespace SharePoint.Remote.Access.Helpers
     public sealed class SPClientContentType
     {
         private bool _executeQuery;
-        public ContentType ContentType { get; private set; }
 
         internal SPClientContentType(ContentType contentType)
         {
-            this.ContentType = contentType;
+            ContentType = contentType;
         }
 
+        public ContentType ContentType { get; }
         public bool IsLoaded { get; internal set; }
-
         public bool IsSiteContentType { get; internal set; }
-
         public SPClientWeb ClientWeb { get; internal set; }
-
         public SPClientList ClientList { get; internal set; }
 
         public string GetRestUrl()
@@ -32,23 +29,23 @@ namespace SharePoint.Remote.Access.Helpers
 
         public SPClientContentType IncludeFields(params Expression<Func<FieldCollection, object>>[] retrievals)
         {
-            FieldCollection fields = this.ContentType.Fields;
-            this.ContentType.Context.Load(fields, retrievals);
+            var fields = ContentType.Fields;
+            ContentType.Context.Load(fields, retrievals);
             _executeQuery = true;
             return this;
         }
 
         public SPClientField[] GetFields()
         {
-            FieldCollection fields = this.ContentType.Fields;
+            var fields = ContentType.Fields;
             if (fields != null && fields.AreItemsAvailable)
             {
                 return fields.ToList().Select(field =>
                 {
                     var clientField = SPClientField.FromField(field);
-                    clientField.ClientWeb = this.ClientWeb;
-                    clientField.ClientList = this.ClientList;
-                    clientField.IsSiteField = this.IsSiteContentType;
+                    clientField.ClientWeb = ClientWeb;
+                    clientField.ClientList = ClientList;
+                    clientField.IsSiteField = IsSiteContentType;
                     return clientField;
                 }).ToArray();
             }
@@ -59,14 +56,14 @@ namespace SharePoint.Remote.Access.Helpers
         {
             if (!IsLoaded)
             {
-                this.ContentType.Context.Load(this.ContentType);
+                ContentType.Context.Load(ContentType);
                 _executeQuery = true;
             }
 
             if (_executeQuery)
             {
-                this.ContentType.Context.ExecuteQuery();
-                this.IsLoaded = true;
+                ContentType.Context.ExecuteQuery();
+                IsLoaded = true;
             }
             _executeQuery = false;
         }
@@ -75,24 +72,24 @@ namespace SharePoint.Remote.Access.Helpers
         {
             if (!IsLoaded)
             {
-                this.ContentType.Context.Load(this.ContentType);
+                ContentType.Context.Load(ContentType);
                 _executeQuery = true;
             }
 
             if (_executeQuery)
             {
-                await this.ContentType.Context.ExecuteQueryAsync();
-                this.IsLoaded = true;
+                await ContentType.Context.ExecuteQueryAsync();
+                IsLoaded = true;
             }
             _executeQuery = false;
         }
 
         public void RefreshLoad()
         {
-            if (this.IsLoaded)
+            if (IsLoaded)
             {
-                this.IsLoaded = false;
-                this.ContentType.RefreshLoad();
+                IsLoaded = false;
+                ContentType.RefreshLoad();
             }
         }
 

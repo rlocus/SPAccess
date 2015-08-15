@@ -1,35 +1,35 @@
-﻿using SharePoint.Remote.Access.Helpers;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
+using SharePoint.Remote.Access.Helpers;
 
 namespace SP2013Access
 {
     [XmlRoot("Configuration")]
     public sealed class ConfigManager
     {
-        [XmlArray("RecentSites")]
-        public List<RecentSite> RecentSites { get; private set; }
-
         public ConfigManager()
         {
             RecentSites = new List<RecentSite>();
         }
 
+        [XmlArray("RecentSites")]
+        public List<RecentSite> RecentSites { get; private set; }
+
         /// <summary>
-        ///
         /// </summary>
         public void Add(SPClientContext clientContext)
         {
-            RecentSite recentSite = RecentSites.SingleOrDefault(site => site.Url.Equals(clientContext.Url));
+            var recentSite = RecentSites.SingleOrDefault(site => site.Url.Equals(clientContext.Url));
             if (clientContext != null)
             {
                 if (recentSite != null)
                 {
                     RecentSites.Remove(recentSite);
                 }
-                RecentSites.Add(new RecentSite()
+                RecentSites.Add(new RecentSite
                 {
                     Authentication = clientContext.Authentication,
                     Url = clientContext.Url,
@@ -39,13 +39,13 @@ namespace SP2013Access
         }
 
         /// <summary>
-        /// Removes site from collection.
+        ///     Removes site from collection.
         /// </summary>
         public void Remove(SPClientContext clientContext)
         {
             if (clientContext != null)
             {
-                foreach (RecentSite site in RecentSites)
+                foreach (var site in RecentSites)
                 {
                     if (site.Url.Equals(clientContext.Url))
                     {
@@ -57,20 +57,20 @@ namespace SP2013Access
         }
 
         /// <summary>
-        /// Loads previous loaded site collections from configuration file.
+        ///     Loads previous loaded site collections from configuration file.
         /// </summary>
         public void Load()
         {
-            ConfigManager config = OpenAndRead(Constants.CONFIG_FILENAME);
+            var config = OpenAndRead(Constants.CONFIG_FILENAME);
 
             if (config != null && config.RecentSites != null)
             {
-                this.RecentSites.AddRange(config.RecentSites);
+                RecentSites.AddRange(config.RecentSites);
             }
         }
 
         /// <summary>
-        /// Saves the current set of site collections to configuration file.
+        ///     Saves the current set of site collections to configuration file.
         /// </summary>
         public void Save()
         {
@@ -81,13 +81,13 @@ namespace SP2013Access
         {
             try
             {
-                if (!string.IsNullOrEmpty(fileName) && System.IO.File.Exists(fileName))
+                if (!string.IsNullOrEmpty(fileName) && File.Exists(fileName))
                 {
                     // Create the serializer
-                    var serializer = new XmlSerializer(typeof(ConfigManager));
+                    var serializer = new XmlSerializer(typeof (ConfigManager));
 
                     // Open config file
-                    using (var stream = new System.IO.StreamReader(fileName))
+                    using (var stream = new StreamReader(fileName))
                     {
                         // De-serialize the XML
                         return serializer.Deserialize(stream) as ConfigManager;
@@ -107,10 +107,10 @@ namespace SP2013Access
             if (!string.IsNullOrEmpty(fileName))
             {
                 // Create the serializer
-                var serializer = new XmlSerializer(typeof(ConfigManager));
+                var serializer = new XmlSerializer(typeof (ConfigManager));
 
                 // Open config file
-                using (var stream = new System.IO.StreamWriter(fileName))
+                using (var stream = new StreamWriter(fileName))
                 {
                     // Serialize the XML
                     serializer.Serialize(stream, config);

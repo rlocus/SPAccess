@@ -1,6 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
+using Microsoft.SharePoint.Client;
 using SharePoint.Remote.Access.Extensions;
-using Field = Microsoft.SharePoint.Client.Field;
 
 namespace SharePoint.Remote.Access.Helpers
 {
@@ -8,19 +9,16 @@ namespace SharePoint.Remote.Access.Helpers
     {
         private bool _executeQuery;
 
-        public Field Field { get; private set; }
-
         internal SPClientField(Field field)
         {
-            this.Field = field;
+            if (field == null) throw new ArgumentNullException(nameof(field));
+            Field = field;
         }
 
+        public Field Field { get; }
         public bool IsLoaded { get; internal set; }
-
         public bool IsSiteField { get; internal set; }
-
         public SPClientWeb ClientWeb { get; internal set; }
-
         public SPClientList ClientList { get; internal set; }
 
         public string GetRestUrl()
@@ -30,10 +28,10 @@ namespace SharePoint.Remote.Access.Helpers
 
         public void RefreshLoad()
         {
-            if (this.IsLoaded)
+            if (IsLoaded)
             {
-                this.IsLoaded = false;
-                this.Field.RefreshLoad();
+                IsLoaded = false;
+                Field.RefreshLoad();
             }
         }
 
@@ -46,14 +44,14 @@ namespace SharePoint.Remote.Access.Helpers
         {
             if (!IsLoaded)
             {
-                this.Field.Context.Load(this.Field);
+                Field.Context.Load(Field);
                 _executeQuery = true;
             }
 
             if (_executeQuery)
             {
-                this.Field.Context.ExecuteQuery();
-                this.IsLoaded = true;
+                Field.Context.ExecuteQuery();
+                IsLoaded = true;
             }
             _executeQuery = false;
         }
@@ -62,14 +60,14 @@ namespace SharePoint.Remote.Access.Helpers
         {
             if (!IsLoaded)
             {
-                this.Field.Context.Load(this.Field);
+                Field.Context.Load(Field);
                 _executeQuery = true;
             }
 
             if (_executeQuery)
             {
-                await this.Field.Context.ExecuteQueryAsync();
-                this.IsLoaded = true;
+                await Field.Context.ExecuteQueryAsync();
+                IsLoaded = true;
             }
             _executeQuery = false;
         }

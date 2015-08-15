@@ -1,13 +1,28 @@
-﻿using SharePoint.Remote.Access.Helpers;
-using System;
+﻿using System;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using SharePoint.Remote.Access.Helpers;
 
 namespace SP2013Access.ViewModels
 {
     public class SPSiteViewModel : TreeViewItemViewModel
     {
         private readonly SPClientSite _site;
+
+        public SPSiteViewModel(SPClientSite site, TreeViewItemViewModel parent)
+            : this(parent, true)
+        {
+            if (site == null) throw new ArgumentNullException("site");
+            _site = site;
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the SiteItemViewModel class.
+        /// </summary>
+        protected SPSiteViewModel(TreeViewItemViewModel parent, bool lazyLoadChildren)
+            : base(parent, lazyLoadChildren)
+        {
+        }
 
         public override string ID
         {
@@ -21,25 +36,7 @@ namespace SP2013Access.ViewModels
 
         public override ImageSource ImageSource
         {
-            get
-            {
-                return new BitmapImage(new Uri("pack://application:,,,/images/sharepointfoundation16.png"));
-            }
-        }
-
-        public SPSiteViewModel(SPClientSite site, TreeViewItemViewModel parent)
-            : this(parent, true)
-        {
-            if (site == null) throw new ArgumentNullException("site");
-            _site = site;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the SiteItemViewModel class.
-        /// </summary>
-        protected SPSiteViewModel(TreeViewItemViewModel parent, bool lazyLoadChildren)
-            : base(parent, lazyLoadChildren)
-        {
+            get { return new BitmapImage(new Uri("pack://application:,,,/images/sharepointfoundation16.png")); }
         }
 
         protected override IPromise<object, Exception> LoadChildrenAsync()
@@ -48,8 +45,8 @@ namespace SP2013Access.ViewModels
             promise.Done(() =>
             {
                 var rootWeb = _site.GetRootWeb();
-                var viewModel = new SPWebViewModel(rootWeb, this) { IsExpanded = true };
-                this.Children.Add(viewModel);
+                var viewModel = new SPWebViewModel(rootWeb, this) {IsExpanded = true};
+                Children.Add(viewModel);
             });
             promise.Fail(OnFail);
             return promise;
@@ -58,7 +55,7 @@ namespace SP2013Access.ViewModels
         public override void Refresh()
         {
             base.Refresh();
-            this.IsExpanded = true;
+            IsExpanded = true;
         }
     }
 }

@@ -1,97 +1,88 @@
-﻿using SharePoint.Remote.Access;
-using SharePoint.Remote.Access.Helpers;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using SharePoint.Remote.Access;
+using SharePoint.Remote.Access.Helpers;
 
 namespace SP2013Access
 {
     /// <summary>
-    /// Interaction logic for OpenSiteWindow.xaml
+    ///     Interaction logic for OpenSiteWindow.xaml
     /// </summary>
     public partial class OpenSiteWindow : Window
     {
-        public class AuthenticationModeComboBoxItem
-        {
-            public string Title { get; set; }
-
-            public AuthType Type { get; set; }
-        }
-
-        public string SiteUrl { get; set; }
-
-        public string UserName { get; set; }
-
-        public SPClientContext ClientContext { get; private set; }
-
         public OpenSiteWindow()
         {
             InitializeComponent();
 
             var authenticationModes = new List<AuthenticationModeComboBoxItem>(
-                    new[]
+                new[]
+                {
+                    new AuthenticationModeComboBoxItem
                     {
-                        new AuthenticationModeComboBoxItem
-                        {
-                            Title = "Default",
-                            Type = AuthType.Default
-                        },
-                        new AuthenticationModeComboBoxItem
-                        {
-                            Title = "SharePoint Online (Office 365)",
-                            Type = AuthType.SharePointOnline
-                        },
-                        new AuthenticationModeComboBoxItem
-                        {
-                            Title = "Anonymous",
-                            Type = AuthType.Anonymous
-                        },
-                        new AuthenticationModeComboBoxItem
-                        {
-                            Title = "Forms Based",
-                            Type = AuthType.Forms
-                        }
-                    });
+                        Title = "Default",
+                        Type = AuthType.Default
+                    },
+                    new AuthenticationModeComboBoxItem
+                    {
+                        Title = "SharePoint Online (Office 365)",
+                        Type = AuthType.SharePointOnline
+                    },
+                    new AuthenticationModeComboBoxItem
+                    {
+                        Title = "Anonymous",
+                        Type = AuthType.Anonymous
+                    },
+                    new AuthenticationModeComboBoxItem
+                    {
+                        Title = "Forms Based",
+                        Type = AuthType.Forms
+                    }
+                });
 
-            this.AuthenticationModeComboBox.ItemsSource = authenticationModes;
-            this.AuthenticationModeComboBox.SelectedIndex = 0;
+            AuthenticationModeComboBox.ItemsSource = authenticationModes;
+            AuthenticationModeComboBox.SelectedIndex = 0;
         }
 
         public OpenSiteWindow(RecentSite recentSite)
             : this()
         {
-            var authenticationModes = (List<AuthenticationModeComboBoxItem>)this.AuthenticationModeComboBox.ItemsSource;
+            var authenticationModes = (List<AuthenticationModeComboBoxItem>) AuthenticationModeComboBox.ItemsSource;
 
             if (recentSite != null)
             {
-                this.SiteUrl = SiteUrlTextBox.Text = recentSite.Url;
-                this.UserName = UserNameTextBox.Text = recentSite.UserName;
+                SiteUrl = SiteUrlTextBox.Text = recentSite.Url;
+                UserName = UserNameTextBox.Text = recentSite.UserName;
                 UseCurrentUserCredentialsCheckBox.IsChecked = recentSite.UseCurrentUserCredentials;
 
-                this.AuthenticationModeComboBox.SelectedIndex =
+                AuthenticationModeComboBox.SelectedIndex =
                     authenticationModes.Select(auth => auth.Type).ToList().IndexOf(recentSite.Authentication);
                 UserPasswordTextBox.Focus();
             }
             else
             {
-                this.SiteUrl = SiteUrlTextBox.Text = "https://sharepoint";
+                SiteUrl = SiteUrlTextBox.Text = "https://sharepoint";
             }
         }
 
+        public string SiteUrl { get; set; }
+        public string UserName { get; set; }
+        public SPClientContext ClientContext { get; private set; }
+
         private void Cancel_OnClick(object sender, RoutedEventArgs e)
         {
-            this.DialogResult = false;
+            DialogResult = false;
             //this.Close();
         }
 
         private void OK_OnClick(object sender, RoutedEventArgs e)
         {
-            AuthType authType = ((AuthenticationModeComboBoxItem)this.AuthenticationModeComboBox.SelectedValue).Type;
+            var authType = ((AuthenticationModeComboBoxItem) AuthenticationModeComboBox.SelectedValue).Type;
             var site = new RecentSite
             {
-                Url = this.SiteUrlTextBox.Text,
+                Url = SiteUrlTextBox.Text,
                 UserName = UserNameTextBox.Text,
                 UseCurrentUserCredentials = UseCurrentUserCredentialsCheckBox.IsChecked ?? false,
                 Authentication = authType
@@ -101,7 +92,7 @@ namespace SP2013Access
 
             try
             {
-                this.ClientContext = new SPClientContext(
+                ClientContext = new SPClientContext(
                     site.Url,
                     site.Authentication,
                     site.UserName,
@@ -121,20 +112,17 @@ namespace SP2013Access
             UserNameTextBox.IsEnabled = false;
             UserPasswordTextBox.IsEnabled = false;
 
-            IPromise<object, Exception> promise = Utility.ExecuteAsync(this.ClientContext.ConnectAsync());
+            var promise = Utility.ExecuteAsync(ClientContext.ConnectAsync());
             promise.Done(() =>
             {
                 MessageLabel.Content = "Done";
-                Globals.Configuration.Add(this.ClientContext);
+                Globals.Configuration.Add(ClientContext);
                 Globals.Configuration.Save();
 
                 CloseDialog();
             });
 
-            promise.Fail((ex) =>
-            {
-                MessageLabel.Content = ex.Message;
-            });
+            promise.Fail(ex => { MessageLabel.Content = ex.Message; });
 
             promise.Always(() =>
             {
@@ -148,9 +136,9 @@ namespace SP2013Access
 
         private void CloseDialog()
         {
-            if (this.Owner != null && this.Owner.OwnedWindows.Count > 0)
+            if (Owner != null && Owner.OwnedWindows.Count > 0)
             {
-                this.DialogResult = true;
+                DialogResult = true;
             }
         }
 
@@ -181,7 +169,7 @@ namespace SP2013Access
 
         private void SetVisiblility()
         {
-            AuthType authType = ((AuthenticationModeComboBoxItem)this.AuthenticationModeComboBox.SelectedValue).Type;
+            var authType = ((AuthenticationModeComboBoxItem) AuthenticationModeComboBox.SelectedValue).Type;
 
             if (authType == AuthType.Anonymous)
             {
@@ -214,6 +202,12 @@ namespace SP2013Access
                     }
                 }
             }
+        }
+
+        public class AuthenticationModeComboBoxItem
+        {
+            public string Title { get; set; }
+            public AuthType Type { get; set; }
         }
     }
 }

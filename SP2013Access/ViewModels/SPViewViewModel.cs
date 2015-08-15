@@ -1,14 +1,28 @@
-﻿using Microsoft.SharePoint.Client;
-using SharePoint.Remote.Access.Helpers;
-using System;
+﻿using System;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using SharePoint.Remote.Access.Helpers;
 
 namespace SP2013Access.ViewModels
 {
     public class SPViewViewModel : TreeViewItemViewModel
     {
         private readonly SPClientView _view;
+
+        public SPViewViewModel(SPClientView view, SPViewCollectionViewModel parent)
+            : this(parent, false)
+        {
+            if (view == null) throw new ArgumentNullException("view");
+            _view = view;
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the SiteItemViewModel class.
+        /// </summary>
+        protected SPViewViewModel(SPViewCollectionViewModel parent, bool lazyLoadChildren)
+            : base(parent, lazyLoadChildren)
+        {
+        }
 
         public override string ID
         {
@@ -29,34 +43,15 @@ namespace SP2013Access.ViewModels
 
         public override ImageSource ImageSource
         {
-            get
-            {
-                return new BitmapImage(new Uri("pack://application:,,,/images/ITGEN.png"));
-            }
+            get { return new BitmapImage(new Uri("pack://application:,,,/images/ITGEN.png")); }
         }
-
-        public SPViewViewModel(SPClientView view, SPViewCollectionViewModel parent)
-            : this(parent, false)
-        {
-            if (view == null) throw new ArgumentNullException("view");
-            _view = view;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the SiteItemViewModel class.
-        /// </summary>
-        protected SPViewViewModel(SPViewCollectionViewModel parent, bool lazyLoadChildren)
-            : base(parent, lazyLoadChildren)
-        {
-        }
-
 
         public override void Refresh()
         {
             //if (!IsLoaded) return;
-            this.IsDirty = true;
-            this.IsBusy = true;
-            this.IsLoaded = false;
+            IsDirty = true;
+            IsBusy = true;
+            IsLoaded = false;
             _view.RefreshLoad();
             var promise = Utility.ExecuteAsync(_view /*.IncludeItems()*/.LoadAsync());
             promise.Done(() =>

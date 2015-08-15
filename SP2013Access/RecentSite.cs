@@ -1,5 +1,5 @@
-﻿using SharePoint.Remote.Access;
-using System.Xml.Serialization;
+﻿using System.Xml.Serialization;
+using SharePoint.Remote.Access;
 
 namespace SP2013Access
 {
@@ -7,34 +7,22 @@ namespace SP2013Access
     public class RecentSite
     {
         /// <summary>
-        /// Gets and sets the site collection URL as string.
+        ///     Gets and sets the site collection URL as string.
         /// </summary>
-        [XmlAttribute()]
-        public string Url
-        {
-            get;
-            set;
-        }
+        [XmlAttribute]
+        public string Url { get; set; }
 
         /// <summary>
-        /// Gets and sets the site collection URL as string.
+        ///     Gets and sets the site collection URL as string.
         /// </summary>
-        [XmlAttribute()]
-        public bool UseCurrentUserCredentials
-        {
-            get;
-            set;
-        }
+        [XmlAttribute]
+        public bool UseCurrentUserCredentials { get; set; }
 
         /// <summary>
-        /// Gets and sets the username for authentication with the site collection.
+        ///     Gets and sets the username for authentication with the site collection.
         /// </summary>
-        [XmlAttribute()]
-        public string UserName
-        {
-            get;
-            set;
-        }
+        [XmlAttribute]
+        public string UserName { get; set; }
 
         ///// <summary>
         ///// Gets and sets the password.
@@ -46,13 +34,9 @@ namespace SP2013Access
         //}
 
         /// <summary>
-        /// Authentication mode used for authentication with the SharePoint.
+        ///     Authentication mode used for authentication with the SharePoint.
         /// </summary>
-        [XmlAttribute()]
-        public AuthType Authentication
-        {
-            get;
-            set;
-        }
+        [XmlAttribute]
+        public AuthType Authentication { get; set; }
     }
 }

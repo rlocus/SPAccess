@@ -12,7 +12,7 @@ namespace SP2013Access.Commands
         {
             if (handlers != null)
             {
-                foreach (WeakReference handlerRef in handlers)
+                foreach (var handlerRef in handlers)
                 {
                     var handler = handlerRef.Target as EventHandler;
                     if (handler != null)
@@ -28,7 +28,8 @@ namespace SP2013Access.Commands
             AddWeakReferenceHandler(ref handlers, handler, -1);
         }
 
-        internal static void AddWeakReferenceHandler(ref List<WeakReference> handlers, EventHandler handler, int defaultListSize)
+        internal static void AddWeakReferenceHandler(ref List<WeakReference> handlers, EventHandler handler,
+            int defaultListSize)
         {
             if (handlers == null)
             {
@@ -46,11 +47,11 @@ namespace SP2013Access.Commands
                 // could cause the array to me modified while we are reading it.
 
                 var callees = new EventHandler[handlers.Count];
-                int count = 0;
+                var count = 0;
 
-                for (int i = handlers.Count - 1; i >= 0; i--)
+                for (var i = handlers.Count - 1; i >= 0; i--)
                 {
-                    WeakReference reference = handlers[i];
+                    var reference = handlers[i];
                     var handler = reference.Target as EventHandler;
                     if (handler == null)
                     {
@@ -65,9 +66,9 @@ namespace SP2013Access.Commands
                 }
 
                 // Call the handlers that we snapshotted
-                for (int i = 0; i < count; i++)
+                for (var i = 0; i < count; i++)
                 {
-                    EventHandler handler = callees[i];
+                    var handler = callees[i];
                     handler(null, EventArgs.Empty);
                 }
             }
@@ -77,7 +78,7 @@ namespace SP2013Access.Commands
         {
             if (handlers != null)
             {
-                foreach (WeakReference handlerRef in handlers)
+                foreach (var handlerRef in handlers)
                 {
                     var handler = handlerRef.Target as EventHandler;
                     if (handler != null)
@@ -92,9 +93,9 @@ namespace SP2013Access.Commands
         {
             if (handlers != null)
             {
-                for (int i = handlers.Count - 1; i >= 0; i--)
+                for (var i = handlers.Count - 1; i >= 0; i--)
                 {
-                    WeakReference reference = handlers[i];
+                    var reference = handlers[i];
                     var existingHandler = reference.Target as EventHandler;
                     if ((existingHandler == null) || (existingHandler == handler))
                     {

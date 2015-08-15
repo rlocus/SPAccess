@@ -1,78 +1,70 @@
-﻿using SharePoint.Remote.Access.Helpers;
-using System;
+﻿using System;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using SharePoint.Remote.Access.Helpers;
 
 namespace SP2013Access.ViewModels
 {
     public class SPWebViewModel : TreeViewItemViewModel
     {
-        private readonly SPClientWeb _web;
-
-        public override string ID
-        {
-            get { return string.Format("Web_{0}", _web.Web.Id); }
-        }
-
-        public override string Name
-        {
-            get { return _web.Web.Title; }
-        }
-
-        public override ImageSource ImageSource
-        {
-            get
-            {
-                return new BitmapImage(new Uri("pack://application:,,,/images/siteicon_16x16.png"));
-            }
-        }
-
-        public SPClientWeb Web
-        {
-            get { return _web; }
-        }
-
         public SPWebViewModel(SPClientWeb web, TreeViewItemViewModel parent)
             : this(parent, false)
         {
             if (web == null) throw new ArgumentNullException("web");
-            _web = web;
+            Web = web;
         }
 
         /// <summary>
-        /// Initializes a new instance of the SiteItemViewModel class.
+        ///     Initializes a new instance of the SiteItemViewModel class.
         /// </summary>
         protected SPWebViewModel(TreeViewItemViewModel parent, bool lazyLoadChildren)
             : base(parent, lazyLoadChildren)
         {
         }
 
+        public override string ID
+        {
+            get { return string.Format("Web_{0}", Web.Web.Id); }
+        }
+
+        public override string Name
+        {
+            get { return Web.Web.Title; }
+        }
+
+        public override ImageSource ImageSource
+        {
+            get { return new BitmapImage(new Uri("pack://application:,,,/images/siteicon_16x16.png")); }
+        }
+
+        public SPClientWeb Web { get; }
+
         protected override void LoadChildren()
         {
             if (IsLoaded) return;
-            var websViewModel = new SPWebCollectionViewModel(_web, this);
-            this.Children.Add(websViewModel);
-            var listsViewModel = new SPListCollectionViewModel(_web, this);
-            this.Children.Add(listsViewModel);
-            var contentTypesViewModel = new SPWebContentTypeCollectionViewModel(_web, this);
-            this.Children.Add(contentTypesViewModel);
-            var fieldsViewModel = new SPSiteFieldCollectionViewModel(_web, this);
-            this.Children.Add(fieldsViewModel);
+            var websViewModel = new SPWebCollectionViewModel(Web, this);
+            Children.Add(websViewModel);
+            var listsViewModel = new SPListCollectionViewModel(Web, this);
+            Children.Add(listsViewModel);
+            var contentTypesViewModel = new SPWebContentTypeCollectionViewModel(Web, this);
+            Children.Add(contentTypesViewModel);
+            var fieldsViewModel = new SPSiteFieldCollectionViewModel(Web, this);
+            Children.Add(fieldsViewModel);
             base.LoadChildren();
         }
 
         public override void Refresh()
         {
             if (!IsLoaded) return;
-            this.IsDirty = true;
-            this.IsBusy = true;
-            this.IsLoaded = false;
-            _web.RefreshLoad();
-            var promise = Utility.ExecuteAsync(_web.LoadAsync());
+            IsDirty = true;
+            IsBusy = true;
+            IsLoaded = false;
+            Web.RefreshLoad();
+            var promise = Utility.ExecuteAsync(Web.LoadAsync());
             promise.Done(() =>
             {
-                Name = _web.Web.Title;
-                this.LoadChildren();
+                Name = Web.Web.Title;
+                LoadChildren();
             });
             promise.Fail(OnFail);
         }

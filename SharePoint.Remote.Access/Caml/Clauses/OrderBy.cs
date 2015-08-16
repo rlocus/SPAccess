@@ -8,6 +8,7 @@ namespace SharePoint.Remote.Access.Caml.Clauses
     public sealed class OrderBy : Clause
     {
         internal const string OrderByTag = "OrderBy";
+
         public OrderBy(IEnumerable<FieldRef> fieldRefs)
             : base(OrderByTag)
         {
@@ -32,13 +33,13 @@ namespace SharePoint.Remote.Access.Caml.Clauses
         public OrderBy(Guid fieldId, bool? ascending)
             : base(OrderByTag)
         {
-            FieldRefs = (new[] { new FieldRef { FieldId = fieldId, Ascending = ascending } }).AsEnumerable();
+            FieldRefs = (new[] {new FieldRef {FieldId = fieldId, Ascending = ascending}}).AsEnumerable();
         }
 
         public OrderBy(string fieldName, bool? ascending)
             : base(OrderByTag)
         {
-            FieldRefs = (new[] { new FieldRef { Name = fieldName, Ascending = ascending } }).AsEnumerable();
+            FieldRefs = (new[] {new FieldRef {Name = fieldName, Ascending = ascending}}).AsEnumerable();
         }
 
         public IEnumerable<FieldRef> FieldRefs { get; set; }
@@ -46,7 +47,7 @@ namespace SharePoint.Remote.Access.Caml.Clauses
         protected override void OnParsing(XElement existingOrderBy)
         {
             var existingFieldRefs = existingOrderBy.Elements()
-                    .Where(el => string.Equals(el.Name.LocalName, "FieldRef", StringComparison.InvariantCultureIgnoreCase));
+                .Where(el => string.Equals(el.Name.LocalName, "FieldRef", StringComparison.InvariantCultureIgnoreCase));
             FieldRefs = existingFieldRefs.Select(existingFieldRef => new FieldRef(existingFieldRef));
         }
 

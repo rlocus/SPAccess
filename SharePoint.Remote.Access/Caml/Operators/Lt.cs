@@ -4,7 +4,34 @@ using Microsoft.SharePoint.Client;
 
 namespace SharePoint.Remote.Access.Caml.Operators
 {
-    public sealed class Lt<T> : FieldValueOperator<T>
+    public sealed class Lt : Lt<object>
+    {
+        public Lt(FieldRef fieldRef, Value<object> value) : base(fieldRef, value)
+        {
+        }
+
+        public Lt(FieldRef fieldRef, object value, FieldType type) : base(fieldRef, value, type)
+        {
+        }
+
+        public Lt(Guid fieldId, object value, FieldType type) : base(fieldId, value, type)
+        {
+        }
+
+        public Lt(string fieldName, object value, FieldType type) : base(fieldName, value, type)
+        {
+        }
+
+        public Lt(string existingLtOperator) : base(existingLtOperator)
+        {
+        }
+
+        public Lt(XElement existingLtOperator) : base(existingLtOperator)
+        {
+        }
+    }
+
+    public class Lt<T> : FieldValueOperator<T>
     {
         internal const string LtTag = "Lt";
 

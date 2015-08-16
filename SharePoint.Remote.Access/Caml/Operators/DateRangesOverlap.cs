@@ -16,10 +16,9 @@ namespace SharePoint.Remote.Access.Caml.Operators
         Year
     }
 
-    public sealed class DateRangesOverlap : MultipleFieldValueOperator<DateTime>
+    public sealed class DateRangesOverlap : MultiFieldValueOperator<DateTime>
     {
         internal const string DateRangesOverlapTag = "DateRangesOverlap";
-
         private DateRangesOverlapValue? _enumValue;
 
         public DateRangesOverlap(IEnumerable<FieldRef> fieldRefs, DateTime value)
@@ -82,9 +81,12 @@ namespace SharePoint.Remote.Access.Caml.Operators
 
                 foreach (var element in existingValue.Elements())
                 {
-                    if (dateRangesOverlaps.Any(dateRangesOverlap => dateRangesOverlap.ToString() == element.Name.LocalName))
+                    if (
+                        dateRangesOverlaps.Any(
+                            dateRangesOverlap => dateRangesOverlap.ToString() == element.Name.LocalName))
                     {
-                        _enumValue = (DateRangesOverlapValue)Enum.Parse(typeof(DateRangesOverlapValue), element.Name.LocalName);
+                        _enumValue =
+                            (DateRangesOverlapValue) Enum.Parse(typeof (DateRangesOverlapValue), element.Name.LocalName);
                         break;
                     }
                 }

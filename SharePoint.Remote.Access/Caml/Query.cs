@@ -22,7 +22,8 @@ namespace SharePoint.Remote.Access.Caml
 
     public sealed class Query
     {
-        private const string QueryTag = "Query";
+        internal const string ViewTag = "View";
+        internal const string QueryTag = "Query";
         public bool DisableFormatting;
         public Where Where { get; set; }
         public OrderBy OrderBy { get; set; }
@@ -115,51 +116,44 @@ namespace SharePoint.Remote.Access.Caml
         public static Query Parse(XElement existingQuery)
         {
             var query = new Query();
-
             if (existingQuery != null &&
                 (existingQuery.HasElements &&
-                 string.Equals(existingQuery.Name.LocalName, QueryTag, StringComparison.InvariantCultureIgnoreCase)))
+                 string.Equals(existingQuery.Name.LocalName, QueryTag, StringComparison.OrdinalIgnoreCase)))
             {
                 var existingWhere =
                     existingQuery.Elements()
                         .SingleOrDefault(
-                            el => string.Equals(el.Name.LocalName, "Where", StringComparison.InvariantCultureIgnoreCase));
-
+                            el => string.Equals(el.Name.LocalName, Where.WhereTag, StringComparison.OrdinalIgnoreCase));
                 if (existingWhere != null) query.Where = new Where(existingWhere);
-
                 var existingOrderBy =
                     existingQuery.Elements()
                         .SingleOrDefault(
                             el =>
-                                string.Equals(el.Name.LocalName, "OrderBy", StringComparison.InvariantCultureIgnoreCase));
-
+                                string.Equals(el.Name.LocalName, OrderBy.OrderByTag, StringComparison.OrdinalIgnoreCase));
                 if (existingOrderBy != null) query.OrderBy = new OrderBy(existingOrderBy);
-
                 var existingGroupBy =
                     existingQuery.Elements()
                         .SingleOrDefault(
                             el =>
-                                string.Equals(el.Name.LocalName, "GroupBy", StringComparison.InvariantCultureIgnoreCase));
-
+                                string.Equals(el.Name.LocalName, GroupBy.GroupByTag, StringComparison.OrdinalIgnoreCase));
                 if (existingGroupBy != null) query.GroupBy = new GroupBy(existingGroupBy);
             }
-
             return query;
         }
 
-        public static Query Combine(Query firstQuery, Query secondQuery)
-        {
-            return new Query
-            {
-                Where = Where.Combine(firstQuery.Where, secondQuery.Where),
-                OrderBy = OrderBy.Combine(firstQuery.OrderBy, secondQuery.OrderBy),
-                GroupBy = GroupBy.Combine(firstQuery.GroupBy, secondQuery.GroupBy)
-            };
-        }
+        //public static Query Combine(Query firstQuery, Query secondQuery)
+        //{
+        //    return new Query
+        //    {
+        //        Where = Where.Combine(firstQuery.Where, secondQuery.Where),
+        //        OrderBy = OrderBy.Combine(firstQuery.OrderBy, secondQuery.OrderBy),
+        //        GroupBy = GroupBy.Combine(firstQuery.GroupBy, secondQuery.GroupBy)
+        //    };
+        //}
 
         public static Query GetFromCamlQuery(CamlQuery camlQuery)
         {
-            return camlQuery != null ? Parse(string.Format("<Query>{0}</Query>", camlQuery.ViewXml)) : null;
+            return camlQuery != null ? Parse($"<Query>{camlQuery.ViewXml}</Query>") : null;
         }
 
         public static implicit operator Query(CamlQuery camlQuery)

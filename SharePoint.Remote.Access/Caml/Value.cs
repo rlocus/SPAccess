@@ -50,7 +50,7 @@ namespace SharePoint.Remote.Access.Caml
 
             if (type != null)
             {
-                Type = (FieldType)Enum.Parse(typeof(FieldType), type.Value.Trim(), true);
+                Type = (FieldType) Enum.Parse(typeof (FieldType), type.Value.Trim(), true);
             }
 
             var includeTimeValue = existingValue.Attribute("IncludeTimeValue");

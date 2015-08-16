@@ -53,7 +53,7 @@
     <Compile Include="Caml\FieldRef.cs" />
     <Compile Include="Caml\Interfaces\IFieldOperator.cs" />
     <Compile Include="Caml\Interfaces\IMultiFieldOperator.cs" />
-    <Compile Include="Caml\Interfaces\IMultipleValueOperator.cs" />
+    <Compile Include="Caml\Interfaces\IMultiValueOperator.cs" />
     <Compile Include="Caml\Interfaces\IValueOperator.cs" />
     <Compile Include="Caml\Operators\And.cs" />
     <Compile Include="Caml\Operators\BeginsWith.cs" />
@@ -67,13 +67,13 @@
     <Compile Include="Caml\Operators\IsNull.cs" />
     <Compile Include="Caml\Operators\Leq.cs" />
     <Compile Include="Caml\Operators\Lt.cs" />
-    <Compile Include="Caml\Operators\MultipleFieldValueOperator.cs" />
-    <Compile Include="Caml\Operators\MultipleValueOperator.cs" />
+    <Compile Include="Caml\Operators\MultiFieldValueOperator.cs" />
+    <Compile Include="Caml\Operators\MultiValueOperator.cs" />
     <Compile Include="Caml\Operators\Neq.cs" />
     <Compile Include="Caml\Operators\NestedOperator.cs" />
     <Compile Include="Caml\Operators\Operator.cs" />
     <Compile Include="Caml\Operators\Or.cs" />
-    <Compile Include="Caml\Operators\FieldMultipleValueOperator.cs" />
+    <Compile Include="Caml\Operators\FieldMultiValueOperator.cs" />
     <Compile Include="Caml\Operators\FieldOperator.cs" />
     <Compile Include="Caml\Operators\FieldValueOperator.cs" />
     <Compile Include="Caml\Operators\ValueOperator.cs" />

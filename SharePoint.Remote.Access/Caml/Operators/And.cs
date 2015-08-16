@@ -5,6 +5,7 @@ namespace SharePoint.Remote.Access.Caml.Operators
     public sealed class And : NestedOperator
     {
         internal const string AndTag = "And";
+
         public And(params Operator[] operators)
             : base(AndTag, operators)
         {

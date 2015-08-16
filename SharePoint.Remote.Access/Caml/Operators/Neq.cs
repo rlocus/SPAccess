@@ -4,7 +4,34 @@ using Microsoft.SharePoint.Client;
 
 namespace SharePoint.Remote.Access.Caml.Operators
 {
-    public sealed class Neq<T> : FieldValueOperator<T>
+    public sealed class Neq : Neq<object>
+    {
+        public Neq(FieldRef fieldRef, Value<object> value) : base(fieldRef, value)
+        {
+        }
+
+        public Neq(FieldRef fieldRef, object value, FieldType type) : base(fieldRef, value, type)
+        {
+        }
+
+        public Neq(Guid fieldId, object value, FieldType type) : base(fieldId, value, type)
+        {
+        }
+
+        public Neq(string fieldName, object value, FieldType type) : base(fieldName, value, type)
+        {
+        }
+
+        public Neq(string existingNeqOperator) : base(existingNeqOperator)
+        {
+        }
+
+        public Neq(XElement existingNeqOperator) : base(existingNeqOperator)
+        {
+        }
+    }
+
+    public class Neq<T> : FieldValueOperator<T>
     {
         internal const string NeqTag = "Neq";
 

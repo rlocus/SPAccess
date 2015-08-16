@@ -30,7 +30,7 @@ namespace SharePoint.Remote.Access.Caml.Clauses
             var el = base.ToXElement();
             if (Operators != null)
             {
-                foreach (Operator op in Operators.Where(op => op != null))
+                foreach (var op in Operators.Where(op => op != null))
                 {
                     el.Add(op.ToXElement());
                 }

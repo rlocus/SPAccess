@@ -7,26 +7,26 @@ using SharePoint.Remote.Access.Caml.Interfaces;
 
 namespace SharePoint.Remote.Access.Caml.Operators
 {
-    public abstract class MultipleValueOperator<T> : Operator, IMultipleValueOperator<T>
+    public abstract class MultiValueOperator<T> : Operator, IMultiValueOperator<T>
     {
-        protected MultipleValueOperator(string operatorName, IEnumerable<T> values, FieldType type)
+        protected MultiValueOperator(string operatorName, IEnumerable<T> values, FieldType type)
             : base(operatorName)
         {
             if (values != null) Values = values.Select(val => new Value<T>(val, type));
         }
 
-        protected MultipleValueOperator(string operatorName, IEnumerable<Value<T>> values)
+        protected MultiValueOperator(string operatorName, IEnumerable<Value<T>> values)
             : base(operatorName)
         {
             Values = values;
         }
 
-        protected MultipleValueOperator(string operatorName, string existingMultipleValueOperator)
+        protected MultiValueOperator(string operatorName, string existingMultipleValueOperator)
             : base(operatorName, existingMultipleValueOperator)
         {
         }
 
-        protected MultipleValueOperator(string operatorName, XElement existingMultipleValueOperator)
+        protected MultiValueOperator(string operatorName, XElement existingMultipleValueOperator)
             : base(operatorName, existingMultipleValueOperator)
         {
         }
@@ -36,7 +36,7 @@ namespace SharePoint.Remote.Access.Caml.Operators
         protected override void OnParsing(XElement existingValuesOperator)
         {
             var existingValues = existingValuesOperator.Elements()
-                    .Where(el => string.Equals(el.Name.LocalName, "Value", StringComparison.InvariantCultureIgnoreCase));
+                .Where(el => string.Equals(el.Name.LocalName, "Value", StringComparison.InvariantCultureIgnoreCase));
             Values = existingValues.Select(val => new Value<T>(val));
         }
 

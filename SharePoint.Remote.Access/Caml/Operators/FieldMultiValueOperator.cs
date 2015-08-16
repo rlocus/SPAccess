@@ -7,53 +7,53 @@ using SharePoint.Remote.Access.Caml.Interfaces;
 
 namespace SharePoint.Remote.Access.Caml.Operators
 {
-    public abstract class FieldMultipleValueOperator<T> : MultipleValueOperator<T>, IFieldOperator
+    public abstract class FieldMultiValueOperator<T> : MultiValueOperator<T>, IFieldOperator
     {
-        protected FieldMultipleValueOperator(string operatorName, Guid fieldId, IEnumerable<Value<T>> values)
+        protected FieldMultiValueOperator(string operatorName, Guid fieldId, IEnumerable<Value<T>> values)
             : base(operatorName, values)
         {
             FieldRef = new FieldRef {FieldId = fieldId};
         }
 
-        protected FieldMultipleValueOperator(string operatorName, Guid fieldId, IEnumerable<T> values,
+        protected FieldMultiValueOperator(string operatorName, Guid fieldId, IEnumerable<T> values,
             FieldType type)
             : base(operatorName, values, type)
         {
             FieldRef = new FieldRef {FieldId = fieldId};
         }
 
-        protected FieldMultipleValueOperator(string operatorName, string fieldName, IEnumerable<T> values,
+        protected FieldMultiValueOperator(string operatorName, string fieldName, IEnumerable<T> values,
             FieldType type)
             : base(operatorName, values, type)
         {
             FieldRef = new FieldRef {Name = fieldName};
         }
 
-        protected FieldMultipleValueOperator(string operatorName, string fieldName, IEnumerable<Value<T>> values)
+        protected FieldMultiValueOperator(string operatorName, string fieldName, IEnumerable<Value<T>> values)
             : base(operatorName, values)
         {
             FieldRef = new FieldRef {Name = fieldName};
         }
 
-        protected FieldMultipleValueOperator(string operatorName, FieldRef fieldRef, IEnumerable<T> values,
+        protected FieldMultiValueOperator(string operatorName, FieldRef fieldRef, IEnumerable<T> values,
             FieldType type)
             : base(operatorName, values, type)
         {
             FieldRef = fieldRef;
         }
 
-        protected FieldMultipleValueOperator(string operatorName, FieldRef fieldRef, IEnumerable<Value<T>> values)
+        protected FieldMultiValueOperator(string operatorName, FieldRef fieldRef, IEnumerable<Value<T>> values)
             : base(operatorName, values)
         {
             FieldRef = fieldRef;
         }
 
-        protected FieldMultipleValueOperator(string operatorName, string existingSingleFieldMultipleValueOperator)
+        protected FieldMultiValueOperator(string operatorName, string existingSingleFieldMultipleValueOperator)
             : base(operatorName, existingSingleFieldMultipleValueOperator)
         {
         }
 
-        protected FieldMultipleValueOperator(string operatorName,
+        protected FieldMultiValueOperator(string operatorName,
             XElement existingSingleFieldMultipleValueOperator)
             : base(operatorName, existingSingleFieldMultipleValueOperator)
         {

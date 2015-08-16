@@ -4,7 +4,34 @@ using Microsoft.SharePoint.Client;
 
 namespace SharePoint.Remote.Access.Caml.Operators
 {
-    public sealed class Eq<T> : FieldValueOperator<T>
+    public sealed class Eq : Eq<object>
+    {
+        public Eq(FieldRef fieldRef, Value<object> value) : base(fieldRef, value)
+        {
+        }
+
+        public Eq(FieldRef fieldRef, object value, FieldType type) : base(fieldRef, value, type)
+        {
+        }
+
+        public Eq(Guid fieldId, object value, FieldType type) : base(fieldId, value, type)
+        {
+        }
+
+        public Eq(string fieldName, object value, FieldType type) : base(fieldName, value, type)
+        {
+        }
+
+        public Eq(string existingEqOperator) : base(existingEqOperator)
+        {
+        }
+
+        public Eq(XElement existingEqOperator) : base(existingEqOperator)
+        {
+        }
+    }
+
+    public class Eq<T> : FieldValueOperator<T>
     {
         internal const string EqTag = "Eq";
 

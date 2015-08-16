@@ -1,4 +1,5 @@
-﻿using System.Xml.Linq;
+﻿using System;
+using System.Xml.Linq;
 
 namespace SharePoint.Remote.Access.Caml.Operators
 {
@@ -19,41 +20,66 @@ namespace SharePoint.Remote.Access.Caml.Operators
         {
         }
 
-        protected Operator GetOperator(XElement existingOperator)
+        internal static Operator GetOperator(XElement existingOperator)
         {
-            switch (existingOperator.Name.LocalName.ToUpper())
+            var tag = existingOperator.Name.LocalName;
+            if (string.Equals(tag, And.AndTag, StringComparison.OrdinalIgnoreCase))
             {
-                case "AND":
-                    return new And(existingOperator);
-                case "OR":
-                    return new Or(existingOperator);
-                case "BEGINSWITH":
-                    return new BeginsWith(existingOperator);
-                case "CONTAINS":
-                    return new Contains(existingOperator);
-                case "EQ":
-                    return new Eq<object>(existingOperator);
-                case "GEQ":
-                    return new Geq<object>(existingOperator);
-                case "GT":
-                    return new Gt<object>(existingOperator);
-                case "LEQ":
-                    return new Leq<object>(existingOperator);
-                case "LT":
-                    return new Lt<object>(existingOperator);
-                case "NEQ":
-                    return new Neq<object>(existingOperator);
-                case "ISNULL":
-                    return new IsNull(existingOperator);
-                case "ISNOTNULL":
-                    return new IsNotNull(existingOperator);
-                case "DATERANGESOVERLAP":
-                    return new DateRangesOverlap(existingOperator);
-                case "IN":
-                    return new In<object>(existingOperator);
-                default:
-                    return null;
+                return new And(existingOperator);
             }
+            if (string.Equals(tag, Or.OrTag, StringComparison.OrdinalIgnoreCase))
+            {
+                return new Or(existingOperator);
+            }
+            if (string.Equals(tag, BeginsWith.BeginsWithTag, StringComparison.OrdinalIgnoreCase))
+            {
+                return new BeginsWith(existingOperator);
+            }
+            if (string.Equals(tag, Contains.ContainsTag, StringComparison.OrdinalIgnoreCase))
+            {
+                return new Contains(existingOperator);
+            }
+            if (string.Equals(tag, Eq.EqTag, StringComparison.OrdinalIgnoreCase))
+            {
+                return new Eq(existingOperator);
+            }
+            if (string.Equals(tag, Geq.GeqTag, StringComparison.OrdinalIgnoreCase))
+            {
+                return new Geq(existingOperator);
+            }
+            if (string.Equals(tag, Gt.GtTag, StringComparison.OrdinalIgnoreCase))
+            {
+                return new Gt(existingOperator);
+            }
+            if (string.Equals(tag, Leq.LeqTag, StringComparison.OrdinalIgnoreCase))
+            {
+                return new Leq(existingOperator);
+            }
+            if (string.Equals(tag, Lt.LtTag, StringComparison.OrdinalIgnoreCase))
+            {
+                return new Lt(existingOperator);
+            }
+            if (string.Equals(tag, Neq.NeqTag, StringComparison.OrdinalIgnoreCase))
+            {
+                return new Neq(existingOperator);
+            }
+            if (string.Equals(tag, IsNull.IsNullTag, StringComparison.OrdinalIgnoreCase))
+            {
+                return new IsNull(existingOperator);
+            }
+            if (string.Equals(tag, IsNotNull.IsNotNullTag, StringComparison.OrdinalIgnoreCase))
+            {
+                return new IsNotNull(existingOperator);
+            }
+            if (string.Equals(tag, DateRangesOverlap.DateRangesOverlapTag, StringComparison.OrdinalIgnoreCase))
+            {
+                return new DateRangesOverlap(existingOperator);
+            }
+            if (string.Equals(tag, In.InTag, StringComparison.OrdinalIgnoreCase))
+            {
+                return new In(existingOperator);
+            }
+            throw new NotSupportedException(nameof(tag));
         }
     }
 }

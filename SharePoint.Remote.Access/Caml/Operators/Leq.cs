@@ -4,7 +4,34 @@ using Microsoft.SharePoint.Client;
 
 namespace SharePoint.Remote.Access.Caml.Operators
 {
-    public sealed class Leq<T> : FieldValueOperator<T>
+    public sealed class Leq : Leq<object>
+    {
+        public Leq(FieldRef fieldRef, Value<object> value) : base(fieldRef, value)
+        {
+        }
+
+        public Leq(FieldRef fieldRef, object value, FieldType type) : base(fieldRef, value, type)
+        {
+        }
+
+        public Leq(Guid fieldId, object value, FieldType type) : base(fieldId, value, type)
+        {
+        }
+
+        public Leq(string fieldName, object value, FieldType type) : base(fieldName, value, type)
+        {
+        }
+
+        public Leq(string existingLeqOperator) : base(existingLeqOperator)
+        {
+        }
+
+        public Leq(XElement existingLeqOperator) : base(existingLeqOperator)
+        {
+        }
+    }
+
+    public class Leq<T> : FieldValueOperator<T>
     {
         internal const string LeqTag = "Leq";
 

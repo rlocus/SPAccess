@@ -23,25 +23,25 @@ namespace SharePoint.Remote.Access.Caml.Operators
         protected FieldValueOperator(string operatorName, Guid fieldId, Value<T> value)
             : base(operatorName, value)
         {
-            FieldRef = new FieldRef { FieldId = fieldId };
+            FieldRef = new FieldRef {FieldId = fieldId};
         }
 
         protected FieldValueOperator(string operatorName, Guid fieldId, T value, FieldType type)
             : base(operatorName, value, type)
         {
-            FieldRef = new FieldRef { FieldId = fieldId };
+            FieldRef = new FieldRef {FieldId = fieldId};
         }
 
         protected FieldValueOperator(string operatorName, string fieldName, Value<T> value)
             : base(operatorName, value)
         {
-            FieldRef = new FieldRef { Name = fieldName };
+            FieldRef = new FieldRef {Name = fieldName};
         }
 
         protected FieldValueOperator(string operatorName, string fieldName, T value, FieldType type)
             : base(operatorName, value, type)
         {
-            FieldRef = new FieldRef { Name = fieldName };
+            FieldRef = new FieldRef {Name = fieldName};
         }
 
         protected FieldValueOperator(string operatorName, string existingSingleFieldValueOperator)
@@ -61,7 +61,9 @@ namespace SharePoint.Remote.Access.Caml.Operators
             var existingFieldRef =
                 existingSingleFieldValueOperator.Elements()
                     .SingleOrDefault(
-                        el => string.Equals(el.Name.LocalName, FieldRef.FieldRefTag, StringComparison.InvariantCultureIgnoreCase));
+                        el =>
+                            string.Equals(el.Name.LocalName, FieldRef.FieldRefTag,
+                                StringComparison.InvariantCultureIgnoreCase));
 
             if (existingFieldRef != null)
             {

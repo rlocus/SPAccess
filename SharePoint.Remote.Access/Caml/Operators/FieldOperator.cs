@@ -31,7 +31,9 @@ namespace SharePoint.Remote.Access.Caml.Operators
             var existingFieldRef =
                 existingSingleFieldValueOperator.Elements()
                     .SingleOrDefault(
-                        el => string.Equals(el.Name.LocalName, FieldRef.FieldRefTag, StringComparison.InvariantCultureIgnoreCase));
+                        el =>
+                            string.Equals(el.Name.LocalName, FieldRef.FieldRefTag,
+                                StringComparison.InvariantCultureIgnoreCase));
 
             if (existingFieldRef != null)
             {

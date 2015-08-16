@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 using SharePoint.Remote.Access.Caml.Interfaces;
@@ -11,10 +10,13 @@ namespace SharePoint.Remote.Access.Caml.Clauses
     {
         internal const string WhereTag = "Where";
 
+        internal Operator Operator { get; private set; }
+
         public Where(Operator op)
-            : base(WhereTag, op)
+            : base(WhereTag)
         {
             if (op == null) throw new ArgumentNullException(nameof(op));
+            Operator = op;
         }
 
         public Where(string existingWhere)
@@ -32,27 +34,37 @@ namespace SharePoint.Remote.Access.Caml.Clauses
         {
             if (op == null) throw new ArgumentNullException(nameof(op));
 
-            var operators = new List<Operator>(Operators) {op};
-            Operators = new[]
-            {
-                new And(operators.ToArray())
-            };
+            //var operators = new List<Operator>(Operators) {op};
+            //Operators = new[]
+            //{
+            //    new And(operators.ToArray())
+            //};
         }
 
         internal void Or<T>(T op)
             where T : Operator, IFieldOperator, IMultiFieldOperator
         {
             if (op == null) throw new ArgumentNullException(nameof(op));
-            var operators = new List<Operator>(Operators) {op};
-            Operators = new[]
-            {
-                new Or(operators.ToArray())
-            };
+            //var operators = new List<Operator>(Operators) {op};
+            //Operators = new[]
+            //{
+            //    new Or(operators.ToArray())
+            //};
         }
 
         protected override void OnParsing(XElement existingWhere)
         {
-            Operators = existingWhere.Elements().Select(Operator.GetOperator).Where(op => op != null);
+            Operator = existingWhere.Elements().Select(Operator.GetOperator).FirstOrDefault(op => op != null);
+        }
+
+        public override XElement ToXElement()
+        {
+            var el = base.ToXElement();
+            if (Operator != null)
+            {
+                el.Add(Operator.ToXElement());
+            }
+            return el;
         }
     }
 }

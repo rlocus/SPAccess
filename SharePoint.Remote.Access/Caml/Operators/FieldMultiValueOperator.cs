@@ -4,35 +4,38 @@ using System.Linq;
 using System.Xml.Linq;
 using Microsoft.SharePoint.Client;
 using SharePoint.Remote.Access.Caml.Interfaces;
+using SharePoint.Remote.Access.Extensions;
 
 namespace SharePoint.Remote.Access.Caml.Operators
 {
     public abstract class FieldMultiValueOperator<T> : MultiValueOperator<T>, IFieldOperator
     {
+        public FieldRef FieldRef { get; private set; }
+
         protected FieldMultiValueOperator(string operatorName, Guid fieldId, IEnumerable<Value<T>> values)
             : base(operatorName, values)
         {
-            FieldRef = new FieldRef {FieldId = fieldId};
+            FieldRef = new FieldRef { FieldId = fieldId };
         }
 
         protected FieldMultiValueOperator(string operatorName, Guid fieldId, IEnumerable<T> values,
             FieldType type)
             : base(operatorName, values, type)
         {
-            FieldRef = new FieldRef {FieldId = fieldId};
+            FieldRef = new FieldRef { FieldId = fieldId };
         }
 
         protected FieldMultiValueOperator(string operatorName, string fieldName, IEnumerable<T> values,
             FieldType type)
             : base(operatorName, values, type)
         {
-            FieldRef = new FieldRef {Name = fieldName};
+            FieldRef = new FieldRef { Name = fieldName };
         }
 
         protected FieldMultiValueOperator(string operatorName, string fieldName, IEnumerable<Value<T>> values)
             : base(operatorName, values)
         {
-            FieldRef = new FieldRef {Name = fieldName};
+            FieldRef = new FieldRef { Name = fieldName };
         }
 
         protected FieldMultiValueOperator(string operatorName, FieldRef fieldRef, IEnumerable<T> values,
@@ -59,27 +62,17 @@ namespace SharePoint.Remote.Access.Caml.Operators
         {
         }
 
-        public FieldRef FieldRef { get; set; }
-
         protected override void OnParsing(XElement existingSingleFieldMultipleValueOperator)
         {
-            var existingFieldRef =
-                existingSingleFieldMultipleValueOperator.Elements()
-                    .SingleOrDefault(
-                        el => string.Equals(el.Name.LocalName, "FieldRef", StringComparison.InvariantCultureIgnoreCase));
-
-            if (existingFieldRef != null)
-            {
-                FieldRef = new FieldRef(existingFieldRef);
-            }
-            var existingValues =
-                existingSingleFieldMultipleValueOperator.Elements()
-                    .SingleOrDefault(
-                        el => string.Equals(el.Name.LocalName, "Values", StringComparison.InvariantCultureIgnoreCase));
-
+            XElement existingValues = existingSingleFieldMultipleValueOperator.ElementsIgnoreCase(ValuesTag).SingleOrDefault();
             if (existingValues != null)
             {
                 base.OnParsing(existingValues);
+            }
+            XElement existingFieldRef = existingSingleFieldMultipleValueOperator.ElementsIgnoreCase(FieldRef.FieldRefTag).SingleOrDefault();
+            if (existingFieldRef != null)
+            {
+                FieldRef = new FieldRef(existingFieldRef);
             }
         }
 

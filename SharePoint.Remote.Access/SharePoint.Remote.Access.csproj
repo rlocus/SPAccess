@@ -67,7 +67,7 @@
     <Compile Include="Caml\Operators\IsNull.cs" />
     <Compile Include="Caml\Operators\Leq.cs" />
     <Compile Include="Caml\Operators\Lt.cs" />
-    <Compile Include="Caml\Operators\MultiFieldValueOperator.cs" />
+    <Compile Include="Caml\Operators\ValueMultiFieldOperator.cs" />
     <Compile Include="Caml\Operators\MultiValueOperator.cs" />
     <Compile Include="Caml\Operators\Neq.cs" />
     <Compile Include="Caml\Operators\NestedOperator.cs" />
@@ -83,6 +83,7 @@
     <Compile Include="Extensions\CamlQueryExtensions.cs" />
     <Compile Include="Extensions\ClientRuntimeContextExtentions.cs" />
     <Compile Include="Extensions\LinqExtensions.cs" />
+    <Compile Include="Extensions\XElementExtensions.cs" />
     <Compile Include="Helpers\Deferred.cs" />
     <Compile Include="Helpers\SPClientView.cs" />
     <Compile Include="Helpers\SPClientContext.cs" />

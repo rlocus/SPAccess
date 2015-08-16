@@ -2,12 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
+using SharePoint.Remote.Access.Caml.Interfaces;
+using SharePoint.Remote.Access.Extensions;
 
 namespace SharePoint.Remote.Access.Caml.Clauses
 {
-    public sealed class OrderBy : Clause
+    public sealed class OrderBy : Clause, IMultiFieldOperator
     {
         internal const string OrderByTag = "OrderBy";
+
+        public IEnumerable<FieldRef> FieldRefs { get; private set; }
 
         public OrderBy(IEnumerable<FieldRef> fieldRefs)
             : base(OrderByTag)
@@ -15,8 +19,8 @@ namespace SharePoint.Remote.Access.Caml.Clauses
             FieldRefs = fieldRefs;
         }
 
-        public OrderBy(string fieldName)
-            : this(fieldName, null)
+        public OrderBy(string existingGroupBy)
+            : base(OrderByTag, existingGroupBy)
         {
         }
 
@@ -25,29 +29,27 @@ namespace SharePoint.Remote.Access.Caml.Clauses
         {
         }
 
-        public OrderBy(Guid fieldId)
-            : this(fieldId, null)
-        {
-        }
+        //public OrderBy(Guid fieldId, bool? ascending = null)
+        //    : base(OrderByTag)
+        //{
+        //    FieldRefs = (new[] { new FieldRef { FieldId = fieldId, Ascending = ascending } }).AsEnumerable();
+        //}
 
-        public OrderBy(Guid fieldId, bool? ascending)
-            : base(OrderByTag)
-        {
-            FieldRefs = (new[] {new FieldRef {FieldId = fieldId, Ascending = ascending}}).AsEnumerable();
-        }
+        //public OrderBy(string fieldName, bool? ascending = null)
+        //    : base(OrderByTag)
+        //{
+        //    FieldRefs = (new[] { new FieldRef { Name = fieldName, Ascending = ascending } }).AsEnumerable();
+        //}
 
-        public OrderBy(string fieldName, bool? ascending)
-            : base(OrderByTag)
+        public OrderBy(FieldRef field)
+        : base(OrderByTag)
         {
-            FieldRefs = (new[] {new FieldRef {Name = fieldName, Ascending = ascending}}).AsEnumerable();
+            FieldRefs = new[] { field }.AsEnumerable();
         }
-
-        public IEnumerable<FieldRef> FieldRefs { get; set; }
 
         protected override void OnParsing(XElement existingOrderBy)
         {
-            var existingFieldRefs = existingOrderBy.Elements()
-                .Where(el => string.Equals(el.Name.LocalName, "FieldRef", StringComparison.InvariantCultureIgnoreCase));
+            var existingFieldRefs = existingOrderBy.ElementsIgnoreCase(FieldRef.FieldRefTag);
             FieldRefs = existingFieldRefs.Select(existingFieldRef => new FieldRef(existingFieldRef));
         }
 
@@ -61,7 +63,6 @@ namespace SharePoint.Remote.Access.Caml.Clauses
                     el.Add(fieldRef.ToXElement());
                 }
             }
-
             return el;
         }
 

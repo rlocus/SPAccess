@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 using Microsoft.SharePoint.Client;
+using SharePoint.Remote.Access.Extensions;
 
 namespace SharePoint.Remote.Access.Caml.Operators
 {
@@ -16,7 +17,7 @@ namespace SharePoint.Remote.Access.Caml.Operators
         Year
     }
 
-    public sealed class DateRangesOverlap : MultiFieldValueOperator<DateTime>
+    public sealed class DateRangesOverlap : ValueMultiFieldOperator<DateTime>
     {
         internal const string DateRangesOverlapTag = "DateRangesOverlap";
         private DateRangesOverlapValue? _enumValue;
@@ -61,32 +62,15 @@ namespace SharePoint.Remote.Access.Caml.Operators
         protected override void OnParsing(XElement existingMultipleFieldValueOperator)
         {
             base.OnParsing(existingMultipleFieldValueOperator);
-
-            var existingValue =
-                existingMultipleFieldValueOperator.Elements()
-                    .SingleOrDefault(
-                        el => string.Equals(el.Name.LocalName, "Value", StringComparison.InvariantCultureIgnoreCase));
-
+            var existingValue = existingMultipleFieldValueOperator.ElementsIgnoreCase(Caml.Value.ValueTag).SingleOrDefault();
             if (existingValue != null && existingValue.HasElements)
             {
-                DateRangesOverlapValue[] dateRangesOverlaps =
+                foreach (XElement element in existingValue.Elements())
                 {
-                    DateRangesOverlapValue.Now,
-                    DateRangesOverlapValue.Today,
-                    DateRangesOverlapValue.Day,
-                    DateRangesOverlapValue.Week,
-                    DateRangesOverlapValue.Month,
-                    DateRangesOverlapValue.Year
-                };
-
-                foreach (var element in existingValue.Elements())
-                {
-                    if (
-                        dateRangesOverlaps.Any(
-                            dateRangesOverlap => dateRangesOverlap.ToString() == element.Name.LocalName))
+                    DateRangesOverlapValue enumValue;
+                    if (Enum.TryParse(element.Name.LocalName, true, out enumValue))
                     {
-                        _enumValue =
-                            (DateRangesOverlapValue) Enum.Parse(typeof (DateRangesOverlapValue), element.Name.LocalName);
+                        _enumValue = enumValue;
                         break;
                     }
                 }
@@ -96,14 +80,12 @@ namespace SharePoint.Remote.Access.Caml.Operators
         public override XElement ToXElement()
         {
             var el = base.ToXElement();
-
             if (_enumValue.HasValue)
             {
-                var value = el.Elements("Value").Single();
+                var value = el.Elements(Caml.Value.ValueTag).Single();
                 value.Value = string.Empty;
                 value.Add(new XElement(_enumValue.ToString()));
             }
-
             return el;
         }
     }

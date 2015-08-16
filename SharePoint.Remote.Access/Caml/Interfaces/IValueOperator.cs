@@ -2,6 +2,6 @@
 {
     internal interface IValueOperator<T>
     {
-        Value<T> Value { get; set; }
+        Value<T> Value { get; }
     }
 }

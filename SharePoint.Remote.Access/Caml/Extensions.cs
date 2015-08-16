@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Linq;
+using System.Collections.Generic;
 using SharePoint.Remote.Access.Caml.Clauses;
 using SharePoint.Remote.Access.Caml.Interfaces;
 using SharePoint.Remote.Access.Caml.Operators;
@@ -37,73 +37,37 @@ namespace SharePoint.Remote.Access.Caml
 
             return where;
         }
-
-        public static OrderBy ThenBy(this OrderBy orderBy, Guid fieldId)
+        
+        public static OrderBy ThenBy(this OrderBy orderBy, Guid fieldId, bool? ascending = null)
         {
-            return orderBy.ThenBy(fieldId, false);
+            return orderBy.ThenBy(new FieldRef { FieldId = fieldId, Ascending = @ascending });
         }
 
-        public static OrderBy ThenBy(this OrderBy orderBy, Guid fieldId, bool ascending)
+        public static OrderBy ThenBy(this OrderBy orderBy, string fieldName, bool? ascending = null)
         {
-            var fields = orderBy.FieldRefs.ToList();
-            fields.Add(new FieldRef {FieldId = fieldId, Ascending = ascending});
-            orderBy.FieldRefs = fields;
-            return orderBy;
-        }
-
-        public static OrderBy ThenBy(this OrderBy orderBy, string fieldName)
-        {
-            return orderBy.ThenBy(fieldName, null);
-        }
-
-        public static OrderBy ThenBy(this OrderBy orderBy, string fieldName, bool? ascending)
-        {
-            var fields = orderBy.FieldRefs.ToList();
-            fields.Add(new FieldRef {Name = fieldName, Ascending = ascending});
-            orderBy.FieldRefs = fields;
-            return orderBy;
+            return orderBy.ThenBy(new FieldRef { Name = fieldName, Ascending = @ascending });
         }
 
         public static OrderBy ThenBy(this OrderBy orderBy, FieldRef fieldRef)
         {
-            var fields = orderBy.FieldRefs.ToList();
-            fields.Add(fieldRef);
-            orderBy.FieldRefs = fields;
-            return orderBy;
+            var fields = new List<FieldRef>(orderBy.FieldRefs) { fieldRef };
+            return new OrderBy(fields);
         }
 
         public static GroupBy ThenBy(this GroupBy groupBy, Guid fieldId)
         {
-            return groupBy.ThenBy(fieldId, false);
-        }
-
-        public static GroupBy ThenBy(this GroupBy groupBy, Guid fieldId, bool collapsed)
-        {
-            var fields = groupBy.FieldRefs.ToList();
-            fields.Add(new FieldRef {FieldId = fieldId, Ascending = false});
-            groupBy.FieldRefs = fields;
-            return groupBy;
+            return groupBy.ThenBy(new FieldRef { FieldId = fieldId, Ascending = false });
         }
 
         public static GroupBy ThenBy(this GroupBy groupBy, string fieldName)
         {
-            return groupBy.ThenBy(fieldName, false);
-        }
-
-        public static GroupBy ThenBy(this GroupBy groupBy, string fieldName, bool collapsed)
-        {
-            var fields = groupBy.FieldRefs.ToList();
-            fields.Add(new FieldRef {Name = fieldName, Ascending = false});
-            groupBy.FieldRefs = fields;
-            return groupBy;
+            return groupBy.ThenBy(new FieldRef { Name = fieldName, Ascending = false });
         }
 
         public static GroupBy ThenBy(this GroupBy groupBy, FieldRef fieldRef)
         {
-            var fields = groupBy.FieldRefs.ToList();
-            fields.Add(fieldRef);
-            groupBy.FieldRefs = fields;
-            return groupBy;
+            var fields = new List<FieldRef>(groupBy.FieldRefs) { fieldRef };
+            return new GroupBy(fields, groupBy.Collapse);
         }
     }
 }

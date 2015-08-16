@@ -9,17 +9,6 @@ using SharePoint.Remote.Access.Extensions;
 
 namespace SharePoint.Remote.Access.Caml
 {
-    // var query = new Query()
-    //{
-    //    Where = new Where(
-    //        new Or(
-    //            new Eq<string>(fieldName: "ContentType", value: "My Content Type", type: SPFieldType.Text),
-    //            new IsNotNull(fieldName: "Description"))),
-
-    //    GroupBy = new GroupBy(fieldName: "Title", collapsed: true),
-    //    OrderBy = new OrderBy(fieldName: "_Author").ThenBy(fieldName: "AuthoringDate").ThenBy(fieldName: "AssignedTo")
-    //};
-
     public sealed class Query
     {
         internal const string ViewTag = "View";

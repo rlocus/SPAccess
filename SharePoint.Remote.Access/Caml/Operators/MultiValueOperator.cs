@@ -4,11 +4,14 @@ using System.Linq;
 using System.Xml.Linq;
 using Microsoft.SharePoint.Client;
 using SharePoint.Remote.Access.Caml.Interfaces;
+using SharePoint.Remote.Access.Extensions;
 
 namespace SharePoint.Remote.Access.Caml.Operators
 {
     public abstract class MultiValueOperator<T> : Operator, IMultiValueOperator<T>
     {
+        internal const string ValuesTag = "Values";
+
         protected MultiValueOperator(string operatorName, IEnumerable<T> values, FieldType type)
             : base(operatorName)
         {
@@ -35,8 +38,7 @@ namespace SharePoint.Remote.Access.Caml.Operators
 
         protected override void OnParsing(XElement existingValuesOperator)
         {
-            var existingValues = existingValuesOperator.Elements()
-                .Where(el => string.Equals(el.Name.LocalName, "Value", StringComparison.InvariantCultureIgnoreCase));
+            var existingValues = existingValuesOperator.ElementsIgnoreCase(Value.ValueTag);
             Values = existingValues.Select(val => new Value<T>(val));
         }
 
@@ -45,7 +47,7 @@ namespace SharePoint.Remote.Access.Caml.Operators
             var el = base.ToXElement();
             if (Values != null)
             {
-                el.Add(new XElement("Values", Values.Select(val => val?.ToXElement())));
+                el.Add(new XElement(ValuesTag, Values.Select(val => val?.ToXElement())));
             }
             return el;
         }

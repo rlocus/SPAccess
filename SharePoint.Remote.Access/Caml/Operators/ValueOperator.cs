@@ -1,4 +1,5 @@
-﻿using System.Xml.Linq;
+﻿using System;
+using System.Xml.Linq;
 using Microsoft.SharePoint.Client;
 using SharePoint.Remote.Access.Caml.Interfaces;
 
@@ -6,9 +7,12 @@ namespace SharePoint.Remote.Access.Caml.Operators
 {
     public abstract class ValueOperator<T> : Operator, IValueOperator<T>
     {
+        public Value<T> Value { get; private set; }
+
         protected ValueOperator(string operatorName, Value<T> value)
             : base(operatorName)
         {
+            if (value == null) throw new ArgumentNullException(nameof(value));
             Value = value;
         }
 
@@ -27,9 +31,7 @@ namespace SharePoint.Remote.Access.Caml.Operators
             : base(operatorName, existingValueOperator)
         {
         }
-
-        public Value<T> Value { get; set; }
-
+        
         protected override void OnParsing(XElement existingValueOperator)
         {
             Value = new Value<T>(existingValueOperator);

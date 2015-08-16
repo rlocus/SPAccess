@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Xml.Linq;
 using Microsoft.SharePoint.Client;
+using SharePoint.Remote.Access.Extensions;
 
 namespace SharePoint.Remote.Access.Caml
 {
@@ -22,10 +23,17 @@ namespace SharePoint.Remote.Access.Caml
     public class Value<T> : QueryElement
     {
         internal const string ValueTag = "Value";
+        internal const string TypeAttr = "Type";
+        internal const string IncludeTimeValueAttr = "IncludeTimeValue";
+
+        public T Val { get; set; }
+        public FieldType Type { get; set; }
+        public bool? IncludeTimeValue { get; set; }
 
         public Value(T value, FieldType type)
             : base(ValueTag)
         {
+            if (value == null) throw new ArgumentNullException(nameof(value));
             Val = value;
             Type = type;
         }
@@ -40,26 +48,54 @@ namespace SharePoint.Remote.Access.Caml
         {
         }
 
-        public T Val { get; set; }
-        public FieldType Type { get; set; }
-        public bool? IncludeTimeValue { get; set; }
+        private Type GetValueType()
+        {
+            switch (Type)
+            {
+                case FieldType.Guid:
+                    return typeof(Guid);
+                case FieldType.Text:
+                case FieldType.Note:
+                case FieldType.Choice:
+                case FieldType.Lookup:
+                case FieldType.User:
+                case FieldType.URL:
+                case FieldType.MultiChoice:
+                case FieldType.ContentTypeId:
+                    return typeof(string);
+                case FieldType.Number:
+                case FieldType.Currency:
+                    return typeof(double);
+                case FieldType.Boolean:
+                case FieldType.Recurrence:
+                case FieldType.Attachments:
+                case FieldType.AllDayEvent:
+                case FieldType.CrossProjectLink:
+                    return typeof(bool);
+                case FieldType.DateTime:
+                    return typeof(DateTime);
+                case FieldType.Integer:
+                case FieldType.Counter:
+                case FieldType.ModStat:
+                case FieldType.WorkflowStatus:
+                    return typeof(int);
+            }
+            throw new NotSupportedException(nameof(Type));
+        }
 
         protected override void OnParsing(XElement existingValue)
         {
-            var type = existingValue.Attribute("Type");
-
+            XAttribute type = existingValue.AttributeIgnoreCase(TypeAttr);
             if (type != null)
             {
-                Type = (FieldType) Enum.Parse(typeof (FieldType), type.Value.Trim(), true);
+                Type = (FieldType)Enum.Parse(typeof(FieldType), type.Value.Trim(), true);
             }
 
-            var includeTimeValue = existingValue.Attribute("IncludeTimeValue");
-
+            XAttribute includeTimeValue = existingValue.AttributeIgnoreCase(IncludeTimeValueAttr);
             if (includeTimeValue != null)
             {
                 IncludeTimeValue = Convert.ToBoolean(includeTimeValue.Value);
             }
-
             if (!string.IsNullOrEmpty(existingValue.Value))
             {
                 if (FieldType.DateTime == Type)
@@ -67,19 +103,21 @@ namespace SharePoint.Remote.Access.Caml
                     //if (typeof(T) == typeof(DateTime) || typeof(T) == typeof(object))
                     //Val = (T)((object)Utility.CreateDateTimeFromISO8601DateTimeString(existingValue.Value));
                 }
+                else
+                {
+                    Val = (T) Convert.ChangeType(existingValue.Value, GetValueType());
+                }
             }
         }
 
         public override XElement ToXElement()
         {
             var el = base.ToXElement();
-            el.Add(new XAttribute("Type", Type));
-
+            el.Add(new XAttribute(TypeAttr, Type));
             if (IncludeTimeValue.HasValue)
             {
-                el.Add(new XAttribute("IncludeTimeValue", IncludeTimeValue.Value));
+                el.Add(new XAttribute(IncludeTimeValueAttr, IncludeTimeValue.Value));
             }
-
             if (FieldType.DateTime == Type)
             {
                 //el.Value = typeof(T) == typeof(DateTime) || typeof(T) == typeof(object)
@@ -90,7 +128,6 @@ namespace SharePoint.Remote.Access.Caml
             {
                 el.Value = Convert.ToString(Val);
             }
-
             return el;
         }
     }

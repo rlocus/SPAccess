@@ -2,6 +2,6 @@
 {
     public interface IFieldOperator
     {
-        FieldRef FieldRef { get; set; }
+        FieldRef FieldRef { get; }
     }
 }

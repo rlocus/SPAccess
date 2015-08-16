@@ -5,6 +5,8 @@ namespace SharePoint.Remote.Access.Caml
 {
     public abstract class QueryElement
     {
+        public string ElementName { get; }
+
         protected QueryElement(string elementName)
         {
             ElementName = elementName;
@@ -22,21 +24,17 @@ namespace SharePoint.Remote.Access.Caml
             Parse(existingElement);
         }
 
-        public string ElementName { get; }
-
-        public virtual XElement ToXElement()
-        {
-            return new XElement(ElementName);
-        }
-
-        protected abstract void OnParsing(XElement existingElement);
-
         private void Parse(XElement existingElement)
         {
-            if (string.Equals(existingElement.Name.LocalName, ElementName, StringComparison.InvariantCultureIgnoreCase)
+            if (existingElement == null) throw new ArgumentNullException(nameof(existingElement));
+            if (string.Equals(existingElement.Name.LocalName, ElementName, StringComparison.OrdinalIgnoreCase)
                 && (existingElement.HasAttributes || existingElement.HasElements))
             {
                 OnParsing(existingElement);
+            }
+            else
+            {
+                throw new NotSupportedException(nameof(existingElement.Name));
             }
         }
 
@@ -44,9 +42,16 @@ namespace SharePoint.Remote.Access.Caml
         {
             if (!string.IsNullOrEmpty(existingElement))
             {
-                var el = XElement.Parse(existingElement, LoadOptions.None);
+                XElement el = XElement.Parse(existingElement, LoadOptions.None);
                 Parse(el);
             }
+        }
+
+        protected abstract void OnParsing(XElement existingElement);
+
+        public virtual XElement ToXElement()
+        {
+            return new XElement(ElementName);
         }
 
         public override string ToString()

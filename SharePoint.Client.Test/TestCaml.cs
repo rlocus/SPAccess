@@ -14,20 +14,20 @@ namespace SharePoint.Client.Test
         {
             var query = new Query()
             {
-                Where = new Where(
+                Where = new CamlWhere(
                     new Or(
                         new Eq<string>("ContentType", "My Content Type", FieldType.Text),
                         new IsNotNull("Description"))),
 
-                GroupBy = new GroupBy(new FieldRef { Name = "Title" }, true),
-                OrderBy = new OrderBy(new FieldRef { Name = "_Author" }).ThenBy("AuthoringDate").ThenBy("AssignedTo")
+                GroupBy = new CamlGroupBy(new CamlFieldRef { Name = "Title" }, true),
+                OrderBy = new CamlOrderBy(new CamlFieldRef { Name = "_Author" }).ThenBy("AuthoringDate").ThenBy("AssignedTo")
             };
 
             var caml = new Query()
             {
-                Where = new Where(query.Where.ToString()),
-                GroupBy = new GroupBy(query.GroupBy.ToString()),
-                OrderBy = new OrderBy(query.OrderBy.ToString())
+                Where = new CamlWhere(query.Where.ToString()),
+                GroupBy = new CamlGroupBy(query.GroupBy.ToString()),
+                OrderBy = new CamlOrderBy(query.OrderBy.ToString())
             };
         }
     }

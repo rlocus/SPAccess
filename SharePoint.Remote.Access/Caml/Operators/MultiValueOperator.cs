@@ -38,7 +38,7 @@ namespace SharePoint.Remote.Access.Caml.Operators
 
         protected override void OnParsing(XElement existingValuesOperator)
         {
-            var existingValues = existingValuesOperator.ElementsIgnoreCase(Value.ValueTag);
+            var existingValues = existingValuesOperator.ElementsIgnoreCase(CamlValue.ValueTag);
             Values = existingValues.Select(val => new Value<T>(val));
         }
 

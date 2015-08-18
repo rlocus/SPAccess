@@ -4,7 +4,7 @@ using SharePoint.Remote.Access.Extensions;
 
 namespace SharePoint.Remote.Access.Caml
 {
-    public sealed class FieldRef : QueryElement
+    public sealed class CamlFieldRef : CamlElement
     {
         internal const string FieldRefTag = "FieldRef";
         internal const string NameAttr = "Name";
@@ -13,17 +13,17 @@ namespace SharePoint.Remote.Access.Caml
         internal const string NullableAttr = "Nullable";
         internal const string LookupIdAttr = "LookupId";
 
-        public FieldRef()
+        public CamlFieldRef()
             : base(FieldRefTag)
         {
         }
 
-        public FieldRef(string existingFieldRef)
+        public CamlFieldRef(string existingFieldRef)
             : base(FieldRefTag, existingFieldRef)
         {
         }
 
-        public FieldRef(XElement existingFieldRef)
+        public CamlFieldRef(XElement existingFieldRef)
             : base(FieldRefTag, existingFieldRef)
         {
         }

@@ -8,12 +8,12 @@ namespace SharePoint.Remote.Access.Caml.Operators
     {
         internal const string ContainsTag = "Contains";
 
-        public Contains(FieldRef fieldRef, Value<string> value)
+        public Contains(CamlFieldRef fieldRef, Value<string> value)
             : base(ContainsTag, fieldRef, value)
         {
         }
 
-        public Contains(FieldRef fieldRef, string value)
+        public Contains(CamlFieldRef fieldRef, string value)
             : base(ContainsTag, fieldRef, value, FieldType.Text)
         {
         }

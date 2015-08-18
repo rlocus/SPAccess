@@ -6,11 +6,11 @@ namespace SharePoint.Remote.Access.Caml.Operators
 {
     public sealed class Eq : Eq<object>
     {
-        public Eq(FieldRef fieldRef, Value<object> value) : base(fieldRef, value)
+        public Eq(CamlFieldRef fieldRef, Value<object> value) : base(fieldRef, value)
         {
         }
 
-        public Eq(FieldRef fieldRef, object value, FieldType type) : base(fieldRef, value, type)
+        public Eq(CamlFieldRef fieldRef, object value, FieldType type) : base(fieldRef, value, type)
         {
         }
 
@@ -35,12 +35,12 @@ namespace SharePoint.Remote.Access.Caml.Operators
     {
         internal const string EqTag = "Eq";
 
-        public Eq(FieldRef fieldRef, Value<T> value)
+        public Eq(CamlFieldRef fieldRef, Value<T> value)
             : base(EqTag, fieldRef, value)
         {
         }
 
-        public Eq(FieldRef fieldRef, T value, FieldType type)
+        public Eq(CamlFieldRef fieldRef, T value, FieldType type)
             : base(EqTag, fieldRef, value, type)
         {
         }

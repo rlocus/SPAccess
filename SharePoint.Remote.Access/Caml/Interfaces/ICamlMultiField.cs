@@ -2,8 +2,8 @@
 
 namespace SharePoint.Remote.Access.Caml.Interfaces
 {
-    public interface IMultiFieldOperator
+    public interface ICamlMultiField
     {
-        IEnumerable<FieldRef> FieldRefs { get; }
+        IEnumerable<CamlFieldRef> FieldRefs { get; }
     }
 }

@@ -3,22 +3,22 @@ using System.Xml.Linq;
 
 namespace SharePoint.Remote.Access.Caml
 {
-    public abstract class QueryElement
+    public abstract class CamlElement
     {
         public string ElementName { get; }
 
-        protected QueryElement(string elementName)
+        protected CamlElement(string elementName)
         {
             ElementName = elementName;
         }
 
-        protected QueryElement(string elementName, string existingElement)
+        protected CamlElement(string elementName, string existingElement)
         {
             ElementName = elementName;
             Parse(existingElement);
         }
 
-        protected QueryElement(string elementName, XElement existingElement)
+        protected CamlElement(string elementName, XElement existingElement)
         {
             ElementName = elementName;
             Parse(existingElement);
@@ -56,7 +56,12 @@ namespace SharePoint.Remote.Access.Caml
 
         public override string ToString()
         {
-            return ToXElement().ToString();
+            return ToString(false);
+        }
+
+        public string ToString(bool disableFormatting)
+        {
+            return disableFormatting ? ToXElement().ToString(SaveOptions.DisableFormatting) : ToXElement().ToString(SaveOptions.None);
         }
     }
 }

@@ -7,16 +7,16 @@ using SharePoint.Remote.Access.Extensions;
 
 namespace SharePoint.Remote.Access.Caml.Clauses
 {
-    public sealed class GroupBy : Clause, IMultiFieldOperator
+    public sealed class CamlGroupBy : CamlClause, ICamlMultiField
     {
         internal const string GroupByTag = "GroupBy";
         internal const string CollapseAttr = "Collapse";
 
-        public IEnumerable<FieldRef> FieldRefs { get; private set; }
+        public IEnumerable<CamlFieldRef> FieldRefs { get; private set; }
 
         public bool? Collapse { get; private set; }
 
-        public GroupBy(IEnumerable<FieldRef> fieldRefs, bool? collapse = null)
+        public CamlGroupBy(IEnumerable<CamlFieldRef> fieldRefs, bool? collapse = null)
             : base(GroupByTag)
         {
             FieldRefs = fieldRefs;
@@ -37,27 +37,27 @@ namespace SharePoint.Remote.Access.Caml.Clauses
         //    Collapse = collapse;
         //}
 
-        public GroupBy(FieldRef field, bool? collapse = null)
+        public CamlGroupBy(CamlFieldRef field, bool? collapse = null)
         : base(GroupByTag)
         {
             FieldRefs = new[] { field }.AsEnumerable();
             Collapse = collapse;
         }
 
-        public GroupBy(string existingGroupBy)
+        public CamlGroupBy(string existingGroupBy)
             : base(GroupByTag, existingGroupBy)
         {
         }
 
-        public GroupBy(XElement existingGroupBy)
+        public CamlGroupBy(XElement existingGroupBy)
             : base(GroupByTag, existingGroupBy)
         {
         }
 
         protected override void OnParsing(XElement existingGroupBy)
         {
-            var existingFieldRefs = existingGroupBy.ElementsIgnoreCase(FieldRef.FieldRefTag);
-            FieldRefs = existingFieldRefs.Select(existingFieldRef => new FieldRef(existingFieldRef));
+            var existingFieldRefs = existingGroupBy.ElementsIgnoreCase(CamlFieldRef.FieldRefTag);
+            FieldRefs = existingFieldRefs.Select(existingFieldRef => new CamlFieldRef(existingFieldRef));
             var collaps = existingGroupBy.Attribute(CollapseAttr);
             if (collaps != null)
             {
@@ -79,11 +79,11 @@ namespace SharePoint.Remote.Access.Caml.Clauses
             return el;
         }
 
-        public static GroupBy Combine(GroupBy firstGroupBy, GroupBy secondGroupBy)
+        public static CamlGroupBy Combine(CamlGroupBy firstGroupBy, CamlGroupBy secondGroupBy)
         {
-            GroupBy groupBy = null;
+            CamlGroupBy groupBy = null;
             var collapse = false;
-            var fieldRefs = new List<FieldRef>();
+            var fieldRefs = new List<CamlFieldRef>();
             if (firstGroupBy?.FieldRefs != null)
             {
                 if (firstGroupBy.Collapse != null) collapse = firstGroupBy.Collapse.Value;
@@ -99,7 +99,7 @@ namespace SharePoint.Remote.Access.Caml.Clauses
             }
             if (fieldRefs.Count > 0)
             {
-                groupBy = new GroupBy(fieldRefs, collapse);
+                groupBy = new CamlGroupBy(fieldRefs, collapse);
             }
             return groupBy;
         }

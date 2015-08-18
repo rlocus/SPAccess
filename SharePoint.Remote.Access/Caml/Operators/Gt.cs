@@ -6,11 +6,11 @@ namespace SharePoint.Remote.Access.Caml.Operators
 {
     public sealed class Gt : Gt<object>
     {
-        public Gt(FieldRef fieldRef, Value<object> value) : base(fieldRef, value)
+        public Gt(CamlFieldRef fieldRef, Value<object> value) : base(fieldRef, value)
         {
         }
 
-        public Gt(FieldRef fieldRef, object value, FieldType type) : base(fieldRef, value, type)
+        public Gt(CamlFieldRef fieldRef, object value, FieldType type) : base(fieldRef, value, type)
         {
         }
 
@@ -35,12 +35,12 @@ namespace SharePoint.Remote.Access.Caml.Operators
     {
         internal const string GtTag = "Gt";
 
-        public Gt(FieldRef fieldRef, Value<T> value)
+        public Gt(CamlFieldRef fieldRef, Value<T> value)
             : base(GtTag, fieldRef, value)
         {
         }
 
-        public Gt(FieldRef fieldRef, T value, FieldType type)
+        public Gt(CamlFieldRef fieldRef, T value, FieldType type)
             : base(GtTag, fieldRef, value, type)
         {
         }

@@ -6,11 +6,11 @@ namespace SharePoint.Remote.Access.Caml.Operators
 {
     public sealed class Geq : Geq<object>
     {
-        public Geq(FieldRef fieldRef, Value<object> value) : base(fieldRef, value)
+        public Geq(CamlFieldRef fieldRef, Value<object> value) : base(fieldRef, value)
         {
         }
 
-        public Geq(FieldRef fieldRef, object value, FieldType type) : base(fieldRef, value, type)
+        public Geq(CamlFieldRef fieldRef, object value, FieldType type) : base(fieldRef, value, type)
         {
         }
 
@@ -35,12 +35,12 @@ namespace SharePoint.Remote.Access.Caml.Operators
     {
         internal const string GeqTag = "Geq";
 
-        public Geq(FieldRef fieldRef, Value<T> value)
+        public Geq(CamlFieldRef fieldRef, Value<T> value)
             : base(GeqTag, fieldRef, value)
         {
         }
 
-        public Geq(FieldRef fieldRef, T value, FieldType type)
+        public Geq(CamlFieldRef fieldRef, T value, FieldType type)
             : base(GeqTag, fieldRef, value, type)
         {
         }

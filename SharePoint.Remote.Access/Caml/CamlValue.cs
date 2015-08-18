@@ -5,22 +5,22 @@ using SharePoint.Remote.Access.Extensions;
 
 namespace SharePoint.Remote.Access.Caml
 {
-    public sealed class Value : Value<object>
+    public sealed class CamlValue : Value<object>
     {
-        public Value(object value, FieldType type) : base(value, type)
+        public CamlValue(object value, FieldType type) : base(value, type)
         {
         }
 
-        public Value(string existingValue) : base(existingValue)
+        public CamlValue(string existingValue) : base(existingValue)
         {
         }
 
-        public Value(XElement existingValue) : base(existingValue)
+        public CamlValue(XElement existingValue) : base(existingValue)
         {
         }
     }
 
-    public class Value<T> : QueryElement
+    public class Value<T> : CamlElement
     {
         internal const string ValueTag = "Value";
         internal const string TypeAttr = "Type";

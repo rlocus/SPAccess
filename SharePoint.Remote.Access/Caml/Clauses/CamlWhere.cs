@@ -6,31 +6,31 @@ using SharePoint.Remote.Access.Caml.Operators;
 
 namespace SharePoint.Remote.Access.Caml.Clauses
 {
-    public sealed class Where : Clause
+    public sealed class CamlWhere : CamlClause
     {
         internal const string WhereTag = "Where";
 
         internal Operator Operator { get; private set; }
 
-        public Where(Operator op)
+        public CamlWhere(Operator op)
             : base(WhereTag)
         {
             if (op == null) throw new ArgumentNullException(nameof(op));
             Operator = op;
         }
 
-        public Where(string existingWhere)
+        public CamlWhere(string existingWhere)
             : base(WhereTag, existingWhere)
         {
         }
 
-        public Where(XElement existingWhere)
+        public CamlWhere(XElement existingWhere)
             : base(WhereTag, existingWhere)
         {
         }
 
         internal void And<T>(T op)
-            where T : Operator, IFieldOperator, IMultiFieldOperator
+            where T : Operator, ICamlField, ICamlMultiField
         {
             if (op == null) throw new ArgumentNullException(nameof(op));
 
@@ -42,7 +42,7 @@ namespace SharePoint.Remote.Access.Caml.Clauses
         }
 
         internal void Or<T>(T op)
-            where T : Operator, IFieldOperator, IMultiFieldOperator
+            where T : Operator, ICamlField, ICamlMultiField
         {
             if (op == null) throw new ArgumentNullException(nameof(op));
             //var operators = new List<Operator>(Operators) {op};

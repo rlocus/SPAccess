@@ -7,24 +7,24 @@ using SharePoint.Remote.Access.Extensions;
 
 namespace SharePoint.Remote.Access.Caml.Clauses
 {
-    public sealed class OrderBy : Clause, IMultiFieldOperator
+    public sealed class CamlOrderBy : CamlClause, ICamlMultiField
     {
         internal const string OrderByTag = "OrderBy";
 
-        public IEnumerable<FieldRef> FieldRefs { get; private set; }
+        public IEnumerable<CamlFieldRef> FieldRefs { get; private set; }
 
-        public OrderBy(IEnumerable<FieldRef> fieldRefs)
+        public CamlOrderBy(IEnumerable<CamlFieldRef> fieldRefs)
             : base(OrderByTag)
         {
             FieldRefs = fieldRefs;
         }
 
-        public OrderBy(string existingGroupBy)
+        public CamlOrderBy(string existingGroupBy)
             : base(OrderByTag, existingGroupBy)
         {
         }
 
-        public OrderBy(XElement existingOrderBy)
+        public CamlOrderBy(XElement existingOrderBy)
             : base(OrderByTag, existingOrderBy)
         {
         }
@@ -41,7 +41,7 @@ namespace SharePoint.Remote.Access.Caml.Clauses
         //    FieldRefs = (new[] { new FieldRef { Name = fieldName, Ascending = ascending } }).AsEnumerable();
         //}
 
-        public OrderBy(FieldRef field)
+        public CamlOrderBy(CamlFieldRef field)
         : base(OrderByTag)
         {
             FieldRefs = new[] { field }.AsEnumerable();
@@ -49,8 +49,8 @@ namespace SharePoint.Remote.Access.Caml.Clauses
 
         protected override void OnParsing(XElement existingOrderBy)
         {
-            var existingFieldRefs = existingOrderBy.ElementsIgnoreCase(FieldRef.FieldRefTag);
-            FieldRefs = existingFieldRefs.Select(existingFieldRef => new FieldRef(existingFieldRef));
+            var existingFieldRefs = existingOrderBy.ElementsIgnoreCase(CamlFieldRef.FieldRefTag);
+            FieldRefs = existingFieldRefs.Select(existingFieldRef => new CamlFieldRef(existingFieldRef));
         }
 
         public override XElement ToXElement()
@@ -66,10 +66,10 @@ namespace SharePoint.Remote.Access.Caml.Clauses
             return el;
         }
 
-        public static OrderBy Combine(OrderBy firstOrderBy, OrderBy secondOrderBy)
+        public static CamlOrderBy Combine(CamlOrderBy firstOrderBy, CamlOrderBy secondOrderBy)
         {
-            OrderBy orderBy = null;
-            var fieldRefs = new List<FieldRef>();
+            CamlOrderBy orderBy = null;
+            var fieldRefs = new List<CamlFieldRef>();
             if (firstOrderBy?.FieldRefs != null)
             {
                 fieldRefs.AddRange(firstOrderBy.FieldRefs);
@@ -80,12 +80,12 @@ namespace SharePoint.Remote.Access.Caml.Clauses
             }
             if (fieldRefs.Count > 0)
             {
-                orderBy = new OrderBy(fieldRefs);
+                orderBy = new CamlOrderBy(fieldRefs);
             }
             return orderBy;
         }
 
-        public static OrderBy operator +(OrderBy firstOrderBy, OrderBy secondOrderBy)
+        public static CamlOrderBy operator +(CamlOrderBy firstOrderBy, CamlOrderBy secondOrderBy)
         {
             return Combine(firstOrderBy, secondOrderBy);
         }

@@ -6,11 +6,11 @@ namespace SharePoint.Remote.Access.Caml.Operators
 {
     public sealed class Neq : Neq<object>
     {
-        public Neq(FieldRef fieldRef, Value<object> value) : base(fieldRef, value)
+        public Neq(CamlFieldRef fieldRef, Value<object> value) : base(fieldRef, value)
         {
         }
 
-        public Neq(FieldRef fieldRef, object value, FieldType type) : base(fieldRef, value, type)
+        public Neq(CamlFieldRef fieldRef, object value, FieldType type) : base(fieldRef, value, type)
         {
         }
 
@@ -35,12 +35,12 @@ namespace SharePoint.Remote.Access.Caml.Operators
     {
         internal const string NeqTag = "Neq";
 
-        public Neq(FieldRef fieldRef, Value<T> value)
+        public Neq(CamlFieldRef fieldRef, Value<T> value)
             : base(NeqTag, fieldRef, value)
         {
         }
 
-        public Neq(FieldRef fieldRef, T value, FieldType type)
+        public Neq(CamlFieldRef fieldRef, T value, FieldType type)
             : base(NeqTag, fieldRef, value, type)
         {
         }

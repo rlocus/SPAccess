@@ -8,8 +8,8 @@ namespace SharePoint.Remote.Access.Caml
 {
     public static class Extensions
     {
-        public static Where CombineAnd<T>(this Where where, T op)
-            where T : Operator, IFieldOperator, IMultiFieldOperator
+        public static CamlWhere CombineAnd<T>(this CamlWhere where, T op)
+            where T : Operator, ICamlField, ICamlMultiField
         {
             if (where != null)
             {
@@ -17,14 +17,14 @@ namespace SharePoint.Remote.Access.Caml
             }
             else
             {
-                where = new Where(op);
+                where = new CamlWhere(op);
             }
 
             return where;
         }
 
-        public static Where CombineOr<T>(this Where where, T op)
-            where T : Operator, IFieldOperator, IMultiFieldOperator
+        public static CamlWhere CombineOr<T>(this CamlWhere where, T op)
+            where T : Operator, ICamlField, ICamlMultiField
         {
             if (where != null)
             {
@@ -32,42 +32,42 @@ namespace SharePoint.Remote.Access.Caml
             }
             else
             {
-                where = new Where(op);
+                where = new CamlWhere(op);
             }
 
             return where;
         }
         
-        public static OrderBy ThenBy(this OrderBy orderBy, Guid fieldId, bool? ascending = null)
+        public static CamlOrderBy ThenBy(this CamlOrderBy orderBy, Guid fieldId, bool? ascending = null)
         {
-            return orderBy.ThenBy(new FieldRef { FieldId = fieldId, Ascending = @ascending });
+            return orderBy.ThenBy(new CamlFieldRef { FieldId = fieldId, Ascending = @ascending });
         }
 
-        public static OrderBy ThenBy(this OrderBy orderBy, string fieldName, bool? ascending = null)
+        public static CamlOrderBy ThenBy(this CamlOrderBy orderBy, string fieldName, bool? ascending = null)
         {
-            return orderBy.ThenBy(new FieldRef { Name = fieldName, Ascending = @ascending });
+            return orderBy.ThenBy(new CamlFieldRef { Name = fieldName, Ascending = @ascending });
         }
 
-        public static OrderBy ThenBy(this OrderBy orderBy, FieldRef fieldRef)
+        public static CamlOrderBy ThenBy(this CamlOrderBy orderBy, CamlFieldRef fieldRef)
         {
-            var fields = new List<FieldRef>(orderBy.FieldRefs) { fieldRef };
-            return new OrderBy(fields);
+            var fields = new List<CamlFieldRef>(orderBy.FieldRefs) { fieldRef };
+            return new CamlOrderBy(fields);
         }
 
-        public static GroupBy ThenBy(this GroupBy groupBy, Guid fieldId)
+        public static CamlGroupBy ThenBy(this CamlGroupBy groupBy, Guid fieldId)
         {
-            return groupBy.ThenBy(new FieldRef { FieldId = fieldId, Ascending = false });
+            return groupBy.ThenBy(new CamlFieldRef { FieldId = fieldId, Ascending = false });
         }
 
-        public static GroupBy ThenBy(this GroupBy groupBy, string fieldName)
+        public static CamlGroupBy ThenBy(this CamlGroupBy groupBy, string fieldName)
         {
-            return groupBy.ThenBy(new FieldRef { Name = fieldName, Ascending = false });
+            return groupBy.ThenBy(new CamlFieldRef { Name = fieldName, Ascending = false });
         }
 
-        public static GroupBy ThenBy(this GroupBy groupBy, FieldRef fieldRef)
+        public static CamlGroupBy ThenBy(this CamlGroupBy groupBy, CamlFieldRef fieldRef)
         {
-            var fields = new List<FieldRef>(groupBy.FieldRefs) { fieldRef };
-            return new GroupBy(fields, groupBy.Collapse);
+            var fields = new List<CamlFieldRef>(groupBy.FieldRefs) { fieldRef };
+            return new CamlGroupBy(fields, groupBy.Collapse);
         }
     }
 }

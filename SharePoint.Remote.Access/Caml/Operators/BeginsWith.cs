@@ -8,12 +8,12 @@ namespace SharePoint.Remote.Access.Caml.Operators
     {
         internal const string BeginsWithTag = "BeginsWith";
 
-        public BeginsWith(FieldRef fieldRef, Value<string> value)
+        public BeginsWith(CamlFieldRef fieldRef, Value<string> value)
             : base(BeginsWithTag, fieldRef, value)
         {
         }
 
-        public BeginsWith(FieldRef fieldRef, string value)
+        public BeginsWith(CamlFieldRef fieldRef, string value)
             : base(BeginsWithTag, fieldRef, value, FieldType.Text)
         {
         }

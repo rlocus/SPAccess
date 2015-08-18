@@ -3,7 +3,7 @@ using System.Xml.Linq;
 
 namespace SharePoint.Remote.Access.Caml.Operators
 {
-    public abstract class Operator : QueryElement
+    public abstract class Operator : CamlElement
     {
         protected Operator(string operatorName)
             : base(operatorName)

@@ -5,11 +5,11 @@ using SharePoint.Remote.Access.Caml.Interfaces;
 
 namespace SharePoint.Remote.Access.Caml.Operators
 {
-    public abstract class FieldOperator : Operator, IFieldOperator
+    public abstract class FieldOperator : Operator, ICamlField
     {
-        public FieldRef FieldRef { get; private set; }
+        public CamlFieldRef FieldRef { get; private set; }
 
-        protected FieldOperator(string operatorName, FieldRef fieldRef)
+        protected FieldOperator(string operatorName, CamlFieldRef fieldRef)
             : base(operatorName)
         {
             if (fieldRef == null) throw new ArgumentNullException(nameof(fieldRef));
@@ -29,10 +29,10 @@ namespace SharePoint.Remote.Access.Caml.Operators
         protected override void OnParsing(XElement existingSingleFieldValueOperator)
         {
             XElement existingFieldRef =
-                existingSingleFieldValueOperator.Elements(FieldRef.FieldRefTag).SingleOrDefault();
+                existingSingleFieldValueOperator.Elements(CamlFieldRef.FieldRefTag).SingleOrDefault();
             if (existingFieldRef != null)
             {
-                FieldRef = new FieldRef(existingFieldRef);
+                FieldRef = new CamlFieldRef(existingFieldRef);
             }
         }
 

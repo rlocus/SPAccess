@@ -23,11 +23,11 @@ namespace SharePoint.Remote.Access.Caml.Operators
         {
         }
 
-        public In(FieldRef fieldRef, IEnumerable<object> values, FieldType type) : base(fieldRef, values, type)
+        public In(CamlFieldRef fieldRef, IEnumerable<object> values, FieldType type) : base(fieldRef, values, type)
         {
         }
 
-        public In(FieldRef fieldRef, IEnumerable<Value<object>> values) : base(fieldRef, values)
+        public In(CamlFieldRef fieldRef, IEnumerable<Value<object>> values) : base(fieldRef, values)
         {
         }
 
@@ -64,12 +64,12 @@ namespace SharePoint.Remote.Access.Caml.Operators
         {
         }
 
-        public In(FieldRef fieldRef, IEnumerable<T> values, FieldType type)
+        public In(CamlFieldRef fieldRef, IEnumerable<T> values, FieldType type)
             : base(InTag, fieldRef, values, type)
         {
         }
 
-        public In(FieldRef fieldRef, IEnumerable<Value<T>> values)
+        public In(CamlFieldRef fieldRef, IEnumerable<Value<T>> values)
             : base(InTag, fieldRef, values)
         {
         }

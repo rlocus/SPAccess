@@ -6,17 +6,17 @@ using SharePoint.Remote.Access.Caml.Interfaces;
 
 namespace SharePoint.Remote.Access.Caml.Operators
 {
-    public abstract class FieldValueOperator<T> : ValueOperator<T>, IFieldOperator
+    public abstract class FieldValueOperator<T> : ValueOperator<T>, ICamlField
     {
-        public FieldRef FieldRef { get; private set; }
+        public CamlFieldRef FieldRef { get; private set; }
 
-        protected FieldValueOperator(string operatorName, FieldRef fieldRef, Value<T> value)
+        protected FieldValueOperator(string operatorName, CamlFieldRef fieldRef, Value<T> value)
             : base(operatorName, value)
         {
             FieldRef = fieldRef;
         }
 
-        protected FieldValueOperator(string operatorName, FieldRef fieldRef, T value, FieldType type)
+        protected FieldValueOperator(string operatorName, CamlFieldRef fieldRef, T value, FieldType type)
             : base(operatorName, value, type)
         {
             FieldRef = fieldRef;
@@ -25,25 +25,25 @@ namespace SharePoint.Remote.Access.Caml.Operators
         protected FieldValueOperator(string operatorName, Guid fieldId, Value<T> value)
             : base(operatorName, value)
         {
-            FieldRef = new FieldRef { FieldId = fieldId };
+            FieldRef = new CamlFieldRef { FieldId = fieldId };
         }
 
         protected FieldValueOperator(string operatorName, Guid fieldId, T value, FieldType type)
             : base(operatorName, value, type)
         {
-            FieldRef = new FieldRef { FieldId = fieldId };
+            FieldRef = new CamlFieldRef { FieldId = fieldId };
         }
 
         protected FieldValueOperator(string operatorName, string fieldName, Value<T> value)
             : base(operatorName, value)
         {
-            FieldRef = new FieldRef { Name = fieldName };
+            FieldRef = new CamlFieldRef { Name = fieldName };
         }
 
         protected FieldValueOperator(string operatorName, string fieldName, T value, FieldType type)
             : base(operatorName, value, type)
         {
-            FieldRef = new FieldRef { Name = fieldName };
+            FieldRef = new CamlFieldRef { Name = fieldName };
         }
 
         protected FieldValueOperator(string operatorName, string existingSingleFieldValueOperator)
@@ -58,16 +58,16 @@ namespace SharePoint.Remote.Access.Caml.Operators
 
         protected override void OnParsing(XElement existingSingleFieldValueOperator)
         {
-            XElement existingValue = existingSingleFieldValueOperator.Elements().SingleOrDefault(el => string.Equals(el.Name.LocalName, Caml.Value.ValueTag, StringComparison.OrdinalIgnoreCase));
+            XElement existingValue = existingSingleFieldValueOperator.Elements().SingleOrDefault(el => string.Equals(el.Name.LocalName, Caml.CamlValue.ValueTag, StringComparison.OrdinalIgnoreCase));
             if (existingValue != null)
             {
                 base.OnParsing(existingValue);
             }
             XElement existingFieldRef =
-                existingSingleFieldValueOperator.Elements(FieldRef.FieldRefTag).SingleOrDefault();
+                existingSingleFieldValueOperator.Elements(CamlFieldRef.FieldRefTag).SingleOrDefault();
             if (existingFieldRef != null)
             {
-                FieldRef = new FieldRef(existingFieldRef);
+                FieldRef = new CamlFieldRef(existingFieldRef);
             }
         }
 

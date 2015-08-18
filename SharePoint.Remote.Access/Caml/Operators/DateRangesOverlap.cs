@@ -22,7 +22,7 @@ namespace SharePoint.Remote.Access.Caml.Operators
         internal const string DateRangesOverlapTag = "DateRangesOverlap";
         private DateRangesOverlapValue? _enumValue;
 
-        public DateRangesOverlap(IEnumerable<FieldRef> fieldRefs, DateTime value)
+        public DateRangesOverlap(IEnumerable<CamlFieldRef> fieldRefs, DateTime value)
             : base(DateRangesOverlapTag, fieldRefs, value, FieldType.DateTime)
         {
         }
@@ -62,7 +62,7 @@ namespace SharePoint.Remote.Access.Caml.Operators
         protected override void OnParsing(XElement existingMultipleFieldValueOperator)
         {
             base.OnParsing(existingMultipleFieldValueOperator);
-            var existingValue = existingMultipleFieldValueOperator.ElementsIgnoreCase(Caml.Value.ValueTag).SingleOrDefault();
+            var existingValue = existingMultipleFieldValueOperator.ElementsIgnoreCase(Caml.CamlValue.ValueTag).SingleOrDefault();
             if (existingValue != null && existingValue.HasElements)
             {
                 foreach (XElement element in existingValue.Elements())
@@ -82,7 +82,7 @@ namespace SharePoint.Remote.Access.Caml.Operators
             var el = base.ToXElement();
             if (_enumValue.HasValue)
             {
-                var value = el.Elements(Caml.Value.ValueTag).Single();
+                var value = el.Elements(Caml.CamlValue.ValueTag).Single();
                 value.Value = string.Empty;
                 value.Add(new XElement(_enumValue.ToString()));
             }

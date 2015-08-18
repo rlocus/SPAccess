@@ -6,11 +6,11 @@ namespace SharePoint.Remote.Access.Caml.Operators
 {
     public sealed class Leq : Leq<object>
     {
-        public Leq(FieldRef fieldRef, Value<object> value) : base(fieldRef, value)
+        public Leq(CamlFieldRef fieldRef, Value<object> value) : base(fieldRef, value)
         {
         }
 
-        public Leq(FieldRef fieldRef, object value, FieldType type) : base(fieldRef, value, type)
+        public Leq(CamlFieldRef fieldRef, object value, FieldType type) : base(fieldRef, value, type)
         {
         }
 
@@ -35,12 +35,12 @@ namespace SharePoint.Remote.Access.Caml.Operators
     {
         internal const string LeqTag = "Leq";
 
-        public Leq(FieldRef fieldRef, Value<T> value)
+        public Leq(CamlFieldRef fieldRef, Value<T> value)
             : base(LeqTag, fieldRef, value)
         {
         }
 
-        public Leq(FieldRef fieldRef, T value, FieldType type)
+        public Leq(CamlFieldRef fieldRef, T value, FieldType type)
             : base(LeqTag, fieldRef, value, type)
         {
         }

@@ -45,16 +45,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AuthType.cs" />
-    <Compile Include="Caml\Clauses\Clause.cs" />
-    <Compile Include="Caml\Clauses\GroupBy.cs" />
-    <Compile Include="Caml\Clauses\OrderBy.cs" />
-    <Compile Include="Caml\Clauses\Where.cs" />
+    <Compile Include="Caml\Clauses\CamlClause.cs" />
+    <Compile Include="Caml\Clauses\CamlGroupBy.cs" />
+    <Compile Include="Caml\Clauses\CamlOrderBy.cs" />
+    <Compile Include="Caml\Clauses\CamlWhere.cs" />
     <Compile Include="Caml\Extensions.cs" />
-    <Compile Include="Caml\FieldRef.cs" />
-    <Compile Include="Caml\Interfaces\IFieldOperator.cs" />
-    <Compile Include="Caml\Interfaces\IMultiFieldOperator.cs" />
-    <Compile Include="Caml\Interfaces\IMultiValueOperator.cs" />
-    <Compile Include="Caml\Interfaces\IValueOperator.cs" />
+    <Compile Include="Caml\CamlFieldRef.cs" />
+    <Compile Include="Caml\Interfaces\ICamlField.cs" />
+    <Compile Include="Caml\Interfaces\ICamlMultiField.cs" />
+    <Compile Include="Caml\Interfaces\ICamlMultiValue.cs" />
+    <Compile Include="Caml\Interfaces\ICamlValue.cs" />
     <Compile Include="Caml\Operators\And.cs" />
     <Compile Include="Caml\Operators\BeginsWith.cs" />
     <Compile Include="Caml\Operators\Contains.cs" />
@@ -77,10 +77,10 @@
     <Compile Include="Caml\Operators\FieldOperator.cs" />
     <Compile Include="Caml\Operators\FieldValueOperator.cs" />
     <Compile Include="Caml\Operators\ValueOperator.cs" />
+    <Compile Include="Caml\View.cs" />
     <Compile Include="Caml\Query.cs" />
     <Compile Include="Caml\QueryElement.cs" />
-    <Compile Include="Caml\Value.cs" />
-    <Compile Include="Extensions\CamlQueryExtensions.cs" />
+    <Compile Include="Caml\CamlValue.cs" />
     <Compile Include="Extensions\ClientRuntimeContextExtentions.cs" />
     <Compile Include="Extensions\LinqExtensions.cs" />
     <Compile Include="Extensions\XElementExtensions.cs" />

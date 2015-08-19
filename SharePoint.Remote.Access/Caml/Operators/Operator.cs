@@ -71,10 +71,10 @@ namespace SharePoint.Remote.Access.Caml.Operators
             {
                 return new IsNotNull(existingOperator);
             }
-            if (string.Equals(tag, DateRangesOverlap.DateRangesOverlapTag, StringComparison.OrdinalIgnoreCase))
-            {
-                return new DateRangesOverlap(existingOperator);
-            }
+            //if (string.Equals(tag, DateRangesOverlap.DateRangesOverlapTag, StringComparison.OrdinalIgnoreCase))
+            //{
+            //    return new DateRangesOverlap(existingOperator);
+            //}
             if (string.Equals(tag, In.InTag, StringComparison.OrdinalIgnoreCase))
             {
                 return new In(existingOperator);

@@ -77,9 +77,10 @@
     <Compile Include="Caml\Operators\FieldOperator.cs" />
     <Compile Include="Caml\Operators\FieldValueOperator.cs" />
     <Compile Include="Caml\Operators\ValueOperator.cs" />
+    <Compile Include="Caml\ViewFields.cs" />
     <Compile Include="Caml\View.cs" />
     <Compile Include="Caml\Query.cs" />
-    <Compile Include="Caml\QueryElement.cs" />
+    <Compile Include="Caml\CamlElement.cs" />
     <Compile Include="Caml\CamlValue.cs" />
     <Compile Include="Extensions\ClientRuntimeContextExtentions.cs" />
     <Compile Include="Extensions\LinqExtensions.cs" />

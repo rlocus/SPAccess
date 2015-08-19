@@ -1,43 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
 using SharePoint.Remote.Access.Caml.Clauses;
-using SharePoint.Remote.Access.Caml.Interfaces;
-using SharePoint.Remote.Access.Caml.Operators;
 
 namespace SharePoint.Remote.Access.Caml
 {
     public static class Extensions
     {
-        public static CamlWhere CombineAnd<T>(this CamlWhere where, T op)
-            where T : Operator, ICamlField, ICamlMultiField
+        public static CamlWhere CombineAnd(this CamlWhere where, CamlWhere combinedWhere)
         {
-            if (where != null)
-            {
-                where.And(op);
-            }
-            else
-            {
-                where = new CamlWhere(op);
-            }
-
+            if (where == null) throw new ArgumentNullException(nameof(where));
+            if (combinedWhere == null) throw new ArgumentNullException(nameof(combinedWhere));
+            where = new CamlWhere(where.Operator);
+            where.And(combinedWhere.Operator);
             return where;
         }
 
-        public static CamlWhere CombineOr<T>(this CamlWhere where, T op)
-            where T : Operator, ICamlField, ICamlMultiField
+        public static CamlWhere CombineOr(this CamlWhere where, CamlWhere combinedWhere)
         {
-            if (where != null)
-            {
-                where.Or(op);
-            }
-            else
-            {
-                where = new CamlWhere(op);
-            }
-
+            if (where == null) throw new ArgumentNullException(nameof(where));
+            if (combinedWhere == null) throw new ArgumentNullException(nameof(combinedWhere));
+            where = new CamlWhere(where.Operator);
+            where.Or(combinedWhere.Operator);
             return where;
         }
-        
+
         public static CamlOrderBy ThenBy(this CamlOrderBy orderBy, Guid fieldId, bool? ascending = null)
         {
             return orderBy.ThenBy(new CamlFieldRef { FieldId = fieldId, Ascending = @ascending });

@@ -26,21 +26,20 @@ namespace SharePoint.Remote.Access.Caml.Operators
         {
         }
 
-        public Operator[] Operators { get; private set; }
+        internal Operator[] Operators { get; private set; }
 
         private void InitOperators(IEnumerable<Operator> operators)
         {
-            Operators = new Operator[OperatorCount];
-            var i = 0;
             if (operators != null)
             {
-                foreach (var op in operators)
+                Operators = operators as Operator[] ?? operators.ToArray();
+                if (Operators.Length > OperatorCount)
                 {
-                    Operators[i++] = op;
-                    if (i > OperatorCount)
-                    {
-                        throw new NotSupportedException($"Max count of operators must be {OperatorCount}.");
-                    }
+                    throw new NotSupportedException($"Max count of operators must be {OperatorCount}.");
+                }
+                if (Operators.Length < OperatorCount)
+                {
+                    throw new NotSupportedException($"Min count of operators must be {OperatorCount}.");
                 }
                 if (Operators.OfType<NestedOperator>().Count() > NestedOperatorCount)
                 {

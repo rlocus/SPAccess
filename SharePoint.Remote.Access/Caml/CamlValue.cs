@@ -5,6 +5,16 @@ using SharePoint.Remote.Access.Extensions;
 
 namespace SharePoint.Remote.Access.Caml
 {
+    public enum DateValue
+    {
+        Now,
+        Today,
+        Day,
+        Week,
+        Month,
+        Year
+    }
+
     public sealed class CamlValue : Value<object>
     {
         public CamlValue(object value, FieldType type) : base(value, type)
@@ -100,12 +110,20 @@ namespace SharePoint.Remote.Access.Caml
             {
                 if (FieldType.DateTime == Type)
                 {
-                    //if (typeof(T) == typeof(DateTime) || typeof(T) == typeof(object))
-                    //Val = (T)((object)Utility.CreateDateTimeFromISO8601DateTimeString(existingValue.Value));
+                    DateValue dateValue;
+                    if (Enum.TryParse(existingValue.Name.LocalName, true, out dateValue))
+                    {
+                        Val = (T)(object)dateValue;
+                    }
+                    else
+                    {
+                        DateTime date = DateTime.Parse(existingValue.Value);
+                        Val = (T)(object)date;
+                    }
                 }
                 else
                 {
-                    Val = (T) Convert.ChangeType(existingValue.Value, GetValueType());
+                    Val = (T)Convert.ChangeType(existingValue.Value, GetValueType());
                 }
             }
         }
@@ -120,9 +138,18 @@ namespace SharePoint.Remote.Access.Caml
             }
             if (FieldType.DateTime == Type)
             {
-                //el.Value = typeof(T) == typeof(DateTime) || typeof(T) == typeof(object)
-                //    ? SPUtility.CreateISO8601DateTimeFromSystemDateTime(Convert.ToDateTime(Val))
-                //    : Convert.ToString(Val);
+                if (typeof(T) == typeof(DateTime))
+                {
+                    el.Value = Convert.ToDateTime(Val).ToString("s") + "Z";
+                }
+                else if (typeof(T) == typeof(DateValue))
+                {
+                    el.ReplaceAll(new XElement(Convert.ToString(Val)));
+                }
+                else
+                {
+                    el.Value = Convert.ToString(Val);
+                }
             }
             else
             {

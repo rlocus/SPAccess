@@ -1,92 +1,81 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Xml.Linq;
 using Microsoft.SharePoint.Client;
-using SharePoint.Remote.Access.Extensions;
 
 namespace SharePoint.Remote.Access.Caml.Operators
 {
-    public enum DateRangesOverlapValue
-    {
-        Now,
-        Today,
-        Day,
-        Week,
-        Month,
-        Year
-    }
-
-    public sealed class DateRangesOverlap : ValueMultiFieldOperator<DateTime>
+    public class DateRangesOverlap : ValueMultiFieldOperator<object>
     {
         internal const string DateRangesOverlapTag = "DateRangesOverlap";
-        private DateRangesOverlapValue? _enumValue;
 
-        public DateRangesOverlap(IEnumerable<CamlFieldRef> fieldRefs, DateTime value)
+        public DateRangesOverlap(IEnumerable<CamlFieldRef> fieldRefs, DateValue value)
             : base(DateRangesOverlapTag, fieldRefs, value, FieldType.DateTime)
         {
         }
 
-        public DateRangesOverlap(DateTime value, params Guid[] fieldIds)
-            : base(DateRangesOverlapTag, fieldIds, value, FieldType.DateTime)
-        {
-        }
-
-        public DateRangesOverlap(DateTime value, params string[] fieldNames)
+        public DateRangesOverlap(IEnumerable<string> fieldNames, DateValue value)
             : base(DateRangesOverlapTag, fieldNames, value, FieldType.DateTime)
         {
         }
 
-        public DateRangesOverlap(DateRangesOverlapValue value, params Guid[] fieldIds)
-            : base(DateRangesOverlapTag, fieldIds, DateTime.MinValue, FieldType.DateTime)
+        protected DateRangesOverlap(IEnumerable<Guid> fieldIds, DateValue value)
+            : base(DateRangesOverlapTag, fieldIds, value, FieldType.DateTime)
         {
-            _enumValue = value;
         }
-
-        public DateRangesOverlap(DateRangesOverlapValue value, params string[] fieldNames)
-            : base(DateRangesOverlapTag, fieldNames, DateTime.MinValue, FieldType.DateTime)
-        {
-            _enumValue = value;
-        }
-
-        public DateRangesOverlap(string existingDateRangesOverlapOperator)
-            : base(DateRangesOverlapTag, existingDateRangesOverlapOperator)
+        
+        public DateRangesOverlap(IEnumerable<CamlFieldRef> fieldRefs, DateTime value)
+           : base(DateRangesOverlapTag, fieldRefs, value, FieldType.DateTime)
         {
         }
 
-        public DateRangesOverlap(XElement existingDateRangesOverlapOperator)
-            : base(DateRangesOverlapTag, existingDateRangesOverlapOperator)
+        public DateRangesOverlap(IEnumerable<string> fieldNames, DateTime value)
+            : base(DateRangesOverlapTag, fieldNames, value, FieldType.DateTime)
         {
         }
 
-        protected override void OnParsing(XElement existingMultipleFieldValueOperator)
+        protected DateRangesOverlap(IEnumerable<Guid> fieldIds, DateTime value)
+            : base(DateRangesOverlapTag, fieldIds, value, FieldType.DateTime)
         {
-            base.OnParsing(existingMultipleFieldValueOperator);
-            var existingValue = existingMultipleFieldValueOperator.ElementsIgnoreCase(Caml.CamlValue.ValueTag).SingleOrDefault();
-            if (existingValue != null && existingValue.HasElements)
-            {
-                foreach (XElement element in existingValue.Elements())
-                {
-                    DateRangesOverlapValue enumValue;
-                    if (Enum.TryParse(element.Name.LocalName, true, out enumValue))
-                    {
-                        _enumValue = enumValue;
-                        break;
-                    }
-                }
-            }
         }
 
-        public override XElement ToXElement()
+        public DateRangesOverlap(string existingSingleFieldValueOperator)
+            : base(DateRangesOverlapTag, existingSingleFieldValueOperator)
         {
-            var el = base.ToXElement();
-            if (_enumValue.HasValue)
-            {
-                var value = el.Elements(Caml.CamlValue.ValueTag).Single();
-                value.Value = string.Empty;
-                value.Add(new XElement(_enumValue.ToString()));
-            }
-            return el;
         }
+
+        protected DateRangesOverlap(XElement existingSingleFieldValueOperator)
+            : base(DateRangesOverlapTag, existingSingleFieldValueOperator)
+        {
+        }
+
+        //protected override void OnParsing(XElement existingMultipleFieldValueOperator)
+        //{
+        //    base.OnParsing(existingMultipleFieldValueOperator);
+        //    var existingValue = existingMultipleFieldValueOperator.ElementsIgnoreCase(CamlValue.ValueTag).SingleOrDefault();
+        //    if (existingValue != null && existingValue.HasElements)
+        //    {
+        //        foreach (XElement element in existingValue.Elements())
+        //        {
+        //            DateRangesOverlapValue enumValue;
+        //            if (Enum.TryParse(element.Name.LocalName, true, out enumValue))
+        //            {
+        //                _enumValue = enumValue;
+        //                break;
+        //            }
+        //        }
+        //    }
+        //}
+
+        //public override XElement ToXElement()
+        //{
+        //    var el = base.ToXElement();
+        //    if (_enumValue.HasValue)
+        //    {
+        //        var value = el.Elements(CamlValue.ValueTag).Single();
+        //        value.ReplaceAll(new XElement(_enumValue.ToString()));
+        //    }
+        //    return el;
+        //}
     }
 }

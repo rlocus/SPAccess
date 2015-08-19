@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharePoint.Remote.Access.Caml;
 using SharePoint.Remote.Access.Caml.Clauses;
 using SharePoint.Remote.Access.Caml.Operators;
+using View = SharePoint.Remote.Access.Caml.View;
 
 namespace SharePoint.Client.Test
 {
@@ -12,23 +13,73 @@ namespace SharePoint.Client.Test
         [TestMethod]
         public void TestMethod1()
         {
-            var query = new Query()
-            {
-                Where = new CamlWhere(
-                    new Or(
-                        new Eq<string>("ContentType", "My Content Type", FieldType.Text),
-                        new IsNotNull("Description"))),
+            string q = GetTestQuery();
+            string q1 = GetTestQuery1();
+            string q2 = GetTestQuery2();
 
-                GroupBy = new CamlGroupBy(new CamlFieldRef { Name = "Title" }, true),
-                OrderBy = new CamlOrderBy(new CamlFieldRef { Name = "_Author" }).ThenBy("AuthoringDate").ThenBy("AssignedTo")
-            };
+            string q3 = GetTestQuery1().CombineOr(GetTestQuery2());
 
-            var caml = new Query()
-            {
-                Where = new CamlWhere(query.Where.ToString()),
-                GroupBy = new CamlGroupBy(query.GroupBy.ToString()),
-                OrderBy = new CamlOrderBy(query.OrderBy.ToString())
-            };
+            string q4 = GetTestQuery3().CombineAnd(GetTestQuery4());
+
+            string q5 = GetTestQuery6();
+        }
+
+        public CamlWhere GetTestQuery()
+        {
+            //var caml =
+            //   Camlex.Query()
+            //       .Where(x => ((int)x["ProductID"] < 1000 && (int)x["ProductID"] > 100) ||
+            //             ((bool)x["IsCompleted"] == false || x["IsCompleted"] == null))
+            //           .ToString();
+
+           
+              return
+                    new CamlWhere(
+                        new And(new Lt<int>("ProductID", 1000, FieldType.Integer),
+                            new Or(new Gt<int>("ProductID", 100, FieldType.Integer),
+                                new Or(new Eq<bool>("IsCompleted", false, FieldType.Boolean), new IsNull("IsCompleted")))));
+          
+        }
+
+        public CamlWhere GetTestQuery1()
+        {
+          return  new CamlWhere(
+                new And(new Lt<int>("ProductID", 1000, FieldType.Integer),
+                    new Gt<int>("ProductID", 100, FieldType.Integer)));
+        }
+
+        public CamlWhere GetTestQuery2()
+        {
+            return
+                new CamlWhere(new Or(new Eq<bool>("IsCompleted", false, FieldType.Boolean), new IsNull("IsCompleted")));
+
+        }
+
+        public CamlWhere GetTestQuery3()
+        {
+            return
+                new CamlWhere(new Eq<bool>("IsCompleted", false, FieldType.Boolean));
+
+        }
+
+        public CamlWhere GetTestQuery4()
+        {
+            return
+                new CamlWhere(new IsNull("IsCompleted"));
+
+        }
+
+        public CamlWhere GetTestQuery5()
+        {
+            return
+                new CamlWhere(new Eq<bool>("IsCompleted", false, FieldType.Boolean));
+        }
+
+        public CamlWhere GetTestQuery6()
+        {
+            return
+                new CamlWhere(new DateRangesOverlap(new[] {"Start","End"}, DateValue.Week));
+
         }
     }
 }

@@ -63,5 +63,10 @@ namespace SharePoint.Remote.Access.Caml
         {
             return disableFormatting ? ToXElement().ToString(SaveOptions.DisableFormatting) : ToXElement().ToString(SaveOptions.None);
         }
+
+        public static implicit operator string (CamlElement caml)
+        {
+            return caml?.ToString() ?? string.Empty;
+        }
     }
 }

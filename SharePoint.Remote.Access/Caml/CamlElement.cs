@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Xml.Linq;
+using SharePoint.Remote.Access.Caml.Interfaces;
 
 namespace SharePoint.Remote.Access.Caml
 {
-    public abstract class CamlElement
+    public abstract class CamlElement : ICaml
     {
         protected CamlElement(string elementName)
         {
@@ -66,7 +67,7 @@ namespace SharePoint.Remote.Access.Caml
                 : ToXElement().ToString(SaveOptions.None);
         }
 
-        public static implicit operator string(CamlElement caml)
+        public static implicit operator string (CamlElement caml)
         {
             return caml?.ToString() ?? string.Empty;
         }

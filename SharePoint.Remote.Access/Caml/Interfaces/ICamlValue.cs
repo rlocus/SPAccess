@@ -1,6 +1,6 @@
 ﻿namespace SharePoint.Remote.Access.Caml.Interfaces
 {
-    internal interface IValueOperator<T>
+    internal interface ICamlValue<T> : ICaml
     {
         CamlValue<T> Value { get; }
     }

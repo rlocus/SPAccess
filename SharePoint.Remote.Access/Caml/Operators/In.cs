@@ -40,7 +40,7 @@ namespace SharePoint.Remote.Access.Caml.Operators
         }
     }
 
-    public class In<T> : FieldMultiValueOperator<T>
+    public class In<T> : FieldCamlMultiValue<T>
     {
         internal const string InTag = "In";
 

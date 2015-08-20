@@ -10,6 +10,9 @@ namespace SharePoint.Remote.Access.Caml.Operators
         internal const int OperatorCount = 2;
         internal const int NestedOperatorCount = 1;
 
+        public LogicalJoin Parent { get; private set; }
+        public Operator[] Operators { get; private set; }
+
         protected LogicalJoin(string operatorName, IEnumerable<Operator> operators)
             : base(operatorName)
         {
@@ -25,9 +28,6 @@ namespace SharePoint.Remote.Access.Caml.Operators
             : base(operatorName, existingNestedOperator)
         {
         }
-
-        public LogicalJoin Parent { get; private set; }
-        internal Operator[] Operators { get; private set; }
 
         internal void InitOperators(IEnumerable<Operator> operators)
         {

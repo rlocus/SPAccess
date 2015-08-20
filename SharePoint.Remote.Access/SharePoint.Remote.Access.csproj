@@ -51,6 +51,7 @@
     <Compile Include="Caml\Clauses\CamlWhere.cs" />
     <Compile Include="Caml\Extensions.cs" />
     <Compile Include="Caml\CamlFieldRef.cs" />
+    <Compile Include="Caml\Interfaces\ICaml.cs" />
     <Compile Include="Caml\Interfaces\ICamlField.cs" />
     <Compile Include="Caml\Interfaces\ICamlMultiField.cs" />
     <Compile Include="Caml\Interfaces\ICamlMultiValue.cs" />

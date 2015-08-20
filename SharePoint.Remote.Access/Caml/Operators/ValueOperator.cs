@@ -5,8 +5,10 @@ using SharePoint.Remote.Access.Caml.Interfaces;
 
 namespace SharePoint.Remote.Access.Caml.Operators
 {
-    public abstract class ValueOperator<T> : Operator, IValueOperator<T>
+    public abstract class ValueOperator<T> : Operator, ICamlValue<T>
     {
+        public CamlValue<T> Value { get; private set; }
+
         protected ValueOperator(string operatorName, CamlValue<T> value)
             : base(operatorName)
         {
@@ -29,9 +31,7 @@ namespace SharePoint.Remote.Access.Caml.Operators
             : base(operatorName, existingValueOperator)
         {
         }
-
-        public CamlValue<T> Value { get; private set; }
-
+        
         protected override void OnParsing(XElement existingValueOperator)
         {
             Value = new CamlValue<T>(existingValueOperator);

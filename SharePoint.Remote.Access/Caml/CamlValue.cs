@@ -37,11 +37,13 @@ namespace SharePoint.Remote.Access.Caml
         internal const string TypeAttr = "Type";
         internal const string IncludeTimeValueAttr = "IncludeTimeValue";
 
+        public const string UserId = "UserID";
+
         public CamlValue(T value, FieldType type)
             : base(ValueTag)
         {
             if (value == null) throw new ArgumentNullException(nameof(value));
-            Val = value;
+            Value = value;
             Type = type;
         }
 
@@ -55,7 +57,7 @@ namespace SharePoint.Remote.Access.Caml
         {
         }
 
-        public T Val { get; set; }
+        public T Value { get; set; }
         public FieldType Type { get; set; }
         public bool? IncludeTimeValue { get; set; }
 
@@ -64,7 +66,7 @@ namespace SharePoint.Remote.Access.Caml
             switch (Type)
             {
                 case FieldType.Guid:
-                    return typeof (Guid);
+                    return typeof(Guid);
                 case FieldType.Text:
                 case FieldType.Note:
                 case FieldType.Choice:
@@ -73,23 +75,23 @@ namespace SharePoint.Remote.Access.Caml
                 case FieldType.URL:
                 case FieldType.MultiChoice:
                 case FieldType.ContentTypeId:
-                    return typeof (string);
+                    return typeof(string);
                 case FieldType.Number:
                 case FieldType.Currency:
-                    return typeof (double);
+                    return typeof(double);
                 case FieldType.Boolean:
                 case FieldType.Recurrence:
                 case FieldType.Attachments:
                 case FieldType.AllDayEvent:
                 case FieldType.CrossProjectLink:
-                    return typeof (bool);
+                    return typeof(bool);
                 case FieldType.DateTime:
-                    return typeof (DateTime);
+                    return typeof(DateTime);
                 case FieldType.Integer:
                 case FieldType.Counter:
                 case FieldType.ModStat:
                 case FieldType.WorkflowStatus:
-                    return typeof (int);
+                    return typeof(int);
             }
             throw new NotSupportedException(nameof(Type));
         }
@@ -99,7 +101,7 @@ namespace SharePoint.Remote.Access.Caml
             var type = existingValue.AttributeIgnoreCase(TypeAttr);
             if (type != null)
             {
-                Type = (FieldType) Enum.Parse(typeof (FieldType), type.Value.Trim(), true);
+                Type = (FieldType)Enum.Parse(typeof(FieldType), type.Value.Trim(), true);
             }
             if (FieldType.DateTime == Type)
             {
@@ -108,38 +110,50 @@ namespace SharePoint.Remote.Access.Caml
                 {
                     IncludeTimeValue = Convert.ToBoolean(includeTimeValue.Value);
                 }
-                var dateValues = new[]
+                if (existingValue.HasElements)
                 {
-                    DateValue.Today.ToString(),
-                    DateValue.Day.ToString(),
-                    DateValue.Month.ToString(),
-                    DateValue.Now.ToString(),
-                    DateValue.Week.ToString(),
-                    DateValue.Year.ToString()
-                };
-                var existingDateValue =
-                    dateValues.Select(dateValue => existingValue.ElementIgnoreCase(dateValue))
-                        .FirstOrDefault(val => val != null);
-
-                if (existingDateValue != null)
-                {
-                    Val = (T) Enum.Parse(typeof (DateValue), existingDateValue.Name.LocalName, true);
+                    var dateValues = new[]
+                    {
+                        DateValue.Today.ToString(),
+                        DateValue.Day.ToString(),
+                        DateValue.Month.ToString(),
+                        DateValue.Now.ToString(),
+                        DateValue.Week.ToString(),
+                        DateValue.Year.ToString()
+                    };
+                    var existingDateValue =
+                        dateValues.Select(dateValue => existingValue.ElementIgnoreCase(dateValue))
+                            .FirstOrDefault(val => val != null);
+                    if (existingDateValue != null)
+                    {
+                        Value = (T)Enum.Parse(typeof(DateValue), existingDateValue.Name.LocalName, true);
+                    }
                 }
                 else
                 {
                     if (!string.IsNullOrEmpty(existingValue.Value))
                     {
                         var date = DateTime.Parse(existingValue.Value);
-                        Val = (T) (object) date;
+                        Value = (T)(object)date;
+                    }
+                }
+                return;
+            }
+            if (FieldType.Integer == Type)
+            {
+                if (existingValue.HasElements)
+                {
+                    XElement userId = existingValue.ElementIgnoreCase(UserId);
+                    if (userId != null)
+                    {
+                        Value = (T)(object)UserId;
+                        return;
                     }
                 }
             }
-            else
+            if (!string.IsNullOrEmpty(existingValue.Value))
             {
-                if (!string.IsNullOrEmpty(existingValue.Value))
-                {
-                    Val = (T) Convert.ChangeType(existingValue.Value, GetValueType());
-                }
+                Value = (T)Convert.ChangeType(existingValue.Value, GetValueType());
             }
         }
 
@@ -154,22 +168,22 @@ namespace SharePoint.Remote.Access.Caml
                 {
                     el.Add(new XAttribute(IncludeTimeValueAttr, IncludeTimeValue.Value));
                 }
-                if (Val is DateTime)
+                if (Value is DateTime)
                 {
-                    el.Value = string.Concat(Convert.ToDateTime(Val).ToString("s"), "Z");
+                    el.Value = string.Concat(Convert.ToDateTime(Value).ToString("s"), "Z");
                 }
-                else if (Val is DateValue)
+                else if (Value is DateValue)
                 {
-                    el.Add(new XElement(Convert.ToString(Val)));
+                    el.Add(new XElement(Convert.ToString(Value)));
                 }
                 else
                 {
-                    el.Value = Convert.ToString(Val);
+                    el.Value = Convert.ToString(Value);
                 }
             }
             else
             {
-                el.Value = Convert.ToString(Val);
+                el.Value = Convert.ToString(Value);
             }
             return el;
         }

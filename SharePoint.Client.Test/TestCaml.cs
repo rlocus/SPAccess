@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.SharePoint.Client;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharePoint.Remote.Access.Caml;
@@ -26,13 +27,21 @@ namespace SharePoint.Client.Test
 
             //string q = GetTestQuery8();
 
-            var view = new View(new[] { "Title" }) { Query = { Where = /*GetTestQuery8()*/ null } };
+            //var view = new View(new[] { "Title", "ID" }) { Query = { Where = /*GetTestQuery8()*/ null } };
 
-            view.Query.WhereAny(new And(new Lt<int>("ProductID", 1000, FieldType.Integer),
-                new Gt<int>("ProductID", 100, FieldType.Integer)), new Eq<bool>("IsCompleted", false, FieldType.Boolean));
-            view.Query.GroupBy = new CamlGroupBy(new[] {"Title"}, true);
-            view.Query.OrderBy = new CamlOrderBy(new[] {new CamlFieldRef {Name = "Title", Ascending = true}});
-            string q = view;
+            //view.Query.WhereAny(new And(new Lt<int>("ProductID", 1000, FieldType.Integer),
+            //    new Gt<int>("ProductID", 100, FieldType.Integer)), new Eq<bool>("IsCompleted", false, FieldType.Boolean));
+            //view.Query.GroupBy = new CamlGroupBy(new[] {"Title"}, true);
+            //view.Query.OrderBy = new CamlOrderBy(new[] {new CamlFieldRef {Name = "Title", Ascending = true}});
+            //string q = view;
+
+            //string vv = view.ViewFields.ToString(true, true);
+            //var v2 = new View(view).ToCamlQuery();
+
+            var q = new Query() { Where = new CamlWhere(new Contains("Title", "e")) };
+            q.WhereAll(new IsNotNull("Title"), new Leq<DateTime>(new CamlFieldRef { Name = "Created" }, DateTime.Now, FieldType.DateTime));
+
+            string s =  q;
         }
 
         public CamlWhere GetTestQuery()

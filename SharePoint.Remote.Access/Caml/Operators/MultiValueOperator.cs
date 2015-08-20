@@ -7,28 +7,28 @@ using SharePoint.Remote.Access.Extensions;
 
 namespace SharePoint.Remote.Access.Caml.Operators
 {
-    public abstract class MultiValueOperator<T> : Operator, IMultiValueOperator<T>
+    public abstract class CamlMultiValue<T> : Operator, ICamlMultiValue<T>
     {
         internal const string ValuesTag = "Values";
 
-        protected MultiValueOperator(string operatorName, IEnumerable<T> values, FieldType type)
+        protected CamlMultiValue(string operatorName, IEnumerable<T> values, FieldType type)
             : base(operatorName)
         {
             if (values != null) Values = values.Select(val => new CamlValue<T>(val, type));
         }
 
-        protected MultiValueOperator(string operatorName, IEnumerable<CamlValue<T>> values)
+        protected CamlMultiValue(string operatorName, IEnumerable<CamlValue<T>> values)
             : base(operatorName)
         {
             Values = values;
         }
 
-        protected MultiValueOperator(string operatorName, string existingMultipleValueOperator)
+        protected CamlMultiValue(string operatorName, string existingMultipleValueOperator)
             : base(operatorName, existingMultipleValueOperator)
         {
         }
 
-        protected MultiValueOperator(string operatorName, XElement existingMultipleValueOperator)
+        protected CamlMultiValue(string operatorName, XElement existingMultipleValueOperator)
             : base(operatorName, existingMultipleValueOperator)
         {
         }

@@ -2,7 +2,7 @@
 
 namespace SharePoint.Remote.Access.Caml.Interfaces
 {
-    internal interface IMultiValueOperator<T>
+    internal interface ICamlMultiValue<T> : ICaml
     {
         IEnumerable<CamlValue<T>> Values { get; set; }
     }

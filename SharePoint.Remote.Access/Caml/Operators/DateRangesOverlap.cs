@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Xml.Linq;
 using Microsoft.SharePoint.Client;
 
@@ -9,33 +8,33 @@ namespace SharePoint.Remote.Access.Caml.Operators
     {
         internal const string DateRangesOverlapTag = "DateRangesOverlap";
 
-        public DateRangesOverlap(IEnumerable<CamlFieldRef> fieldRefs, DateValue value)
-            : base(DateRangesOverlapTag, fieldRefs, value, FieldType.DateTime)
+        public DateRangesOverlap(CamlFieldRef startField, CamlFieldRef endField, CamlFieldRef recurrenceField, DateValue value)
+            : base(DateRangesOverlapTag, new[] { startField, endField, recurrenceField }, value, FieldType.DateTime)
         {
         }
 
-        public DateRangesOverlap(IEnumerable<string> fieldNames, DateValue value)
-            : base(DateRangesOverlapTag, fieldNames, value, FieldType.DateTime)
+        public DateRangesOverlap(string startField, string endField, string recurrenceField, DateValue value)
+            : base(DateRangesOverlapTag, new[] { startField, endField, recurrenceField }, value, FieldType.DateTime)
         {
         }
 
-        protected DateRangesOverlap(IEnumerable<Guid> fieldIds, DateValue value)
-            : base(DateRangesOverlapTag, fieldIds, value, FieldType.DateTime)
-        {
-        }
-        
-        public DateRangesOverlap(IEnumerable<CamlFieldRef> fieldRefs, DateTime value)
-           : base(DateRangesOverlapTag, fieldRefs, value, FieldType.DateTime)
+        protected DateRangesOverlap(Guid startField, Guid endField, Guid recurrenceField, DateValue value)
+            : base(DateRangesOverlapTag, new[] { startField, endField, recurrenceField }, value, FieldType.DateTime)
         {
         }
 
-        public DateRangesOverlap(IEnumerable<string> fieldNames, DateTime value)
-            : base(DateRangesOverlapTag, fieldNames, value, FieldType.DateTime)
+        public DateRangesOverlap(CamlFieldRef startField, CamlFieldRef endField, CamlFieldRef recurrenceField, DateTime value)
+           : base(DateRangesOverlapTag, new[] { startField, endField, recurrenceField }, value, FieldType.DateTime)
         {
         }
 
-        protected DateRangesOverlap(IEnumerable<Guid> fieldIds, DateTime value)
-            : base(DateRangesOverlapTag, fieldIds, value, FieldType.DateTime)
+        public DateRangesOverlap(string startField, string endField, string recurrenceField, DateTime value)
+            : base(DateRangesOverlapTag, new[] { startField, endField, recurrenceField }, value, FieldType.DateTime)
+        {
+        }
+
+        protected DateRangesOverlap(Guid startField, Guid endField, Guid recurrenceField, DateTime value)
+            : base(DateRangesOverlapTag, new[] { startField, endField, recurrenceField }, value, FieldType.DateTime)
         {
         }
 
@@ -44,7 +43,7 @@ namespace SharePoint.Remote.Access.Caml.Operators
         {
         }
 
-        protected DateRangesOverlap(XElement existingSingleFieldValueOperator)
+        public DateRangesOverlap(XElement existingSingleFieldValueOperator)
             : base(DateRangesOverlapTag, existingSingleFieldValueOperator)
         {
         }

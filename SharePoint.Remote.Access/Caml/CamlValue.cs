@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Xml.Linq;
 using Microsoft.SharePoint.Client;
 using SharePoint.Remote.Access.Extensions;
@@ -106,22 +107,36 @@ namespace SharePoint.Remote.Access.Caml
             {
                 IncludeTimeValue = Convert.ToBoolean(includeTimeValue.Value);
             }
-            if (!string.IsNullOrEmpty(existingValue.Value))
+            if (FieldType.DateTime == Type)
             {
-                if (FieldType.DateTime == Type)
+                var dateValues = new[]
                 {
-                    DateValue dateValue;
-                    if (Enum.TryParse(existingValue.Name.LocalName, true, out dateValue))
-                    {
-                        Val = (T)(object)dateValue;
-                    }
-                    else
+                    DateValue.Today.ToString(),
+                    DateValue.Day.ToString(),
+                    DateValue.Month.ToString(),
+                    DateValue.Now.ToString(),
+                    DateValue.Week.ToString(),
+                    DateValue.Year.ToString()
+                };
+                XElement existingDateValue =
+                    dateValues.Select(dateValue => existingValue.ElementIgnoreCase(dateValue)).FirstOrDefault(val => val != null);
+
+                if (existingDateValue != null)
+                {
+                    Val = (T)Enum.Parse(typeof(DateValue), existingDateValue.Name.LocalName, true);
+                }
+                else
+                {
+                    if (!string.IsNullOrEmpty(existingValue.Value))
                     {
                         DateTime date = DateTime.Parse(existingValue.Value);
                         Val = (T)(object)date;
                     }
                 }
-                else
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(existingValue.Value))
                 {
                     Val = (T)Convert.ChangeType(existingValue.Value, GetValueType());
                 }
@@ -138,13 +153,13 @@ namespace SharePoint.Remote.Access.Caml
             }
             if (FieldType.DateTime == Type)
             {
-                if (typeof(T) == typeof(DateTime))
+                if (Val is DateTime)
                 {
-                    el.Value = Convert.ToDateTime(Val).ToString("s") + "Z";
+                    el.Value = string.Concat(Convert.ToDateTime(Val).ToString("s"), "Z");
                 }
-                else if (typeof(T) == typeof(DateValue))
+                else if (Val is DateValue)
                 {
-                    el.ReplaceAll(new XElement(Convert.ToString(Val)));
+                    el.Add(new XElement(Convert.ToString(Val)));
                 }
                 else
                 {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 using SharePoint.Remote.Access.Caml.Operators;
+using SharePoint.Remote.Access.Extensions;
 
 namespace SharePoint.Remote.Access.Caml.Clauses
 {
@@ -37,17 +38,15 @@ namespace SharePoint.Remote.Access.Caml.Clauses
             if (@operator != null && op is NestedOperator)
             {
                 var operators = new List<Operator>();
+                var childOperator = @operator.Operators.OfType<NestedOperator>()
+                        .FirstOrDefaultFromMany(o => o.Operators.OfType<NestedOperator>(), o => !o.Operators.OfType<NestedOperator>().Any());
+                if (childOperator != null)
+                {
+                    @operator = childOperator;
+                }
                 operators.AddRange(@operator.Operators.Where(@o => !(@o is NestedOperator)).Take(NestedOperator.OperatorCount - 1));
                 operators.Add(new And(new List<Operator>(@operator.Operators.Where(@o => !operators.Contains(@o))) { op }.ToArray()));
-
-                if (@operator is And)
-                {
-                    Operator = new And(operators.ToArray());
-                }
-                if (@operator is Or)
-                {
-                    Operator = new Or(operators.ToArray());
-                }
+                @operator.InitOperators(operators);
             }
             else
             {
@@ -63,21 +62,19 @@ namespace SharePoint.Remote.Access.Caml.Clauses
             if (@operator != null && op is NestedOperator)
             {
                 var operators = new List<Operator>();
+                var childOperator = @operator.Operators.OfType<NestedOperator>()
+                        .FirstOrDefaultFromMany(o => o.Operators.OfType<NestedOperator>(), o => !o.Operators.OfType<NestedOperator>().Any());
+                if (childOperator != null)
+                {
+                    @operator = childOperator;
+                }
                 operators.AddRange(@operator.Operators.Where(@o => !(@o is NestedOperator)).Take(NestedOperator.OperatorCount - 1));
                 operators.Add(new Or(new List<Operator>(@operator.Operators.Where(@o => !operators.Contains(@o))) { op }.ToArray()));
-
-                if (@operator is And)
-                {
-                    Operator = new And(operators.ToArray());
-                }
-                if (@operator is Or)
-                {
-                    Operator = new Or(operators.ToArray());
-                }
+                @operator.InitOperators(operators);
             }
             else
             {
-                Operator = new And(Operator, op);
+                Operator = new Or(Operator, op);
             }
         }
 

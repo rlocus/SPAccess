@@ -65,5 +65,21 @@ namespace SharePoint.Remote.Access.Extensions
             }
             return result;
         }
+
+        public static T FirstOrDefaultFromMany<T>(this IEnumerable<T> source, Func<T, IEnumerable<T>> childrenSelector, Predicate<T> condition)
+        {
+            while (true)
+            {
+                // return default if no items
+                var enumerable = source as T[] ?? source.ToArray();
+                if (source == null || !enumerable.Any()) return default(T);
+                // return result if found and stop traversing hierarchy
+                var attempt = enumerable.FirstOrDefault(t => condition(t));
+                if (!Equals(attempt, default(T))) return attempt;
+                // recursively call this function on lower levels of the
+                // hierarchy until a match is found or the hierarchy is exhausted
+                source = enumerable.SelectMany(childrenSelector);
+            }
+        }
     }
 }

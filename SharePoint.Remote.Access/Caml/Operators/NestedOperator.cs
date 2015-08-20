@@ -10,6 +10,9 @@ namespace SharePoint.Remote.Access.Caml.Operators
         internal const int OperatorCount = 2;
         internal const int NestedOperatorCount = 1;
 
+        public NestedOperator Parent { get; private set; }
+        internal Operator[] Operators { get; private set; }
+
         protected NestedOperator(string operatorName, IEnumerable<Operator> operators)
             : base(operatorName)
         {
@@ -26,31 +29,39 @@ namespace SharePoint.Remote.Access.Caml.Operators
         {
         }
 
-        internal Operator[] Operators { get; private set; }
-
-        private void InitOperators(IEnumerable<Operator> operators)
+        internal void InitOperators(IEnumerable<Operator> operators)
         {
             if (operators != null)
             {
                 Operators = operators as Operator[] ?? operators.ToArray();
-                if (Operators.Length > OperatorCount)
+                if (Operators.Length != OperatorCount)
                 {
-                    throw new NotSupportedException($"Max count of operators must be {OperatorCount}.");
-                }
-                if (Operators.Length < OperatorCount)
-                {
-                    throw new NotSupportedException($"Min count of operators must be {OperatorCount}.");
+                    throw new NotSupportedException($"Count of operators must be {OperatorCount}.");
                 }
                 if (Operators.OfType<NestedOperator>().Count() > NestedOperatorCount)
                 {
                     throw new NotSupportedException($"Max count of nested operators must be {NestedOperatorCount}.");
+                }
+
+                foreach (var @operator in Operators.OfType<NestedOperator>())
+                {
+                    @operator.Parent = this;
                 }
             }
         }
 
         protected override void OnParsing(XElement existingNestedOperator)
         {
-            var operators = existingNestedOperator.Elements().Select(GetOperator).Where(op => op != null);
+            var operators = existingNestedOperator.Elements().Select(el =>
+            {
+                Operator op = GetOperator(el);
+                var @operator = op as NestedOperator;
+                if (@operator != null)
+                {
+                    @operator.Parent = this;
+                }
+                return op;
+            }).Where(op => op != null);
             InitOperators(operators);
         }
 

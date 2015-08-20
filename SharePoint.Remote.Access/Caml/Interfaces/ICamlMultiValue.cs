@@ -4,6 +4,6 @@ namespace SharePoint.Remote.Access.Caml.Interfaces
 {
     internal interface IMultiValueOperator<T>
     {
-        IEnumerable<Value<T>> Values { get; set; }
+        IEnumerable<CamlValue<T>> Values { get; set; }
     }
 }

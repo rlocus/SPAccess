@@ -7,8 +7,13 @@ namespace SharePoint.Remote.Access.Caml.Operators
     {
         internal const string IsNullTag = "IsNull";
 
+        public IsNull(CamlFieldRef fieldRef)
+            : base(IsNullTag, fieldRef)
+        {
+        }
+
         public IsNull(Guid fieldId)
-            : base(IsNullTag, new CamlFieldRef {FieldId = fieldId})
+            : base(IsNullTag, new CamlFieldRef {Id = fieldId})
         {
         }
 

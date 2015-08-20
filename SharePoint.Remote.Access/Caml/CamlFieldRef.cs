@@ -28,7 +28,7 @@ namespace SharePoint.Remote.Access.Caml
         {
         }
 
-        public Guid FieldId { get; set; }
+        public Guid Id { get; set; }
         public string Name { get; set; }
         public bool? Ascending { get; set; }
         public bool? Nullable { get; set; }
@@ -48,7 +48,7 @@ namespace SharePoint.Remote.Access.Caml
             var guidString = id?.Value.Trim();
             if (guidString?.Length > 0)
             {
-                FieldId = new Guid(guidString);
+                Id = new Guid(guidString);
             }
             var ascending = existingFieldRef.AttributeIgnoreCase(AscendingAttr);
             if (ascending != null)
@@ -72,9 +72,9 @@ namespace SharePoint.Remote.Access.Caml
         {
             var el = new XElement(FieldRefTag);
 
-            if (FieldId != Guid.Empty)
+            if (Id != Guid.Empty)
             {
-                el.Add(new XAttribute(IDAttr, FieldId));
+                el.Add(new XAttribute(IDAttr, Id));
             }
             else if (!string.IsNullOrEmpty(Name))
             {

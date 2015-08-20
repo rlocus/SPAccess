@@ -2,7 +2,7 @@
 
 namespace SharePoint.Remote.Access.Caml.Operators
 {
-    public sealed class And : NestedOperator
+    public sealed class And : LogicalJoin
     {
         internal const string AndTag = "And";
 

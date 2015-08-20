@@ -7,7 +7,7 @@ namespace SharePoint.Remote.Access.Caml.Operators
 {
     public sealed class In : In<object>
     {
-        public In(Guid fieldId, IEnumerable<Value<object>> values) : base(fieldId, values)
+        public In(Guid fieldId, IEnumerable<CamlValue<object>> values) : base(fieldId, values)
         {
         }
 
@@ -19,7 +19,7 @@ namespace SharePoint.Remote.Access.Caml.Operators
         {
         }
 
-        public In(string fieldName, IEnumerable<Value<object>> values) : base(fieldName, values)
+        public In(string fieldName, IEnumerable<CamlValue<object>> values) : base(fieldName, values)
         {
         }
 
@@ -27,7 +27,7 @@ namespace SharePoint.Remote.Access.Caml.Operators
         {
         }
 
-        public In(CamlFieldRef fieldRef, IEnumerable<Value<object>> values) : base(fieldRef, values)
+        public In(CamlFieldRef fieldRef, IEnumerable<CamlValue<object>> values) : base(fieldRef, values)
         {
         }
 
@@ -44,7 +44,7 @@ namespace SharePoint.Remote.Access.Caml.Operators
     {
         internal const string InTag = "In";
 
-        public In(Guid fieldId, IEnumerable<Value<T>> values)
+        public In(Guid fieldId, IEnumerable<CamlValue<T>> values)
             : base(InTag, fieldId, values)
         {
         }
@@ -59,7 +59,7 @@ namespace SharePoint.Remote.Access.Caml.Operators
         {
         }
 
-        public In(string fieldName, IEnumerable<Value<T>> values)
+        public In(string fieldName, IEnumerable<CamlValue<T>> values)
             : base(InTag, fieldName, values)
         {
         }
@@ -69,7 +69,7 @@ namespace SharePoint.Remote.Access.Caml.Operators
         {
         }
 
-        public In(CamlFieldRef fieldRef, IEnumerable<Value<T>> values)
+        public In(CamlFieldRef fieldRef, IEnumerable<CamlValue<T>> values)
             : base(InTag, fieldRef, values)
         {
         }

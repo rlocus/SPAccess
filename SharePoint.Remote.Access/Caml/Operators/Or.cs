@@ -2,7 +2,7 @@
 
 namespace SharePoint.Remote.Access.Caml.Operators
 {
-    public sealed class Or : NestedOperator
+    public sealed class Or : LogicalJoin
     {
         internal const string OrTag = "Or";
 

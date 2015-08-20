@@ -6,7 +6,7 @@ namespace SharePoint.Remote.Access.Caml.Operators
 {
     public sealed class Eq : Eq<object>
     {
-        public Eq(CamlFieldRef fieldRef, Value<object> value) : base(fieldRef, value)
+        public Eq(CamlFieldRef fieldRef, CamlValue<object> value) : base(fieldRef, value)
         {
         }
 
@@ -35,7 +35,7 @@ namespace SharePoint.Remote.Access.Caml.Operators
     {
         internal const string EqTag = "Eq";
 
-        public Eq(CamlFieldRef fieldRef, Value<T> value)
+        public Eq(CamlFieldRef fieldRef, CamlValue<T> value)
             : base(EqTag, fieldRef, value)
         {
         }

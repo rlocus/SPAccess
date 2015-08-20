@@ -7,8 +7,6 @@ namespace SharePoint.Remote.Access.Caml.Operators
 {
     public abstract class FieldOperator : Operator, ICamlField
     {
-        public CamlFieldRef FieldRef { get; private set; }
-
         protected FieldOperator(string operatorName, CamlFieldRef fieldRef)
             : base(operatorName)
         {
@@ -16,20 +14,22 @@ namespace SharePoint.Remote.Access.Caml.Operators
             FieldRef = fieldRef;
         }
 
-        protected FieldOperator(string operatorName, string existingSingleFieldOperator)
-            : base(operatorName, existingSingleFieldOperator)
+        protected FieldOperator(string operatorName, string existingFieldOperator)
+            : base(operatorName, existingFieldOperator)
         {
         }
 
-        protected FieldOperator(string operatorName, XElement existingSingleFieldOperator)
-            : base(operatorName, existingSingleFieldOperator)
+        protected FieldOperator(string operatorName, XElement existingFieldOperator)
+            : base(operatorName, existingFieldOperator)
         {
         }
 
-        protected override void OnParsing(XElement existingSingleFieldValueOperator)
+        public CamlFieldRef FieldRef { get; private set; }
+
+        protected override void OnParsing(XElement existingFieldValueOperator)
         {
-            XElement existingFieldRef =
-                existingSingleFieldValueOperator.Elements(CamlFieldRef.FieldRefTag).SingleOrDefault();
+            var existingFieldRef =
+                existingFieldValueOperator.Elements(CamlFieldRef.FieldRefTag).SingleOrDefault();
             if (existingFieldRef != null)
             {
                 FieldRef = new CamlFieldRef(existingFieldRef);

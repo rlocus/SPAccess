@@ -12,35 +12,32 @@ namespace SharePoint.Remote.Access.Caml.Clauses
         internal const string GroupByTag = "GroupBy";
         internal const string CollapseAttr = "Collapse";
 
-        public IEnumerable<CamlFieldRef> FieldRefs { get; private set; }
-
-        public bool? Collapse { get; private set; }
+        public CamlGroupBy(CamlFieldRef fieldRef, bool? collapse = null)
+            : this(new[] { fieldRef }, collapse)
+        {
+        }
 
         public CamlGroupBy(IEnumerable<CamlFieldRef> fieldRefs, bool? collapse = null)
             : base(GroupByTag)
         {
+            if (fieldRefs == null) throw new ArgumentNullException(nameof(fieldRefs));
             FieldRefs = fieldRefs;
             Collapse = collapse;
         }
 
-        //public GroupBy(Guid fieldId, bool? collapse = null)
-        //    : base(GroupByTag)
-        //{
-        //    FieldRefs = new[] { new FieldRef { FieldId = fieldId } };
-        //    Collapse = collapse;
-        //}
-
-        //public GroupBy(string fieldName, bool? collapse = null)
-        //    : base(GroupByTag)
-        //{
-        //    FieldRefs = (new[] { new FieldRef { Name = fieldName } }).AsEnumerable();
-        //    Collapse = collapse;
-        //}
-
-        public CamlGroupBy(CamlFieldRef field, bool? collapse = null)
-        : base(GroupByTag)
+        public CamlGroupBy(IEnumerable<string> fieldNames, bool? collapse = null)
+          : base(GroupByTag)
         {
-            FieldRefs = new[] { field }.AsEnumerable();
+            if (fieldNames == null) throw new ArgumentNullException(nameof(fieldNames));
+            FieldRefs = fieldNames.Select(fieldName => new CamlFieldRef { Name = fieldName });
+            Collapse = collapse;
+        }
+
+        public CamlGroupBy(IEnumerable<Guid> fieldIds, bool? collapse = null)
+         : base(GroupByTag)
+        {
+            if (fieldIds == null) throw new ArgumentNullException(nameof(fieldIds));
+            FieldRefs = fieldIds.Select(fieldId => new CamlFieldRef { Id = fieldId });
             Collapse = collapse;
         }
 
@@ -53,6 +50,9 @@ namespace SharePoint.Remote.Access.Caml.Clauses
             : base(GroupByTag, existingGroupBy)
         {
         }
+
+        public bool? Collapse { get; private set; }
+        public IEnumerable<CamlFieldRef> FieldRefs { get; private set; }
 
         protected override void OnParsing(XElement existingGroupBy)
         {
@@ -102,6 +102,11 @@ namespace SharePoint.Remote.Access.Caml.Clauses
                 groupBy = new CamlGroupBy(fieldRefs, collapse);
             }
             return groupBy;
+        }
+
+        public static CamlGroupBy operator +(CamlGroupBy firstGroupBy, CamlGroupBy secondGroupBy)
+        {
+            return Combine(firstGroupBy, secondGroupBy);
         }
     }
 }

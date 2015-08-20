@@ -10,32 +10,30 @@ namespace SharePoint.Remote.Access.Caml.Operators
 {
     public abstract class FieldMultiValueOperator<T> : MultiValueOperator<T>, ICamlField
     {
-        public CamlFieldRef FieldRef { get; private set; }
-
-        protected FieldMultiValueOperator(string operatorName, Guid fieldId, IEnumerable<Value<T>> values)
+        protected FieldMultiValueOperator(string operatorName, Guid fieldId, IEnumerable<CamlValue<T>> values)
             : base(operatorName, values)
         {
-            FieldRef = new CamlFieldRef { FieldId = fieldId };
+            FieldRef = new CamlFieldRef {Id = fieldId};
         }
 
         protected FieldMultiValueOperator(string operatorName, Guid fieldId, IEnumerable<T> values,
             FieldType type)
             : base(operatorName, values, type)
         {
-            FieldRef = new CamlFieldRef { FieldId = fieldId };
+            FieldRef = new CamlFieldRef {Id = fieldId};
         }
 
         protected FieldMultiValueOperator(string operatorName, string fieldName, IEnumerable<T> values,
             FieldType type)
             : base(operatorName, values, type)
         {
-            FieldRef = new CamlFieldRef { Name = fieldName };
+            FieldRef = new CamlFieldRef {Name = fieldName};
         }
 
-        protected FieldMultiValueOperator(string operatorName, string fieldName, IEnumerable<Value<T>> values)
+        protected FieldMultiValueOperator(string operatorName, string fieldName, IEnumerable<CamlValue<T>> values)
             : base(operatorName, values)
         {
-            FieldRef = new CamlFieldRef { Name = fieldName };
+            FieldRef = new CamlFieldRef {Name = fieldName};
         }
 
         protected FieldMultiValueOperator(string operatorName, CamlFieldRef fieldRef, IEnumerable<T> values,
@@ -45,7 +43,7 @@ namespace SharePoint.Remote.Access.Caml.Operators
             FieldRef = fieldRef;
         }
 
-        protected FieldMultiValueOperator(string operatorName, CamlFieldRef fieldRef, IEnumerable<Value<T>> values)
+        protected FieldMultiValueOperator(string operatorName, CamlFieldRef fieldRef, IEnumerable<CamlValue<T>> values)
             : base(operatorName, values)
         {
             FieldRef = fieldRef;
@@ -62,14 +60,18 @@ namespace SharePoint.Remote.Access.Caml.Operators
         {
         }
 
+        public CamlFieldRef FieldRef { get; private set; }
+
         protected override void OnParsing(XElement existingSingleFieldMultipleValueOperator)
         {
-            XElement existingValues = existingSingleFieldMultipleValueOperator.ElementsIgnoreCase(ValuesTag).SingleOrDefault();
+            var existingValues =
+                existingSingleFieldMultipleValueOperator.ElementsIgnoreCase(ValuesTag).SingleOrDefault();
             if (existingValues != null)
             {
                 base.OnParsing(existingValues);
             }
-            XElement existingFieldRef = existingSingleFieldMultipleValueOperator.ElementsIgnoreCase(CamlFieldRef.FieldRefTag).SingleOrDefault();
+            var existingFieldRef =
+                existingSingleFieldMultipleValueOperator.ElementsIgnoreCase(CamlFieldRef.FieldRefTag).SingleOrDefault();
             if (existingFieldRef != null)
             {
                 FieldRef = new CamlFieldRef(existingFieldRef);

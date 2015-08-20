@@ -19,7 +19,7 @@ namespace SharePoint.Remote.Access.Caml.Operators
             : base(operatorName, existingOperator)
         {
         }
-        
+
         internal static Operator GetOperator(XElement existingOperator)
         {
             var tag = existingOperator.Name.LocalName;
@@ -78,6 +78,18 @@ namespace SharePoint.Remote.Access.Caml.Operators
             if (string.Equals(tag, In.InTag, StringComparison.OrdinalIgnoreCase))
             {
                 return new In(existingOperator);
+            }
+            if (string.Equals(tag, Includes.IncludesTag, StringComparison.OrdinalIgnoreCase))
+            {
+                return new Includes(existingOperator);
+            }
+            if (string.Equals(tag, NotIncludes.NotIncludesTag, StringComparison.OrdinalIgnoreCase))
+            {
+                return new NotIncludes(existingOperator);
+            }
+            if (string.Equals(tag, Membership.MembershipTag, StringComparison.OrdinalIgnoreCase))
+            {
+                return new Membership(existingOperator);
             }
             throw new NotSupportedException(nameof(tag));
         }

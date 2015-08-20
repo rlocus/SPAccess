@@ -10,13 +10,32 @@ namespace SharePoint.Remote.Access.Caml.Clauses
     public sealed class CamlOrderBy : CamlClause, ICamlMultiField
     {
         internal const string OrderByTag = "OrderBy";
-
         public IEnumerable<CamlFieldRef> FieldRefs { get; private set; }
+
+        public CamlOrderBy(CamlFieldRef fieldRef)
+            : this(new[] { fieldRef })
+        {
+        }
 
         public CamlOrderBy(IEnumerable<CamlFieldRef> fieldRefs)
             : base(OrderByTag)
         {
+            if (fieldRefs == null) throw new ArgumentNullException(nameof(fieldRefs));
             FieldRefs = fieldRefs;
+        }
+
+        public CamlOrderBy(IEnumerable<string> fieldNames)
+          : base(OrderByTag)
+        {
+            if (fieldNames == null) throw new ArgumentNullException(nameof(fieldNames));
+            FieldRefs = fieldNames.Select(fieldName => new CamlFieldRef { Name = fieldName });
+        }
+
+        public CamlOrderBy(IEnumerable<Guid> fieldIds)
+         : base(OrderByTag)
+        {
+            if (fieldIds == null) throw new ArgumentNullException(nameof(fieldIds));
+            FieldRefs = fieldIds.Select(fieldId => new CamlFieldRef { Id = fieldId });
         }
 
         public CamlOrderBy(string existingGroupBy)
@@ -27,24 +46,6 @@ namespace SharePoint.Remote.Access.Caml.Clauses
         public CamlOrderBy(XElement existingOrderBy)
             : base(OrderByTag, existingOrderBy)
         {
-        }
-
-        //public OrderBy(Guid fieldId, bool? ascending = null)
-        //    : base(OrderByTag)
-        //{
-        //    FieldRefs = (new[] { new FieldRef { FieldId = fieldId, Ascending = ascending } }).AsEnumerable();
-        //}
-
-        //public OrderBy(string fieldName, bool? ascending = null)
-        //    : base(OrderByTag)
-        //{
-        //    FieldRefs = (new[] { new FieldRef { Name = fieldName, Ascending = ascending } }).AsEnumerable();
-        //}
-
-        public CamlOrderBy(CamlFieldRef field)
-        : base(OrderByTag)
-        {
-            FieldRefs = new[] { field }.AsEnumerable();
         }
 
         protected override void OnParsing(XElement existingOrderBy)

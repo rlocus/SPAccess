@@ -66,7 +66,8 @@ namespace SharePoint.Remote.Access.Extensions
             return result;
         }
 
-        public static T FirstOrDefaultFromMany<T>(this IEnumerable<T> source, Func<T, IEnumerable<T>> childrenSelector, Predicate<T> condition)
+        public static T FirstOrDefaultFromMany<T>(this IEnumerable<T> source, Func<T, IEnumerable<T>> childrenSelector,
+            Predicate<T> condition)
         {
             while (true)
             {

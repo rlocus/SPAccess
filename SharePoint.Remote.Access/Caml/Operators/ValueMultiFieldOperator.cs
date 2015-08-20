@@ -10,9 +10,8 @@ namespace SharePoint.Remote.Access.Caml.Operators
 {
     public abstract class ValueMultiFieldOperator<T> : ValueOperator<T>, ICamlMultiField
     {
-        public IEnumerable<CamlFieldRef> FieldRefs { get; private set; }
-
-        protected ValueMultiFieldOperator(string operatorName, IEnumerable<CamlFieldRef> fieldRefs, T value, FieldType type)
+        protected ValueMultiFieldOperator(string operatorName, IEnumerable<CamlFieldRef> fieldRefs, T value,
+            FieldType type)
             : base(operatorName, value, type)
         {
             if (fieldRefs == null) throw new ArgumentNullException(nameof(fieldRefs));
@@ -23,7 +22,7 @@ namespace SharePoint.Remote.Access.Caml.Operators
             : base(operatorName, value, type)
         {
             if (fieldNames == null) throw new ArgumentNullException(nameof(fieldNames));
-            var fieldRefs = fieldNames.Select(fieldName => new CamlFieldRef { Name = fieldName });
+            var fieldRefs = fieldNames.Select(fieldName => new CamlFieldRef {Name = fieldName});
             FieldRefs = fieldRefs;
         }
 
@@ -31,7 +30,7 @@ namespace SharePoint.Remote.Access.Caml.Operators
             : base(operatorName, value, type)
         {
             if (fieldIds == null) throw new ArgumentNullException(nameof(fieldIds));
-            var fieldRefs = fieldIds.Select(fieldId => new CamlFieldRef { FieldId = fieldId });
+            var fieldRefs = fieldIds.Select(fieldId => new CamlFieldRef {Id = fieldId});
             FieldRefs = fieldRefs;
         }
 
@@ -45,14 +44,16 @@ namespace SharePoint.Remote.Access.Caml.Operators
         {
         }
 
+        public IEnumerable<CamlFieldRef> FieldRefs { get; private set; }
+
         protected override void OnParsing(XElement existingMultipleFieldValueOperator)
         {
-            IEnumerable<XElement> existingFieldRefs = existingMultipleFieldValueOperator.ElementsIgnoreCase(CamlFieldRef.FieldRefTag);
+            var existingFieldRefs = existingMultipleFieldValueOperator.ElementsIgnoreCase(CamlFieldRef.FieldRefTag);
             FieldRefs = existingFieldRefs.Select(existingFieldRef => new CamlFieldRef(existingFieldRef));
             var existingValue =
                 existingMultipleFieldValueOperator.Elements()
                     .SingleOrDefault(
-                        el => string.Equals(el.Name.LocalName, Caml.CamlValue.ValueTag, StringComparison.OrdinalIgnoreCase));
+                        el => string.Equals(el.Name.LocalName, CamlValue.ValueTag, StringComparison.OrdinalIgnoreCase));
 
             if (existingValue != null)
             {

@@ -5,8 +5,6 @@ namespace SharePoint.Remote.Access.Caml
 {
     public abstract class CamlElement
     {
-        public string ElementName { get; }
-
         protected CamlElement(string elementName)
         {
             ElementName = elementName;
@@ -23,6 +21,8 @@ namespace SharePoint.Remote.Access.Caml
             ElementName = elementName;
             Parse(existingElement);
         }
+
+        public string ElementName { get; }
 
         private void Parse(XElement existingElement)
         {
@@ -42,7 +42,7 @@ namespace SharePoint.Remote.Access.Caml
         {
             if (!string.IsNullOrEmpty(existingElement))
             {
-                XElement el = XElement.Parse(existingElement, LoadOptions.None);
+                var el = XElement.Parse(existingElement, LoadOptions.None);
                 Parse(el);
             }
         }
@@ -61,10 +61,12 @@ namespace SharePoint.Remote.Access.Caml
 
         public string ToString(bool disableFormatting)
         {
-            return disableFormatting ? ToXElement().ToString(SaveOptions.DisableFormatting) : ToXElement().ToString(SaveOptions.None);
+            return disableFormatting
+                ? ToXElement().ToString(SaveOptions.DisableFormatting)
+                : ToXElement().ToString(SaveOptions.None);
         }
 
-        public static implicit operator string (CamlElement caml)
+        public static implicit operator string(CamlElement caml)
         {
             return caml?.ToString() ?? string.Empty;
         }

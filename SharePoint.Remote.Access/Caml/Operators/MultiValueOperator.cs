@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 using Microsoft.SharePoint.Client;
@@ -15,10 +14,10 @@ namespace SharePoint.Remote.Access.Caml.Operators
         protected MultiValueOperator(string operatorName, IEnumerable<T> values, FieldType type)
             : base(operatorName)
         {
-            if (values != null) Values = values.Select(val => new Value<T>(val, type));
+            if (values != null) Values = values.Select(val => new CamlValue<T>(val, type));
         }
 
-        protected MultiValueOperator(string operatorName, IEnumerable<Value<T>> values)
+        protected MultiValueOperator(string operatorName, IEnumerable<CamlValue<T>> values)
             : base(operatorName)
         {
             Values = values;
@@ -34,12 +33,12 @@ namespace SharePoint.Remote.Access.Caml.Operators
         {
         }
 
-        public IEnumerable<Value<T>> Values { get; set; }
+        public IEnumerable<CamlValue<T>> Values { get; set; }
 
         protected override void OnParsing(XElement existingValuesOperator)
         {
             var existingValues = existingValuesOperator.ElementsIgnoreCase(CamlValue.ValueTag);
-            Values = existingValues.Select(val => new Value<T>(val));
+            Values = existingValues.Select(val => new CamlValue<T>(val));
         }
 
         public override XElement ToXElement()

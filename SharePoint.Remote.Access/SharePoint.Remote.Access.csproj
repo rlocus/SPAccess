@@ -59,6 +59,9 @@
     <Compile Include="Caml\Operators\BeginsWith.cs" />
     <Compile Include="Caml\Operators\Contains.cs" />
     <Compile Include="Caml\Operators\DateRangesOverlap.cs" />
+    <Compile Include="Caml\Operators\Membership.cs" />
+    <Compile Include="Caml\Operators\NotIncludes.cs" />
+    <Compile Include="Caml\Operators\Includes.cs" />
     <Compile Include="Caml\Operators\Eq.cs" />
     <Compile Include="Caml\Operators\Geq.cs" />
     <Compile Include="Caml\Operators\Gt.cs" />
@@ -70,7 +73,7 @@
     <Compile Include="Caml\Operators\ValueMultiFieldOperator.cs" />
     <Compile Include="Caml\Operators\MultiValueOperator.cs" />
     <Compile Include="Caml\Operators\Neq.cs" />
-    <Compile Include="Caml\Operators\NestedOperator.cs" />
+    <Compile Include="Caml\Operators\LogicalJoin.cs" />
     <Compile Include="Caml\Operators\Operator.cs" />
     <Compile Include="Caml\Operators\Or.cs" />
     <Compile Include="Caml\Operators\FieldMultiValueOperator.cs" />

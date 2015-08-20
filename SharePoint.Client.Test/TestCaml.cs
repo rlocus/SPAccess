@@ -24,8 +24,15 @@ namespace SharePoint.Client.Test
             //string q5 = GetTestQuery().CombineAnd(GetTestQuery7());
             //string q6 = new CamlWhere(q5);
 
-            string q = GetTestQuery6();
-            string q3 = new CamlWhere(q);
+            //string q = GetTestQuery8();
+
+            var view = new View(new[] { "Title" }) { Query = { Where = /*GetTestQuery8()*/ null } };
+
+            view.Query.WhereAny(new And(new Lt<int>("ProductID", 1000, FieldType.Integer),
+                new Gt<int>("ProductID", 100, FieldType.Integer)), new Eq<bool>("IsCompleted", false, FieldType.Boolean));
+            view.Query.GroupBy = new CamlGroupBy(new[] {"Title"}, true);
+            view.Query.OrderBy = new CamlOrderBy(new[] {new CamlFieldRef {Name = "Title", Ascending = true}});
+            string q = view;
         }
 
         public CamlWhere GetTestQuery()
@@ -61,8 +68,9 @@ namespace SharePoint.Client.Test
 
         public CamlWhere GetTestQuery3()
         {
-            return
-                new CamlWhere(new Eq<bool>("IsCompleted", false, FieldType.Boolean));
+            var eq = new Eq<bool>("IsCompleted", false, FieldType.Boolean);
+            eq.FieldRef.Nullable = true;
+            return new CamlWhere(eq);
 
         }
 
@@ -81,8 +89,9 @@ namespace SharePoint.Client.Test
 
         public CamlWhere GetTestQuery6()
         {
-            return
-                new CamlWhere(new DateRangesOverlap("Start", "End" ,"Reccurence", DateValue.Day));
+            var dateRangesOverlap = new DateRangesOverlap("Start", "End", "Reccurence", DateValue.Day);
+            dateRangesOverlap.Value.IncludeTimeValue = true;
+            return new CamlWhere(dateRangesOverlap);
 
         }
 
@@ -90,6 +99,14 @@ namespace SharePoint.Client.Test
         {
             return
                 new CamlWhere(new And(new IsNull("Title"), new BeginsWith("Title", "test")));
+
+        }
+
+
+        public CamlWhere GetTestQuery8()
+        {
+            return
+                new CamlWhere(new Membership("Author", MembershipType.WebUsers));
 
         }
     }

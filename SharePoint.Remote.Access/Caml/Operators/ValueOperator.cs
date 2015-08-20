@@ -7,9 +7,7 @@ namespace SharePoint.Remote.Access.Caml.Operators
 {
     public abstract class ValueOperator<T> : Operator, IValueOperator<T>
     {
-        public Value<T> Value { get; private set; }
-
-        protected ValueOperator(string operatorName, Value<T> value)
+        protected ValueOperator(string operatorName, CamlValue<T> value)
             : base(operatorName)
         {
             if (value == null) throw new ArgumentNullException(nameof(value));
@@ -19,7 +17,7 @@ namespace SharePoint.Remote.Access.Caml.Operators
         protected ValueOperator(string operatorName, T value, FieldType type)
             : base(operatorName)
         {
-            Value = new Value<T>(value, type);
+            Value = new CamlValue<T>(value, type);
         }
 
         protected ValueOperator(string operatorName, string existingValueOperator)
@@ -31,10 +29,12 @@ namespace SharePoint.Remote.Access.Caml.Operators
             : base(operatorName, existingValueOperator)
         {
         }
-        
+
+        public CamlValue<T> Value { get; private set; }
+
         protected override void OnParsing(XElement existingValueOperator)
         {
-            Value = new Value<T>(existingValueOperator);
+            Value = new CamlValue<T>(existingValueOperator);
         }
 
         public override XElement ToXElement()

@@ -5,29 +5,29 @@ using System.Xml.Linq;
 
 namespace SharePoint.Remote.Access.Caml.Operators
 {
-    public abstract class NestedOperator : Operator
+    public abstract class LogicalJoin : Operator
     {
         internal const int OperatorCount = 2;
         internal const int NestedOperatorCount = 1;
 
-        public NestedOperator Parent { get; private set; }
-        internal Operator[] Operators { get; private set; }
-
-        protected NestedOperator(string operatorName, IEnumerable<Operator> operators)
+        protected LogicalJoin(string operatorName, IEnumerable<Operator> operators)
             : base(operatorName)
         {
             InitOperators(operators);
         }
 
-        protected NestedOperator(string operatorName, string existingNestedOperator)
+        protected LogicalJoin(string operatorName, string existingNestedOperator)
             : base(operatorName, existingNestedOperator)
         {
         }
 
-        protected NestedOperator(string operatorName, XElement existingNestedOperator)
+        protected LogicalJoin(string operatorName, XElement existingNestedOperator)
             : base(operatorName, existingNestedOperator)
         {
         }
+
+        public LogicalJoin Parent { get; private set; }
+        internal Operator[] Operators { get; private set; }
 
         internal void InitOperators(IEnumerable<Operator> operators)
         {
@@ -38,12 +38,12 @@ namespace SharePoint.Remote.Access.Caml.Operators
                 {
                     throw new NotSupportedException($"Count of operators must be {OperatorCount}.");
                 }
-                if (Operators.OfType<NestedOperator>().Count() > NestedOperatorCount)
+                if (Operators.OfType<LogicalJoin>().Count() > NestedOperatorCount)
                 {
                     throw new NotSupportedException($"Max count of nested operators must be {NestedOperatorCount}.");
                 }
 
-                foreach (var @operator in Operators.OfType<NestedOperator>())
+                foreach (var @operator in Operators.OfType<LogicalJoin>())
                 {
                     @operator.Parent = this;
                 }
@@ -54,8 +54,8 @@ namespace SharePoint.Remote.Access.Caml.Operators
         {
             var operators = existingNestedOperator.Elements().Select(el =>
             {
-                Operator op = GetOperator(el);
-                var @operator = op as NestedOperator;
+                var op = GetOperator(el);
+                var @operator = op as LogicalJoin;
                 if (@operator != null)
                 {
                     @operator.Parent = this;

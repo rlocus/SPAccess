@@ -6,7 +6,7 @@ namespace SharePoint.Remote.Access.Caml.Operators
 {
     public sealed class Lt : Lt<object>
     {
-        public Lt(CamlFieldRef fieldRef, Value<object> value) : base(fieldRef, value)
+        public Lt(CamlFieldRef fieldRef, CamlValue<object> value) : base(fieldRef, value)
         {
         }
 
@@ -35,7 +35,7 @@ namespace SharePoint.Remote.Access.Caml.Operators
     {
         internal const string LtTag = "Lt";
 
-        public Lt(CamlFieldRef fieldRef, Value<T> value)
+        public Lt(CamlFieldRef fieldRef, CamlValue<T> value)
             : base(LtTag, fieldRef, value)
         {
         }

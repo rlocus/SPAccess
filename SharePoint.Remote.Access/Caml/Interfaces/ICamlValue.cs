@@ -2,6 +2,6 @@
 {
     internal interface IValueOperator<T>
     {
-        Value<T> Value { get; }
+        CamlValue<T> Value { get; }
     }
 }

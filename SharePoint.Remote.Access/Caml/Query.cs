@@ -8,9 +8,6 @@ namespace SharePoint.Remote.Access.Caml
     public sealed class Query : CamlElement
     {
         internal const string QueryTag = "Query";
-        public CamlWhere Where { get; set; }
-        public CamlOrderBy OrderBy { get; set; }
-        public CamlGroupBy GroupBy { get; set; }
 
         public Query() : base(QueryTag)
         {
@@ -23,6 +20,10 @@ namespace SharePoint.Remote.Access.Caml
         public Query(XElement existingQuery) : base(QueryTag, existingQuery)
         {
         }
+
+        public CamlWhere Where { get; set; }
+        public CamlOrderBy OrderBy { get; set; }
+        public CamlGroupBy GroupBy { get; set; }
 
         protected override void OnParsing(XElement existingQuery)
         {
@@ -50,11 +51,10 @@ namespace SharePoint.Remote.Access.Caml
             return el;
         }
 
-        public string ToString(bool includeQueryTag, bool disableFormatting)
+        public string ToString(bool excludeQueryTag, bool disableFormatting)
         {
-            XElement caml = ToXElement();
-
-            if (!includeQueryTag)
+            var caml = ToXElement();
+            if (excludeQueryTag)
             {
                 var sb = new StringBuilder();
                 foreach (var element in caml.Elements())
@@ -72,21 +72,5 @@ namespace SharePoint.Remote.Access.Caml
             }
             return ToString(disableFormatting);
         }
-
-        public static implicit operator string (Query query)
-        {
-            return query?.ToString() ?? string.Empty;
-        }
-        
-        public static Query Combine(Query firstQuery, Query secondQuery)
-        {
-            return new Query
-            {
-                //Where = CamlWhere.Combine(firstQuery.Where, secondQuery.Where),
-                OrderBy = CamlOrderBy.Combine(firstQuery.OrderBy, secondQuery.OrderBy),
-                GroupBy = CamlGroupBy.Combine(firstQuery.GroupBy, secondQuery.GroupBy)
-            };
-        }
-        
     }
 }

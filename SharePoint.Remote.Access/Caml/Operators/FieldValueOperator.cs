@@ -3,6 +3,7 @@ using System.Linq;
 using System.Xml.Linq;
 using Microsoft.SharePoint.Client;
 using SharePoint.Remote.Access.Caml.Interfaces;
+using SharePoint.Remote.Access.Extensions;
 
 namespace SharePoint.Remote.Access.Caml.Operators
 {
@@ -23,25 +24,25 @@ namespace SharePoint.Remote.Access.Caml.Operators
         protected FieldValueOperator(string operatorName, Guid fieldId, CamlValue<T> value)
             : base(operatorName, value)
         {
-            FieldRef = new CamlFieldRef {Id = fieldId};
+            FieldRef = new CamlFieldRef { Id = fieldId };
         }
 
         protected FieldValueOperator(string operatorName, Guid fieldId, T value, FieldType type)
             : base(operatorName, value, type)
         {
-            FieldRef = new CamlFieldRef {Id = fieldId};
+            FieldRef = new CamlFieldRef { Id = fieldId };
         }
 
         protected FieldValueOperator(string operatorName, string fieldName, CamlValue<T> value)
             : base(operatorName, value)
         {
-            FieldRef = new CamlFieldRef {Name = fieldName};
+            FieldRef = new CamlFieldRef { Name = fieldName };
         }
 
         protected FieldValueOperator(string operatorName, string fieldName, T value, FieldType type)
             : base(operatorName, value, type)
         {
-            FieldRef = new CamlFieldRef {Name = fieldName};
+            FieldRef = new CamlFieldRef { Name = fieldName };
         }
 
         protected FieldValueOperator(string operatorName, string existingSingleFieldValueOperator)
@@ -58,16 +59,12 @@ namespace SharePoint.Remote.Access.Caml.Operators
 
         protected override void OnParsing(XElement existingSingleFieldValueOperator)
         {
-            var existingValue =
-                existingSingleFieldValueOperator.Elements()
-                    .SingleOrDefault(
-                        el => string.Equals(el.Name.LocalName, CamlValue.ValueTag, StringComparison.OrdinalIgnoreCase));
+            XElement existingValue = existingSingleFieldValueOperator.ElementIgnoreCase(CamlValue.ValueTag);
             if (existingValue != null)
             {
                 base.OnParsing(existingValue);
             }
-            var existingFieldRef =
-                existingSingleFieldValueOperator.Elements(CamlFieldRef.FieldRefTag).SingleOrDefault();
+            XElement existingFieldRef = existingSingleFieldValueOperator.ElementIgnoreCase(CamlFieldRef.FieldRefTag);
             if (existingFieldRef != null)
             {
                 FieldRef = new CamlFieldRef(existingFieldRef);

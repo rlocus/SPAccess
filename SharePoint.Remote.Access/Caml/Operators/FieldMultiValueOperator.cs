@@ -13,27 +13,27 @@ namespace SharePoint.Remote.Access.Caml.Operators
         protected FieldCamlMultiValue(string operatorName, Guid fieldId, IEnumerable<CamlValue<T>> values)
             : base(operatorName, values)
         {
-            FieldRef = new CamlFieldRef {Id = fieldId};
+            FieldRef = new CamlFieldRef { Id = fieldId };
         }
 
         protected FieldCamlMultiValue(string operatorName, Guid fieldId, IEnumerable<T> values,
             FieldType type)
             : base(operatorName, values, type)
         {
-            FieldRef = new CamlFieldRef {Id = fieldId};
+            FieldRef = new CamlFieldRef { Id = fieldId };
         }
 
         protected FieldCamlMultiValue(string operatorName, string fieldName, IEnumerable<T> values,
             FieldType type)
             : base(operatorName, values, type)
         {
-            FieldRef = new CamlFieldRef {Name = fieldName};
+            FieldRef = new CamlFieldRef { Name = fieldName };
         }
 
         protected FieldCamlMultiValue(string operatorName, string fieldName, IEnumerable<CamlValue<T>> values)
             : base(operatorName, values)
         {
-            FieldRef = new CamlFieldRef {Name = fieldName};
+            FieldRef = new CamlFieldRef { Name = fieldName };
         }
 
         protected FieldCamlMultiValue(string operatorName, CamlFieldRef fieldRef, IEnumerable<T> values,
@@ -64,14 +64,12 @@ namespace SharePoint.Remote.Access.Caml.Operators
 
         protected override void OnParsing(XElement existingSingleFieldMultipleValueOperator)
         {
-            var existingValues =
-                existingSingleFieldMultipleValueOperator.ElementsIgnoreCase(ValuesTag).SingleOrDefault();
+            var existingValues = existingSingleFieldMultipleValueOperator.ElementIgnoreCase(ValuesTag);
             if (existingValues != null)
             {
                 base.OnParsing(existingValues);
             }
-            var existingFieldRef =
-                existingSingleFieldMultipleValueOperator.ElementsIgnoreCase(CamlFieldRef.FieldRefTag).SingleOrDefault();
+            var existingFieldRef = existingSingleFieldMultipleValueOperator.ElementIgnoreCase(CamlFieldRef.FieldRefTag);
             if (existingFieldRef != null)
             {
                 FieldRef = new CamlFieldRef(existingFieldRef);

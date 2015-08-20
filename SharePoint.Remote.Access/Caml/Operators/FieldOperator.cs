@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Xml.Linq;
 using SharePoint.Remote.Access.Caml.Interfaces;
+using SharePoint.Remote.Access.Extensions;
 
 namespace SharePoint.Remote.Access.Caml.Operators
 {
@@ -28,8 +29,7 @@ namespace SharePoint.Remote.Access.Caml.Operators
 
         protected override void OnParsing(XElement existingFieldValueOperator)
         {
-            var existingFieldRef =
-                existingFieldValueOperator.Elements(CamlFieldRef.FieldRefTag).SingleOrDefault();
+            XElement existingFieldRef = existingFieldValueOperator.ElementIgnoreCase(CamlFieldRef.FieldRefTag);
             if (existingFieldRef != null)
             {
                 FieldRef = new CamlFieldRef(existingFieldRef);

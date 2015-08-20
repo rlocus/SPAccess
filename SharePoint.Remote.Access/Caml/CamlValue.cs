@@ -1,23 +1,21 @@
 ﻿using System;
-using System.Linq;
 using System.Xml.Linq;
 using Microsoft.SharePoint.Client;
+using SharePoint.Remote.Access.Caml.Interfaces;
 using SharePoint.Remote.Access.Extensions;
 
 namespace SharePoint.Remote.Access.Caml
 {
-    public enum DateValue
-    {
-        Now,
-        Today,
-        Day,
-        Week,
-        Month,
-        Year
-    }
-
     public sealed class CamlValue : CamlValue<object>
     {
+        public static NowDateCamlValue Now => new NowDateCamlValue();
+        public static TodayDateCamlValue Today => new TodayDateCamlValue();
+        public static DayDateCamlValue Day => new DayDateCamlValue();
+        public static WeekDateCamlValue Week => new WeekDateCamlValue();
+        public static MonthDateCamlValue Month => new MonthDateCamlValue();
+        public static YearDateCamlValue Year => new YearDateCamlValue();
+        public static UserIdCamlValue UserId => new UserIdCamlValue();
+
         public CamlValue(object value, FieldType type) : base(value, type)
         {
         }
@@ -29,6 +27,210 @@ namespace SharePoint.Remote.Access.Caml
         public CamlValue(XElement existingValue) : base(existingValue)
         {
         }
+
+        public abstract class DateCamlValue : CamlElement, ICamlSpecialValue
+        {
+            protected DateCamlValue(string elementName) : base(elementName)
+            {
+            }
+
+            protected DateCamlValue(string elementName, string existingElement) : base(elementName, existingElement)
+            {
+            }
+
+            protected DateCamlValue(string elementName, XElement existingElement) : base(elementName, existingElement)
+            {
+            }
+
+            protected override void OnParsing(XElement existingElement)
+            {
+            }
+
+            public bool IsSupported(FieldType fieldType)
+            {
+                return fieldType == FieldType.DateTime;
+            }
+
+            internal static DateCamlValue GetValue(XElement existingDateCamlValue)
+            {
+                string tag = existingDateCamlValue.Name.LocalName;
+                if (string.Equals(tag, NowDateCamlValue.NowTag, StringComparison.OrdinalIgnoreCase))
+                {
+                    return new NowDateCamlValue(existingDateCamlValue);
+                }
+                if (string.Equals(tag, TodayDateCamlValue.TodayTag, StringComparison.OrdinalIgnoreCase))
+                {
+                    return new TodayDateCamlValue(existingDateCamlValue);
+                }
+                if (string.Equals(tag, DayDateCamlValue.DayTag, StringComparison.OrdinalIgnoreCase))
+                {
+                    return new DayDateCamlValue(existingDateCamlValue);
+                }
+                if (string.Equals(tag, WeekDateCamlValue.WeekTag, StringComparison.OrdinalIgnoreCase))
+                {
+                    return new WeekDateCamlValue(existingDateCamlValue);
+                }
+                if (string.Equals(tag, MonthDateCamlValue.MonthTag, StringComparison.OrdinalIgnoreCase))
+                {
+                    return new MonthDateCamlValue(existingDateCamlValue);
+                }
+                if (string.Equals(tag, YearDateCamlValue.YearTag, StringComparison.OrdinalIgnoreCase))
+                {
+                    return new YearDateCamlValue(existingDateCamlValue);
+                }
+                throw new NotSupportedException(nameof(tag));
+            }
+        }
+
+        public sealed class NowDateCamlValue : DateCamlValue
+        {
+            internal const string NowTag = "Now";
+
+            internal NowDateCamlValue() : base(NowTag)
+            {
+            }
+
+            internal NowDateCamlValue(string existingElement) : base(NowTag, existingElement)
+            {
+            }
+
+            internal NowDateCamlValue(XElement existingElement) : base(NowTag, existingElement)
+            {
+            }
+        }
+
+        public sealed class TodayDateCamlValue : DateCamlValue
+        {
+            internal const string TodayTag = "Today";
+            internal const string OffsetAttr = "Offset";
+
+            public int? Offset { get; set; }
+
+            internal TodayDateCamlValue() : base(TodayTag)
+            {
+            }
+
+            internal TodayDateCamlValue(string existingElement) : base(TodayTag, existingElement)
+            {
+            }
+
+            internal TodayDateCamlValue(XElement existingElement) : base(TodayTag, existingElement)
+            {
+            }
+
+            protected override void OnParsing(XElement existingElement)
+            {
+                var offset = existingElement.AttributeIgnoreCase(OffsetAttr);
+                if (offset != null)
+                {
+                    Offset = Convert.ToInt32(offset.Value);
+                }
+            }
+
+            public override XElement ToXElement()
+            {
+                var el = base.ToXElement();
+                if (Offset.HasValue)
+                {
+                    el.Add(new XAttribute(OffsetAttr, Offset));
+                }
+                return el;
+            }
+        }
+
+        public sealed class DayDateCamlValue : DateCamlValue
+        {
+            internal const string DayTag = "Day";
+
+            internal DayDateCamlValue() : base(DayTag)
+            {
+            }
+
+            internal DayDateCamlValue(string existingElement) : base(DayTag, existingElement)
+            {
+            }
+
+            internal DayDateCamlValue(XElement existingElement) : base(DayTag, existingElement)
+            {
+            }
+        }
+
+        public sealed class WeekDateCamlValue : DateCamlValue
+        {
+            internal const string WeekTag = "Week";
+
+            internal WeekDateCamlValue() : base(WeekTag)
+            {
+            }
+
+            internal WeekDateCamlValue(string existingElement) : base(WeekTag, existingElement)
+            {
+            }
+
+            internal WeekDateCamlValue(XElement existingElement) : base(WeekTag, existingElement)
+            {
+            }
+        }
+
+        public sealed class MonthDateCamlValue : DateCamlValue
+        {
+            internal const string MonthTag = "Month";
+
+            internal MonthDateCamlValue() : base(MonthTag)
+            {
+            }
+
+            internal MonthDateCamlValue(string existingElement) : base(MonthTag, existingElement)
+            {
+            }
+
+            internal MonthDateCamlValue(XElement existingElement) : base(MonthTag, existingElement)
+            {
+            }
+        }
+
+        public sealed class YearDateCamlValue : DateCamlValue
+        {
+            internal const string YearTag = "Year";
+
+            internal YearDateCamlValue() : base(YearTag)
+            {
+            }
+
+            internal YearDateCamlValue(string existingElement) : base(YearTag, existingElement)
+            {
+            }
+
+            internal YearDateCamlValue(XElement existingElement) : base(YearTag, existingElement)
+            {
+            }
+        }
+
+        public sealed class UserIdCamlValue : CamlElement, ICamlSpecialValue
+        {
+            internal const string UserIdTag = "UserID";
+
+            internal UserIdCamlValue() : base(UserIdTag)
+            {
+            }
+
+            internal UserIdCamlValue(string existingElement) : base(UserIdTag, existingElement)
+            {
+            }
+
+            internal UserIdCamlValue(XElement existingElement) : base(UserIdTag, existingElement)
+            {
+            }
+
+            public bool IsSupported(FieldType fieldType)
+            {
+                return fieldType == FieldType.Integer;
+            }
+
+            protected override void OnParsing(XElement existingElement)
+            {
+            }
+        }
     }
 
     public class CamlValue<T> : CamlElement
@@ -36,8 +238,6 @@ namespace SharePoint.Remote.Access.Caml
         internal const string ValueTag = "Value";
         internal const string TypeAttr = "Type";
         internal const string IncludeTimeValueAttr = "IncludeTimeValue";
-
-        public const string UserId = "UserID";
 
         public CamlValue(T value, FieldType type)
             : base(ValueTag)
@@ -112,21 +312,14 @@ namespace SharePoint.Remote.Access.Caml
                 }
                 if (existingValue.HasElements)
                 {
-                    var dateValues = new[]
+                    foreach (XElement existingDateValue in existingValue.Elements())
                     {
-                        DateValue.Today.ToString(),
-                        DateValue.Day.ToString(),
-                        DateValue.Month.ToString(),
-                        DateValue.Now.ToString(),
-                        DateValue.Week.ToString(),
-                        DateValue.Year.ToString()
-                    };
-                    var existingDateValue =
-                        dateValues.Select(dateValue => existingValue.ElementIgnoreCase(dateValue))
-                            .FirstOrDefault(val => val != null);
-                    if (existingDateValue != null)
-                    {
-                        Value = (T)Enum.Parse(typeof(DateValue), existingDateValue.Name.LocalName, true);
+                        try
+                        {
+                            Value = (T)(object)CamlValue.DateCamlValue.GetValue(existingDateValue);
+                            break;
+                        }
+                        catch { }
                     }
                 }
                 else
@@ -143,12 +336,16 @@ namespace SharePoint.Remote.Access.Caml
             {
                 if (existingValue.HasElements)
                 {
-                    XElement userId = existingValue.ElementIgnoreCase(UserId);
-                    if (userId != null)
+                    foreach (XElement existingDateValue in existingValue.Elements())
                     {
-                        Value = (T)(object)UserId;
-                        return;
+                        try
+                        {
+                            Value = (T)(object)new CamlValue.UserIdCamlValue(existingDateValue);
+                            break;
+                        }
+                        catch { }
                     }
+                    return;
                 }
             }
             if (!string.IsNullOrEmpty(existingValue.Value))
@@ -171,15 +368,13 @@ namespace SharePoint.Remote.Access.Caml
                 if (Value is DateTime)
                 {
                     el.Value = string.Concat(Convert.ToDateTime(Value).ToString("s"), "Z");
+                    return el;
                 }
-                else if (Value is DateValue)
-                {
-                    el.Add(new XElement(Convert.ToString(Value)));
-                }
-                else
-                {
-                    el.Value = Convert.ToString(Value);
-                }
+            }
+            var value = Value as ICamlSpecialValue;
+            if (value != null && value.IsSupported(Type))
+            {
+                el.Add(value.ToXElement());
             }
             else
             {

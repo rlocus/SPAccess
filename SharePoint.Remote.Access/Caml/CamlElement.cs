@@ -28,10 +28,12 @@ namespace SharePoint.Remote.Access.Caml
         private void Parse(XElement existingElement)
         {
             if (existingElement == null) throw new ArgumentNullException(nameof(existingElement));
-            if (string.Equals(existingElement.Name.LocalName, ElementName, StringComparison.OrdinalIgnoreCase)
-                && (existingElement.HasAttributes || existingElement.HasElements))
+            if (string.Equals(existingElement.Name.LocalName, ElementName, StringComparison.OrdinalIgnoreCase))
             {
-                OnParsing(existingElement);
+                if ((existingElement.HasAttributes || existingElement.HasElements))
+                {
+                    OnParsing(existingElement);
+                }
             }
             else
             {

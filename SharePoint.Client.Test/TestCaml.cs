@@ -25,8 +25,8 @@ namespace SharePoint.Client.Test
             //string q5 = GetTestQuery().CombineAnd(GetTestQuery7());
             //string q6 = new CamlWhere(q5);
 
-            //string q = GetTestQuery8();
-
+            string q = GetTestQuery7();
+            string s = new CamlWhere(q);
             //var view = new View(new[] { "Title", "ID" }) { Query = { Where = /*GetTestQuery8()*/ null } };
 
             //view.Query.WhereAny(new And(new Lt<int>("ProductID", 1000, FieldType.Integer),
@@ -38,10 +38,10 @@ namespace SharePoint.Client.Test
             //string vv = view.ViewFields.ToString(true, true);
             //var v2 = new View(view).ToCamlQuery();
 
-            var q = new Query() { Where = new CamlWhere(new Contains("Title", "e")) };
-            q.WhereAll(new IsNotNull("Title"), new Leq<DateTime>(new CamlFieldRef { Name = "Created" }, DateTime.Now, FieldType.DateTime));
+            //var q = new Query() { Where = new CamlWhere(new Contains("Title", "e")) };
+            //q.WhereAll(new IsNotNull("Title"), new Leq<DateTime>(new CamlFieldRef { Name = "Created" }, DateTime.Now, FieldType.DateTime));
 
-            string s =  q;
+            //string s = q;
         }
 
         public CamlWhere GetTestQuery()
@@ -98,7 +98,9 @@ namespace SharePoint.Client.Test
 
         public CamlWhere GetTestQuery6()
         {
-            var dateRangesOverlap = new DateRangesOverlap("Start", "End", "Reccurence", DateValue.Day);
+            var today = CamlValue.Today;
+            today.Offset = -6;
+            var dateRangesOverlap = new DateRangesOverlap("Start", "End", "Reccurence", today);
             dateRangesOverlap.Value.IncludeTimeValue = true;
             return new CamlWhere(dateRangesOverlap);
 
@@ -107,16 +109,17 @@ namespace SharePoint.Client.Test
         public CamlWhere GetTestQuery7()
         {
             return
-                new CamlWhere(new And(new IsNull("Title"), new BeginsWith("Title", "test")));
+                new CamlWhere(new And(new IsNull("Title"),
+                    new Eq(new CamlFieldRef {Name = "User"}, CamlValue.UserId, FieldType.Integer)));
 
         }
 
 
-        public CamlWhere GetTestQuery8()
-        {
-            return
-                new CamlWhere(new Membership("Author", MembershipType.WebUsers));
+    public CamlWhere GetTestQuery8()
+    {
+        return
+            new CamlWhere(new Membership("Author", MembershipType.WebUsers));
 
-        }
     }
+}
 }

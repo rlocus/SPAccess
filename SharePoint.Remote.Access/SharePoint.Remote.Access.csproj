@@ -56,6 +56,7 @@
     <Compile Include="Caml\Interfaces\ICamlMultiField.cs" />
     <Compile Include="Caml\Interfaces\ICamlMultiValue.cs" />
     <Compile Include="Caml\Interfaces\ICamlValue.cs" />
+    <Compile Include="Caml\Interfaces\ICamlValueElement.cs" />
     <Compile Include="Caml\Operators\And.cs" />
     <Compile Include="Caml\Operators\BeginsWith.cs" />
     <Compile Include="Caml\Operators\Contains.cs" />

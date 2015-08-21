@@ -50,27 +50,5 @@ namespace SharePoint.Remote.Access.Caml
             }
             return el;
         }
-
-        public string ToString(bool excludeQueryTag, bool disableFormatting)
-        {
-            var caml = ToXElement();
-            if (excludeQueryTag)
-            {
-                var sb = new StringBuilder();
-                foreach (var element in caml.Elements())
-                {
-                    if (disableFormatting)
-                    {
-                        sb.Append(element.ToString(SaveOptions.DisableFormatting));
-                    }
-                    else
-                    {
-                        sb.AppendLine(element.ToString(SaveOptions.None));
-                    }
-                }
-                return sb.ToString();
-            }
-            return ToString(disableFormatting);
-        }
     }
 }

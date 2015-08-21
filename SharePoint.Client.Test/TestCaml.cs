@@ -25,18 +25,20 @@ namespace SharePoint.Client.Test
             //string q5 = GetTestQuery().CombineAnd(GetTestQuery7());
             //string q6 = new CamlWhere(q5);
 
-            string q = GetTestQuery7();
-            string s = new CamlWhere(q);
-            //var view = new View(new[] { "Title", "ID" }) { Query = { Where = /*GetTestQuery8()*/ null } };
+            //string q = GetTestQuery7();
+            //string s = new CamlWhere(q);
+            var view = new View(new[] { "Title", "ID" }, new Join[] { new InnerJoin("Test", "List 1"), new LeftJoin("Test", "List 1", "List 2") }) { Query = { Where = /*GetTestQuery8()*/ null } };
 
-            //view.Query.WhereAny(new And(new Lt<int>("ProductID", 1000, FieldType.Integer),
-            //    new Gt<int>("ProductID", 100, FieldType.Integer)), new Eq<bool>("IsCompleted", false, FieldType.Boolean));
-            //view.Query.GroupBy = new CamlGroupBy(new[] {"Title"}, true);
-            //view.Query.OrderBy = new CamlOrderBy(new[] {new CamlFieldRef {Name = "Title", Ascending = true}});
-            //string q = view;
+            view.Query.WhereAny(new And(new Lt<int>("ProductID", 1000, FieldType.Integer),
+                new Gt<int>("ProductID", 100, FieldType.Integer)), new Eq<bool>("IsCompleted", false, FieldType.Boolean));
+            view.Query.GroupBy = new CamlGroupBy(new[] { "Title" }, true);
+            view.Query.OrderBy = new CamlOrderBy(new[] { new CamlFieldRef { Name = "Title", Ascending = true } });
 
-            //string vv = view.ViewFields.ToString(true, true);
-            //var v2 = new View(view).ToCamlQuery();
+            //view.Query.Where.CombineOr(GetTestQuery());
+
+            string q = view;
+            string v = new View(q);
+
 
             //var q = new Query() { Where = new CamlWhere(new Contains("Title", "e")) };
             //q.WhereAll(new IsNotNull("Title"), new Leq<DateTime>(new CamlFieldRef { Name = "Created" }, DateTime.Now, FieldType.DateTime));
@@ -110,16 +112,16 @@ namespace SharePoint.Client.Test
         {
             return
                 new CamlWhere(new And(new IsNull("Title"),
-                    new Eq(new CamlFieldRef {Name = "User"}, CamlValue.UserId, FieldType.Integer)));
+                    new Eq(new CamlFieldRef { Name = "User" }, CamlValue.UserId, FieldType.Integer)));
 
         }
 
 
-    public CamlWhere GetTestQuery8()
-    {
-        return
-            new CamlWhere(new Membership("Author", MembershipType.WebUsers));
+        public CamlWhere GetTestQuery8()
+        {
+            return
+                new CamlWhere(new Membership("Author", MembershipType.WebUsers));
 
+        }
     }
-}
 }

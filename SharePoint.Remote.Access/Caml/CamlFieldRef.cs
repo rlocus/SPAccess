@@ -130,6 +130,10 @@ namespace SharePoint.Remote.Access.Caml
         public override XElement ToXElement()
         {
             XElement el = new XElement(FieldRefTag);
+            if (!string.IsNullOrWhiteSpace(List))
+            {
+                el.Add(new XAttribute(ListAttr, List));
+            }
             if (Id != Guid.Empty)
             {
                 el.Add(new XAttribute(IdAttr, Id));
@@ -169,10 +173,6 @@ namespace SharePoint.Remote.Access.Caml
             if (!string.IsNullOrWhiteSpace(Key))
             {
                 el.Add(new XAttribute(KeyAttr, Key));
-            }
-            if (!string.IsNullOrWhiteSpace(List))
-            {
-                el.Add(new XAttribute(ListAttr, List));
             }
             if (!string.IsNullOrWhiteSpace(RefType))
             {

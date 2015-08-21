@@ -45,21 +45,23 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AuthType.cs" />
+    <Compile Include="Caml\Join.cs" />
     <Compile Include="Caml\Clauses\CamlClause.cs" />
     <Compile Include="Caml\Clauses\CamlGroupBy.cs" />
     <Compile Include="Caml\Clauses\CamlOrderBy.cs" />
     <Compile Include="Caml\Clauses\CamlWhere.cs" />
-    <Compile Include="Caml\Extensions.cs" />
+    <Compile Include="Caml\CamlExtensions.cs" />
     <Compile Include="Caml\CamlFieldRef.cs" />
     <Compile Include="Caml\Interfaces\ICaml.cs" />
     <Compile Include="Caml\Interfaces\ICamlField.cs" />
     <Compile Include="Caml\Interfaces\ICamlMultiField.cs" />
     <Compile Include="Caml\Interfaces\ICamlMultiValue.cs" />
     <Compile Include="Caml\Interfaces\ICamlValue.cs" />
-    <Compile Include="Caml\Interfaces\ICamlValueElement.cs" />
+    <Compile Include="Caml\Interfaces\ICamlSpecialValue.cs" />
     <Compile Include="Caml\Operators\And.cs" />
     <Compile Include="Caml\Operators\BeginsWith.cs" />
     <Compile Include="Caml\Operators\Contains.cs" />
+    <Compile Include="Caml\JoinComparison.cs" />
     <Compile Include="Caml\Operators\DateRangesOverlap.cs" />
     <Compile Include="Caml\Operators\Membership.cs" />
     <Compile Include="Caml\Operators\NotIncludes.cs" />
@@ -82,7 +84,8 @@
     <Compile Include="Caml\Operators\FieldOperator.cs" />
     <Compile Include="Caml\Operators\FieldValueOperator.cs" />
     <Compile Include="Caml\Operators\ValueOperator.cs" />
-    <Compile Include="Caml\ViewFields.cs" />
+    <Compile Include="Caml\JoinsCamlElement.cs" />
+    <Compile Include="Caml\ViewFieldsCamlElement.cs" />
     <Compile Include="Caml\View.cs" />
     <Compile Include="Caml\Query.cs" />
     <Compile Include="Caml\CamlElement.cs" />

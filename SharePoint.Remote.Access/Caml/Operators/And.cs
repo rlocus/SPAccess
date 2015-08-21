@@ -6,8 +6,13 @@ namespace SharePoint.Remote.Access.Caml.Operators
     {
         internal const string AndTag = "And";
 
-        public And(params Operator[] operators)
+        internal And(params Operator[] operators)
             : base(AndTag, operators)
+        {
+        }
+
+        public And(Operator firstOperator, Operator secondOperator)
+          : base(AndTag, new[] { firstOperator, secondOperator })
         {
         }
 

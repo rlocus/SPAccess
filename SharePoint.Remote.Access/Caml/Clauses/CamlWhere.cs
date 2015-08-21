@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 using SharePoint.Remote.Access.Caml.Operators;
-using SharePoint.Remote.Access.Extensions;
 
 namespace SharePoint.Remote.Access.Caml.Clauses
 {
@@ -37,19 +35,7 @@ namespace SharePoint.Remote.Access.Caml.Clauses
             var @operator = Operator as LogicalJoin;
             if (@operator != null && op is LogicalJoin)
             {
-                var operators = new List<Operator>();
-                var childOperator = @operator.Operators.OfType<LogicalJoin>()
-                    .FirstOrDefaultFromMany(o => o.Operators.OfType<LogicalJoin>(),
-                        o => !o.Operators.OfType<LogicalJoin>().Any());
-                if (childOperator != null)
-                {
-                    @operator = childOperator;
-                }
-                operators.AddRange(
-                    @operator.Operators.Where(@o => !(@o is LogicalJoin)).Take(LogicalJoin.OperatorCount - 1));
-                operators.Add(
-                    new And(new List<Operator>(@operator.Operators.Where(@o => !operators.Contains(@o))) {op}.ToArray()));
-                @operator.InitOperators(operators);
+                @operator.CombineAnd(op as LogicalJoin);
             }
             else
             {
@@ -64,19 +50,7 @@ namespace SharePoint.Remote.Access.Caml.Clauses
             var @operator = Operator as LogicalJoin;
             if (@operator != null && op is LogicalJoin)
             {
-                var operators = new List<Operator>();
-                var childOperator = @operator.Operators.OfType<LogicalJoin>()
-                    .FirstOrDefaultFromMany(o => o.Operators.OfType<LogicalJoin>(),
-                        o => !o.Operators.OfType<LogicalJoin>().Any());
-                if (childOperator != null)
-                {
-                    @operator = childOperator;
-                }
-                operators.AddRange(
-                    @operator.Operators.Where(@o => !(@o is LogicalJoin)).Take(LogicalJoin.OperatorCount - 1));
-                operators.Add(
-                    new Or(new List<Operator>(@operator.Operators.Where(@o => !operators.Contains(@o))) {op}.ToArray()));
-                @operator.InitOperators(operators);
+                @operator.CombineOr(op as LogicalJoin);
             }
             else
             {

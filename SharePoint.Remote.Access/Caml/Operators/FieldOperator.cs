@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Xml.Linq;
 using SharePoint.Remote.Access.Caml.Interfaces;
 using SharePoint.Remote.Access.Extensions;

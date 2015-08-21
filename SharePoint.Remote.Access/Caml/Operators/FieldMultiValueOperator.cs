@@ -10,6 +10,8 @@ namespace SharePoint.Remote.Access.Caml.Operators
 {
     public abstract class FieldCamlMultiValue<T> : CamlMultiValue<T>, ICamlField
     {
+        public CamlFieldRef FieldRef { get; private set; }
+
         protected FieldCamlMultiValue(string operatorName, Guid fieldId, IEnumerable<CamlValue<T>> values)
             : base(operatorName, values)
         {
@@ -59,8 +61,6 @@ namespace SharePoint.Remote.Access.Caml.Operators
             : base(operatorName, existingSingleFieldMultipleValueOperator)
         {
         }
-
-        public CamlFieldRef FieldRef { get; private set; }
 
         protected override void OnParsing(XElement existingSingleFieldMultipleValueOperator)
         {

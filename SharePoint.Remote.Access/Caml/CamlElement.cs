@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.Xml.Linq;
 using SharePoint.Remote.Access.Caml.Interfaces;
 
@@ -67,6 +68,28 @@ namespace SharePoint.Remote.Access.Caml
             return disableFormatting
                 ? ToXElement().ToString(SaveOptions.DisableFormatting)
                 : ToXElement().ToString(SaveOptions.None);
+        }
+
+        public string ToString(bool excludeParentTag, bool disableFormatting)
+        {
+            var caml = ToXElement();
+            if (excludeParentTag)
+            {
+                var sb = new StringBuilder();
+                foreach (var element in caml.Elements())
+                {
+                    if (disableFormatting)
+                    {
+                        sb.Append(element.ToString(SaveOptions.DisableFormatting));
+                    }
+                    else
+                    {
+                        sb.AppendLine(element.ToString(SaveOptions.None));
+                    }
+                }
+                return sb.ToString();
+            }
+            return ToString(disableFormatting);
         }
 
         public static implicit operator string (CamlElement caml)

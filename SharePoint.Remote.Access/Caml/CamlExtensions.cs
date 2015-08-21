@@ -6,7 +6,7 @@ using SharePoint.Remote.Access.Caml.Operators;
 
 namespace SharePoint.Remote.Access.Caml
 {
-    public static class Extensions
+    public static class CamlExtensions
     {
         public static void WhereAll(this Query query, params Operator[] operators)
         {

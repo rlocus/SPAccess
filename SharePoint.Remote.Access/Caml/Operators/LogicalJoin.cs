@@ -51,16 +51,7 @@ namespace SharePoint.Remote.Access.Caml.Operators
 
         protected override void OnParsing(XElement existingLogicalJoin)
         {
-            var operators = existingLogicalJoin.Elements().Select(el =>
-            {
-                var op = GetOperator(el);
-                var @operator = op as LogicalJoin;
-                if (@operator != null)
-                {
-                    @operator.Parent = this;
-                }
-                return op;
-            }).Where(op => op != null);
+            var operators = existingLogicalJoin.Elements().Select(GetOperator);
             InitOperators(operators);
         }
 

@@ -31,11 +31,11 @@ namespace SharePoint.Client.Test
 
             view.Query.WhereAny(new Eq<bool>("IsCompleted", false, FieldType.Boolean), new Lt<int>("ProductID", 1000, FieldType.Integer));
 
-            //view.Query.WhereAny(new Or(new Eq<bool>("IsCompleted", false, FieldType.Boolean), new And(new IsNull("IsCompleted"), new BeginsWith("Title", "test"))));
+            view.Query.WhereAny(new Or(new Eq<bool>("IsCompleted", false, FieldType.Boolean), new And(new IsNull("IsCompleted"), new BeginsWith("Title", "test"))));
             view.Query.GroupBy = new CamlGroupBy(new[] { "Title" }, true);
             view.Query.OrderBy = new CamlOrderBy(new[] { new CamlFieldRef { Name = "Title", Ascending = true } });
-
-            //view.Query.Where.CombineOr(GetTestQuery());
+            
+            view.Query.Where.Or(new Eq<int>(new CamlFieldRef { Name = "ID" }, 1, FieldType.Counter)).Or(new Eq<int>(new CamlFieldRef { Name = "ID" }, 2, FieldType.Counter)).And(new Eq<string>(new CamlFieldRef { Name = "Title" }, "", FieldType.Text));
 
             string q = view;
             string v = new View(q);

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
-using SharePoint.Remote.Access.Extensions;
 
 namespace SharePoint.Remote.Access.Caml.Operators
 {
@@ -16,7 +15,7 @@ namespace SharePoint.Remote.Access.Caml.Operators
         }
 
         public And(Operator firstOperator, Operator secondOperator)
-          : base(AndTag, new[] { firstOperator, secondOperator })
+            : base(AndTag, new[] {firstOperator, secondOperator})
         {
         }
 
@@ -42,7 +41,8 @@ namespace SharePoint.Remote.Access.Caml.Operators
             {
                 var operators = new List<Operator>();
                 operators.AddRange(Operators.Where(@op => !(@op is LogicalJoin)).Take(OperatorCount - 1));
-                operators.Add(new And(new List<Operator>(Operators.Where(@op => !operators.Contains(@op))) { @operator }.ToArray()));
+                operators.Add(
+                    new And(new List<Operator>(Operators.Where(@op => !operators.Contains(@op))) {@operator}.ToArray()));
                 InitOperators(operators);
             }
         }

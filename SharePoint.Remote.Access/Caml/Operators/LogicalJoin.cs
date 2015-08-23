@@ -9,8 +9,6 @@ namespace SharePoint.Remote.Access.Caml.Operators
     public abstract class LogicalJoin : Operator
     {
         internal const int OperatorCount = 2;
-        public LogicalJoin Parent { get; private set; }
-        public Operator[] Operators { get; private set; }
 
         protected LogicalJoin(string operatorName, IEnumerable<Operator> operators)
             : base(operatorName)
@@ -27,6 +25,9 @@ namespace SharePoint.Remote.Access.Caml.Operators
             : base(operatorName, existingLogicalJoin)
         {
         }
+
+        public LogicalJoin Parent { get; private set; }
+        public Operator[] Operators { get; private set; }
 
         protected void InitOperators(IEnumerable<Operator> operators)
         {
@@ -71,7 +72,8 @@ namespace SharePoint.Remote.Access.Caml.Operators
             var @operator = this;
             var operators = new List<Operator>();
             var childOperator = @operator.Operators.OfType<LogicalJoin>()
-                .FirstOrDefaultFromMany(op => op.Operators.OfType<LogicalJoin>(), op => !op.Operators.OfType<LogicalJoin>().Any());
+                .FirstOrDefaultFromMany(op => op.Operators.OfType<LogicalJoin>(),
+                    op => !op.Operators.OfType<LogicalJoin>().Any());
             if (childOperator != null)
             {
                 @operator = childOperator;
@@ -79,7 +81,8 @@ namespace SharePoint.Remote.Access.Caml.Operators
             operators.AddRange(@operator.Operators.Where(@op => !(@op is LogicalJoin)).Take(OperatorCount - 1));
             var result =
                 new And(
-                    new List<Operator>(@operator.Operators.Where(@op => !operators.Contains(@op))) { combinedOperator }.ToArray());
+                    new List<Operator>(@operator.Operators.Where(@op => !operators.Contains(@op))) { combinedOperator }
+                        .ToArray());
             operators.Add(result);
             @operator.InitOperators(operators);
             return result;
@@ -91,7 +94,8 @@ namespace SharePoint.Remote.Access.Caml.Operators
             var @operator = this;
             var operators = new List<Operator>();
             var childOperator = @operator.Operators.OfType<LogicalJoin>()
-                .FirstOrDefaultFromMany(op => op.Operators.OfType<LogicalJoin>(), op => !op.Operators.OfType<LogicalJoin>().Any());
+                .FirstOrDefaultFromMany(op => op.Operators.OfType<LogicalJoin>(),
+                    op => !op.Operators.OfType<LogicalJoin>().Any());
             if (childOperator != null)
             {
                 @operator = childOperator;
@@ -105,6 +109,7 @@ namespace SharePoint.Remote.Access.Caml.Operators
             @operator.InitOperators(operators);
             return result;
         }
+
         public override XElement ToXElement()
         {
             var el = base.ToXElement();

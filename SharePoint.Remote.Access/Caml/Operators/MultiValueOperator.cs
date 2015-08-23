@@ -35,12 +35,6 @@ namespace SharePoint.Remote.Access.Caml.Operators
 
         public IEnumerable<CamlValue<T>> Values { get; set; }
 
-        protected override void OnParsing(XElement existingValuesOperator)
-        {
-            var existingValues = existingValuesOperator.ElementsIgnoreCase(CamlValue.ValueTag);
-            Values = existingValues.Select(val => new CamlValue<T>(val));
-        }
-
         public override XElement ToXElement()
         {
             var el = base.ToXElement();
@@ -49,6 +43,12 @@ namespace SharePoint.Remote.Access.Caml.Operators
                 el.Add(new XElement(ValuesTag, Values.Select(val => val?.ToXElement())));
             }
             return el;
+        }
+
+        protected override void OnParsing(XElement existingValuesOperator)
+        {
+            var existingValues = existingValuesOperator.ElementsIgnoreCase(CamlValue.ValueTag);
+            Values = existingValues.Select(val => new CamlValue<T>(val));
         }
     }
 }

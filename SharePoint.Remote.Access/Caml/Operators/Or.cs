@@ -15,7 +15,7 @@ namespace SharePoint.Remote.Access.Caml.Operators
         }
 
         public Or(Operator firstOperator, Operator secondOperator)
-          : base(OrTag, new[] { firstOperator, secondOperator })
+            : base(OrTag, new[] {firstOperator, secondOperator})
         {
         }
 
@@ -41,7 +41,8 @@ namespace SharePoint.Remote.Access.Caml.Operators
             {
                 var operators = new List<Operator>();
                 operators.AddRange(Operators.Where(@op => !(@op is LogicalJoin)).Take(OperatorCount - 1));
-                operators.Add(new Or(new List<Operator>(Operators.Where(@op => !operators.Contains(@op))) { @operator }.ToArray()));
+                operators.Add(
+                    new Or(new List<Operator>(Operators.Where(@op => !operators.Contains(@op))) {@operator}.ToArray()));
                 InitOperators(operators);
             }
         }

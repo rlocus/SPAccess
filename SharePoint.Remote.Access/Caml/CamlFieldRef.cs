@@ -22,21 +22,6 @@ namespace SharePoint.Remote.Access.Caml
         internal const string ShowFieldAttr = "ShowField";
         internal const string TextOnlyAttr = "TextOnly";
 
-        public Guid Id { get; set; }
-        public string Name { get; set; }
-        public bool? Ascending { get; set; }
-        public bool? Nullable { get; set; }
-        public bool? LookupId { get; set; }
-        public string Alias { get; set; }
-        public string CreateUrl { get; set; }
-        public string DisplayName { get; set; }
-        public bool? Explicit { get; set; }
-        public string Key { get; set; }
-        public string List { get; set; }
-        public string RefType { get; set; }
-        public string ShowField { get; set; }
-        public bool? TextOnly { get; set; }
-
         public CamlFieldRef()
             : base(FieldRefTag)
         {
@@ -52,75 +37,90 @@ namespace SharePoint.Remote.Access.Caml
         {
         }
 
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+        public bool? Ascending { get; set; }
+        public bool? Nullable { get; set; }
+        public bool? LookupId { get; set; }
+        public string Alias { get; set; }
+        public string CreateUrl { get; set; }
+        public string DisplayName { get; set; }
+        public bool? Explicit { get; set; }
+        public string Key { get; set; }
+        public string List { get; set; }
+        public string RefType { get; set; }
+        public string ShowField { get; set; }
+        public bool? TextOnly { get; set; }
+
         protected override void OnParsing(XElement existingFieldRef)
         {
-            XAttribute name = existingFieldRef.AttributeIgnoreCase(NameAttr);
+            var name = existingFieldRef.AttributeIgnoreCase(NameAttr);
             if (name != null)
             {
                 Name = name.Value;
             }
-            XAttribute id = existingFieldRef.AttributeIgnoreCase(IdAttr);
+            var id = existingFieldRef.AttributeIgnoreCase(IdAttr);
             var guidString = id?.Value.Trim();
             if (guidString?.Length > 0)
             {
                 Id = new Guid(guidString);
             }
-            XAttribute ascending = existingFieldRef.AttributeIgnoreCase(AscendingAttr);
+            var ascending = existingFieldRef.AttributeIgnoreCase(AscendingAttr);
             if (ascending != null)
             {
                 Ascending = Convert.ToBoolean(ascending.Value);
             }
-            XAttribute nullable = existingFieldRef.AttributeIgnoreCase(NullableAttr);
+            var nullable = existingFieldRef.AttributeIgnoreCase(NullableAttr);
             if (nullable != null)
             {
                 Nullable = Convert.ToBoolean(nullable.Value);
             }
-            XAttribute lookupId = existingFieldRef.AttributeIgnoreCase(LookupIdAttr);
+            var lookupId = existingFieldRef.AttributeIgnoreCase(LookupIdAttr);
             if (lookupId != null)
             {
                 LookupId = Convert.ToBoolean(lookupId.Value);
             }
-            XAttribute alias = existingFieldRef.AttributeIgnoreCase(AliasAttr);
+            var alias = existingFieldRef.AttributeIgnoreCase(AliasAttr);
             if (alias != null)
             {
                 Alias = alias.Value;
             }
-            XAttribute createUrl = existingFieldRef.AttributeIgnoreCase(CreateUrlAttr);
+            var createUrl = existingFieldRef.AttributeIgnoreCase(CreateUrlAttr);
             if (createUrl != null)
             {
                 CreateUrl = createUrl.Value;
             }
-            XAttribute displayNameAttr = existingFieldRef.AttributeIgnoreCase(DisplayNameAttr);
+            var displayNameAttr = existingFieldRef.AttributeIgnoreCase(DisplayNameAttr);
             if (displayNameAttr != null)
             {
                 DisplayName = displayNameAttr.Value;
             }
-            XAttribute @explicit = existingFieldRef.AttributeIgnoreCase(ExplicitAttr);
+            var @explicit = existingFieldRef.AttributeIgnoreCase(ExplicitAttr);
             if (@explicit != null)
             {
                 Explicit = Convert.ToBoolean(@explicit.Value);
             }
-            XAttribute key = existingFieldRef.AttributeIgnoreCase(KeyAttr);
+            var key = existingFieldRef.AttributeIgnoreCase(KeyAttr);
             if (key != null)
             {
                 Key = key.Value;
             }
-            XAttribute list = existingFieldRef.AttributeIgnoreCase(ListAttr);
+            var list = existingFieldRef.AttributeIgnoreCase(ListAttr);
             if (list != null)
             {
                 List = list.Value;
             }
-            XAttribute refType = existingFieldRef.AttributeIgnoreCase(RefTypeAttr);
+            var refType = existingFieldRef.AttributeIgnoreCase(RefTypeAttr);
             if (refType != null)
             {
                 RefType = refType.Value;
             }
-            XAttribute showField = existingFieldRef.AttributeIgnoreCase(ShowFieldAttr);
+            var showField = existingFieldRef.AttributeIgnoreCase(ShowFieldAttr);
             if (showField != null)
             {
                 ShowField = showField.Value;
             }
-            XAttribute textOnly = existingFieldRef.AttributeIgnoreCase(TextOnlyAttr);
+            var textOnly = existingFieldRef.AttributeIgnoreCase(TextOnlyAttr);
             if (textOnly != null)
             {
                 TextOnly = Convert.ToBoolean(textOnly.Value);
@@ -129,7 +129,7 @@ namespace SharePoint.Remote.Access.Caml
 
         public override XElement ToXElement()
         {
-            XElement el = new XElement(FieldRefTag);
+            var el = new XElement(FieldRefTag);
             if (!string.IsNullOrWhiteSpace(List))
             {
                 el.Add(new XAttribute(ListAttr, List));

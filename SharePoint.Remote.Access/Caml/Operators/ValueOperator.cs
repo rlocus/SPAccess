@@ -7,8 +7,6 @@ namespace SharePoint.Remote.Access.Caml.Operators
 {
     public abstract class ValueOperator<T> : Operator, ICamlValue<T>
     {
-        public CamlValue<T> Value { get; private set; }
-
         protected ValueOperator(string operatorName, CamlValue<T> value)
             : base(operatorName)
         {
@@ -31,17 +29,19 @@ namespace SharePoint.Remote.Access.Caml.Operators
             : base(operatorName, existingValueOperator)
         {
         }
-        
-        protected override void OnParsing(XElement existingValueOperator)
-        {
-            Value = new CamlValue<T>(existingValueOperator);
-        }
+
+        public CamlValue<T> Value { get; private set; }
 
         public override XElement ToXElement()
         {
             var el = base.ToXElement();
             if (Value != null) el.Add(Value.ToXElement());
             return el;
+        }
+
+        protected override void OnParsing(XElement existingValueOperator)
+        {
+            Value = new CamlValue<T>(existingValueOperator);
         }
     }
 }

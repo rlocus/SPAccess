@@ -13,7 +13,7 @@ namespace SharePoint.Remote.Access.Caml.Clauses
         internal const string CollapseAttr = "Collapse";
 
         public CamlGroupBy(CamlFieldRef fieldRef, bool? collapse = null)
-            : this(new[] { fieldRef }, collapse)
+            : this(new[] {fieldRef}, collapse)
         {
         }
 
@@ -26,18 +26,18 @@ namespace SharePoint.Remote.Access.Caml.Clauses
         }
 
         public CamlGroupBy(IEnumerable<string> fieldNames, bool? collapse = null)
-          : base(GroupByTag)
+            : base(GroupByTag)
         {
             if (fieldNames == null) throw new ArgumentNullException(nameof(fieldNames));
-            FieldRefs = fieldNames.Select(fieldName => new CamlFieldRef { Name = fieldName });
+            FieldRefs = fieldNames.Select(fieldName => new CamlFieldRef {Name = fieldName});
             Collapse = collapse;
         }
 
         public CamlGroupBy(IEnumerable<Guid> fieldIds, bool? collapse = null)
-         : base(GroupByTag)
+            : base(GroupByTag)
         {
             if (fieldIds == null) throw new ArgumentNullException(nameof(fieldIds));
-            FieldRefs = fieldIds.Select(fieldId => new CamlFieldRef { Id = fieldId });
+            FieldRefs = fieldIds.Select(fieldId => new CamlFieldRef {Id = fieldId});
             Collapse = collapse;
         }
 
@@ -54,17 +54,6 @@ namespace SharePoint.Remote.Access.Caml.Clauses
         public bool? Collapse { get; private set; }
         public IEnumerable<CamlFieldRef> FieldRefs { get; private set; }
 
-        protected override void OnParsing(XElement existingGroupBy)
-        {
-            var existingFieldRefs = existingGroupBy.ElementsIgnoreCase(CamlFieldRef.FieldRefTag);
-            FieldRefs = existingFieldRefs.Select(existingFieldRef => new CamlFieldRef(existingFieldRef));
-            var collaps = existingGroupBy.Attribute(CollapseAttr);
-            if (collaps != null)
-            {
-                Collapse = Convert.ToBoolean(collaps.Value);
-            }
-        }
-
         public override XElement ToXElement()
         {
             var el = base.ToXElement();
@@ -77,6 +66,17 @@ namespace SharePoint.Remote.Access.Caml.Clauses
                 }
             }
             return el;
+        }
+
+        protected override void OnParsing(XElement existingGroupBy)
+        {
+            var existingFieldRefs = existingGroupBy.ElementsIgnoreCase(CamlFieldRef.FieldRefTag);
+            FieldRefs = existingFieldRefs.Select(existingFieldRef => new CamlFieldRef(existingFieldRef));
+            var collaps = existingGroupBy.Attribute(CollapseAttr);
+            if (collaps != null)
+            {
+                Collapse = Convert.ToBoolean(collaps.Value);
+            }
         }
 
         public static CamlGroupBy Combine(CamlGroupBy firstGroupBy, CamlGroupBy secondGroupBy)

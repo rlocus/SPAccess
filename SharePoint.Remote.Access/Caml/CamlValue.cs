@@ -8,14 +8,6 @@ namespace SharePoint.Remote.Access.Caml
 {
     public sealed class CamlValue : CamlValue<object>
     {
-        public static NowDateCamlValue Now => new NowDateCamlValue();
-        public static TodayDateCamlValue Today => new TodayDateCamlValue();
-        public static DayDateCamlValue Day => new DayDateCamlValue();
-        public static WeekDateCamlValue Week => new WeekDateCamlValue();
-        public static MonthDateCamlValue Month => new MonthDateCamlValue();
-        public static YearDateCamlValue Year => new YearDateCamlValue();
-        public static UserIdCamlValue UserId => new UserIdCamlValue();
-
         public CamlValue(object value, FieldType type) : base(value, type)
         {
         }
@@ -27,6 +19,14 @@ namespace SharePoint.Remote.Access.Caml
         public CamlValue(XElement existingValue) : base(existingValue)
         {
         }
+
+        public static NowDateCamlValue Now => new NowDateCamlValue();
+        public static TodayDateCamlValue Today => new TodayDateCamlValue();
+        public static DayDateCamlValue Day => new DayDateCamlValue();
+        public static WeekDateCamlValue Week => new WeekDateCamlValue();
+        public static MonthDateCamlValue Month => new MonthDateCamlValue();
+        public static YearDateCamlValue Year => new YearDateCamlValue();
+        public static UserIdCamlValue UserId => new UserIdCamlValue();
 
         public abstract class DateCamlValue : CamlElement, ICamlSpecialValue
         {
@@ -42,18 +42,18 @@ namespace SharePoint.Remote.Access.Caml
             {
             }
 
-            protected override void OnParsing(XElement existingElement)
-            {
-            }
-
             public bool IsSupported(FieldType fieldType)
             {
                 return fieldType == FieldType.DateTime;
             }
 
+            protected override void OnParsing(XElement existingElement)
+            {
+            }
+
             internal static DateCamlValue GetValue(XElement existingDateCamlValue)
             {
-                string tag = existingDateCamlValue.Name.LocalName;
+                var tag = existingDateCamlValue.Name.LocalName;
                 if (string.Equals(tag, NowDateCamlValue.NowTag, StringComparison.OrdinalIgnoreCase))
                 {
                     return new NowDateCamlValue(existingDateCamlValue);
@@ -104,8 +104,6 @@ namespace SharePoint.Remote.Access.Caml
             internal const string TodayTag = "Today";
             internal const string OffsetAttr = "Offset";
 
-            public int? Offset { get; set; }
-
             internal TodayDateCamlValue() : base(TodayTag)
             {
             }
@@ -117,6 +115,8 @@ namespace SharePoint.Remote.Access.Caml
             internal TodayDateCamlValue(XElement existingElement) : base(TodayTag, existingElement)
             {
             }
+
+            public int? Offset { get; set; }
 
             protected override void OnParsing(XElement existingElement)
             {
@@ -266,7 +266,7 @@ namespace SharePoint.Remote.Access.Caml
             switch (Type)
             {
                 case FieldType.Guid:
-                    return typeof(Guid);
+                    return typeof (Guid);
                 case FieldType.Text:
                 case FieldType.Note:
                 case FieldType.Choice:
@@ -275,23 +275,23 @@ namespace SharePoint.Remote.Access.Caml
                 case FieldType.URL:
                 case FieldType.MultiChoice:
                 case FieldType.ContentTypeId:
-                    return typeof(string);
+                    return typeof (string);
                 case FieldType.Number:
                 case FieldType.Currency:
-                    return typeof(double);
+                    return typeof (double);
                 case FieldType.Boolean:
                 case FieldType.Recurrence:
                 case FieldType.Attachments:
                 case FieldType.AllDayEvent:
                 case FieldType.CrossProjectLink:
-                    return typeof(bool);
+                    return typeof (bool);
                 case FieldType.DateTime:
-                    return typeof(DateTime);
+                    return typeof (DateTime);
                 case FieldType.Integer:
                 case FieldType.Counter:
                 case FieldType.ModStat:
                 case FieldType.WorkflowStatus:
-                    return typeof(int);
+                    return typeof (int);
             }
             throw new NotSupportedException(nameof(Type));
         }
@@ -301,7 +301,7 @@ namespace SharePoint.Remote.Access.Caml
             var type = existingValue.AttributeIgnoreCase(TypeAttr);
             if (type != null)
             {
-                Type = (FieldType)Enum.Parse(typeof(FieldType), type.Value.Trim(), true);
+                Type = (FieldType) Enum.Parse(typeof (FieldType), type.Value.Trim(), true);
             }
             if (FieldType.DateTime == Type)
             {
@@ -312,14 +312,16 @@ namespace SharePoint.Remote.Access.Caml
                 }
                 if (existingValue.HasElements)
                 {
-                    foreach (XElement existingDateValue in existingValue.Elements())
+                    foreach (var existingDateValue in existingValue.Elements())
                     {
                         try
                         {
-                            Value = (T)(object)CamlValue.DateCamlValue.GetValue(existingDateValue);
+                            Value = (T) (object) CamlValue.DateCamlValue.GetValue(existingDateValue);
                             break;
                         }
-                        catch { }
+                        catch
+                        {
+                        }
                     }
                 }
                 else
@@ -327,7 +329,7 @@ namespace SharePoint.Remote.Access.Caml
                     if (!string.IsNullOrEmpty(existingValue.Value))
                     {
                         var date = DateTime.Parse(existingValue.Value);
-                        Value = (T)(object)date;
+                        Value = (T) (object) date;
                     }
                 }
                 return;
@@ -336,21 +338,23 @@ namespace SharePoint.Remote.Access.Caml
             {
                 if (existingValue.HasElements)
                 {
-                    foreach (XElement existingDateValue in existingValue.Elements())
+                    foreach (var existingDateValue in existingValue.Elements())
                     {
                         try
                         {
-                            Value = (T)(object)new CamlValue.UserIdCamlValue(existingDateValue);
+                            Value = (T) (object) new CamlValue.UserIdCamlValue(existingDateValue);
                             break;
                         }
-                        catch { }
+                        catch
+                        {
+                        }
                     }
                     return;
                 }
             }
             if (!string.IsNullOrEmpty(existingValue.Value))
             {
-                Value = (T)Convert.ChangeType(existingValue.Value, GetValueType());
+                Value = (T) Convert.ChangeType(existingValue.Value, GetValueType());
             }
         }
 

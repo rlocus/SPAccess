@@ -26,6 +26,11 @@ namespace SharePoint.Remote.Access.Caml
 
         public string ElementName { get; }
 
+        public virtual XElement ToXElement()
+        {
+            return new XElement(ElementName);
+        }
+
         private void Parse(XElement existingElement)
         {
             if (existingElement == null) throw new ArgumentNullException(nameof(existingElement));
@@ -52,11 +57,6 @@ namespace SharePoint.Remote.Access.Caml
         }
 
         protected abstract void OnParsing(XElement existingElement);
-
-        public virtual XElement ToXElement()
-        {
-            return new XElement(ElementName);
-        }
 
         public override string ToString()
         {
@@ -92,7 +92,7 @@ namespace SharePoint.Remote.Access.Caml
             return ToString(disableFormatting);
         }
 
-        public static implicit operator string (CamlElement caml)
+        public static implicit operator string(CamlElement caml)
         {
             return caml?.ToString() ?? string.Empty;
         }

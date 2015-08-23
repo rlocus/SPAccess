@@ -9,7 +9,8 @@ namespace SharePoint.Remote.Access.Caml
     {
         internal const string Left = "LEFT";
 
-        public LeftJoin(string fieldName, string primaryListAlias, string listAlias) : base(fieldName, primaryListAlias, listAlias)
+        public LeftJoin(string fieldName, string primaryListAlias, string listAlias)
+            : base(fieldName, primaryListAlias, listAlias)
         {
         }
 
@@ -37,7 +38,8 @@ namespace SharePoint.Remote.Access.Caml
     {
         internal const string Inner = "INNER";
 
-        public InnerJoin(string fieldName, string primaryListAlias, string listAlias) : base(fieldName, primaryListAlias, listAlias)
+        public InnerJoin(string fieldName, string primaryListAlias, string listAlias)
+            : base(fieldName, primaryListAlias, listAlias)
         {
         }
 
@@ -67,9 +69,6 @@ namespace SharePoint.Remote.Access.Caml
         internal const string TypeAttr = "Type";
         internal const string ListAliasAttr = "ListAlias";
 
-        internal JoinComparison JoinComparison { get; private set; }
-        public string ListAlias { get; private set; }
-
         protected Join(string fieldName, string primaryListAlias, string listAlias) : base(JoinTag)
         {
             if (string.IsNullOrWhiteSpace(listAlias)) throw new ArgumentNullException(nameof(listAlias));
@@ -82,17 +81,15 @@ namespace SharePoint.Remote.Access.Caml
                     List = !string.IsNullOrWhiteSpace(primaryListAlias) ? primaryListAlias : null,
                     Name = fieldName,
                     RefType = "Id"
-
                 },
                 new CamlFieldRef
                 {
                     List = ListAlias,
                     Name = "ID"
-
                 }
             });
         }
-        
+
         protected Join(string existingElement) : base(JoinTag, existingElement)
         {
         }
@@ -101,9 +98,12 @@ namespace SharePoint.Remote.Access.Caml
         {
         }
 
+        internal JoinComparison JoinComparison { get; private set; }
+        public string ListAlias { get; private set; }
+
         protected override void OnParsing(XElement existingElement)
         {
-            XAttribute listAlias = existingElement.AttributeIgnoreCase(ListAliasAttr);
+            var listAlias = existingElement.AttributeIgnoreCase(ListAliasAttr);
             if (listAlias != null)
             {
                 ListAlias = listAlias.Value;
@@ -113,7 +113,7 @@ namespace SharePoint.Remote.Access.Caml
 
         public override XElement ToXElement()
         {
-            XElement el = base.ToXElement();
+            var el = base.ToXElement();
             if (!string.IsNullOrWhiteSpace(ListAlias))
             {
                 el.Add(new XAttribute(ListAliasAttr, ListAlias));
@@ -131,8 +131,8 @@ namespace SharePoint.Remote.Access.Caml
             var tag = existingJoin.Name.LocalName;
             if (string.Equals(tag, JoinTag, StringComparison.OrdinalIgnoreCase))
             {
-                XAttribute type = existingJoin.AttributeIgnoreCase(TypeAttr);
-                string typeValue = type.Value.Trim();
+                var type = existingJoin.AttributeIgnoreCase(TypeAttr);
+                var typeValue = type.Value.Trim();
                 if (string.Equals(typeValue, LeftJoin.Left))
                 {
                     return new LeftJoin(existingJoin);

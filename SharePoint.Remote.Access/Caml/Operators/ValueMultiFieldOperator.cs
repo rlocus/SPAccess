@@ -10,8 +10,6 @@ namespace SharePoint.Remote.Access.Caml.Operators
 {
     public abstract class ValueMultiFieldOperator<T> : ValueOperator<T>, ICamlMultiField
     {
-        public IEnumerable<CamlFieldRef> FieldRefs { get; private set; }
-
         protected ValueMultiFieldOperator(string operatorName, IEnumerable<CamlFieldRef> fieldRefs, T value,
             FieldType type)
             : base(operatorName, value, type)
@@ -24,7 +22,7 @@ namespace SharePoint.Remote.Access.Caml.Operators
             : base(operatorName, value, type)
         {
             if (fieldNames == null) throw new ArgumentNullException(nameof(fieldNames));
-            var fieldRefs = fieldNames.Select(fieldName => new CamlFieldRef { Name = fieldName });
+            var fieldRefs = fieldNames.Select(fieldName => new CamlFieldRef {Name = fieldName});
             FieldRefs = fieldRefs;
         }
 
@@ -32,7 +30,7 @@ namespace SharePoint.Remote.Access.Caml.Operators
             : base(operatorName, value, type)
         {
             if (fieldIds == null) throw new ArgumentNullException(nameof(fieldIds));
-            var fieldRefs = fieldIds.Select(fieldId => new CamlFieldRef { Id = fieldId });
+            var fieldRefs = fieldIds.Select(fieldId => new CamlFieldRef {Id = fieldId});
             FieldRefs = fieldRefs;
         }
 
@@ -46,6 +44,15 @@ namespace SharePoint.Remote.Access.Caml.Operators
         {
         }
 
+        public IEnumerable<CamlFieldRef> FieldRefs { get; private set; }
+
+        public override XElement ToXElement()
+        {
+            var el = base.ToXElement();
+            el.AddFirst(FieldRefs.Select(fieldRef => fieldRef?.ToXElement()));
+            return el;
+        }
+
         protected override void OnParsing(XElement existingMultipleFieldValueOperator)
         {
             var existingFieldRefs = existingMultipleFieldValueOperator.ElementsIgnoreCase(CamlFieldRef.FieldRefTag);
@@ -55,13 +62,6 @@ namespace SharePoint.Remote.Access.Caml.Operators
             {
                 base.OnParsing(existingValue);
             }
-        }
-
-        public override XElement ToXElement()
-        {
-            var el = base.ToXElement();
-            el.AddFirst(FieldRefs.Select(fieldRef => fieldRef?.ToXElement()));
-            return el;
         }
     }
 }

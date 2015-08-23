@@ -10,10 +10,9 @@ namespace SharePoint.Remote.Access.Caml.Clauses
     public sealed class CamlOrderBy : CamlClause, ICamlMultiField
     {
         internal const string OrderByTag = "OrderBy";
-        public IEnumerable<CamlFieldRef> FieldRefs { get; private set; }
 
         public CamlOrderBy(CamlFieldRef fieldRef)
-            : this(new[] { fieldRef })
+            : this(new[] {fieldRef})
         {
         }
 
@@ -25,17 +24,17 @@ namespace SharePoint.Remote.Access.Caml.Clauses
         }
 
         public CamlOrderBy(IEnumerable<string> fieldNames)
-          : base(OrderByTag)
+            : base(OrderByTag)
         {
             if (fieldNames == null) throw new ArgumentNullException(nameof(fieldNames));
-            FieldRefs = fieldNames.Select(fieldName => new CamlFieldRef { Name = fieldName });
+            FieldRefs = fieldNames.Select(fieldName => new CamlFieldRef {Name = fieldName});
         }
 
         public CamlOrderBy(IEnumerable<Guid> fieldIds)
-         : base(OrderByTag)
+            : base(OrderByTag)
         {
             if (fieldIds == null) throw new ArgumentNullException(nameof(fieldIds));
-            FieldRefs = fieldIds.Select(fieldId => new CamlFieldRef { Id = fieldId });
+            FieldRefs = fieldIds.Select(fieldId => new CamlFieldRef {Id = fieldId});
         }
 
         public CamlOrderBy(string existingGroupBy)
@@ -48,11 +47,7 @@ namespace SharePoint.Remote.Access.Caml.Clauses
         {
         }
 
-        protected override void OnParsing(XElement existingOrderBy)
-        {
-            var existingFieldRefs = existingOrderBy.ElementsIgnoreCase(CamlFieldRef.FieldRefTag);
-            FieldRefs = existingFieldRefs.Select(existingFieldRef => new CamlFieldRef(existingFieldRef));
-        }
+        public IEnumerable<CamlFieldRef> FieldRefs { get; private set; }
 
         public override XElement ToXElement()
         {
@@ -65,6 +60,12 @@ namespace SharePoint.Remote.Access.Caml.Clauses
                 }
             }
             return el;
+        }
+
+        protected override void OnParsing(XElement existingOrderBy)
+        {
+            var existingFieldRefs = existingOrderBy.ElementsIgnoreCase(CamlFieldRef.FieldRefTag);
+            FieldRefs = existingFieldRefs.Select(existingFieldRef => new CamlFieldRef(existingFieldRef));
         }
 
         public static CamlOrderBy Combine(CamlOrderBy firstOrderBy, CamlOrderBy secondOrderBy)

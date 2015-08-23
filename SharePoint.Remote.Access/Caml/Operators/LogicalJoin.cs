@@ -9,8 +9,6 @@ namespace SharePoint.Remote.Access.Caml.Operators
     public abstract class LogicalJoin : Operator
     {
         internal const int OperatorCount = 2;
-        internal const int NestedOperatorCount = 1;
-
         public LogicalJoin Parent { get; private set; }
         public Operator[] Operators { get; private set; }
 
@@ -20,30 +18,29 @@ namespace SharePoint.Remote.Access.Caml.Operators
             InitOperators(operators);
         }
 
-        protected LogicalJoin(string operatorName, string existingNestedOperator)
-            : base(operatorName, existingNestedOperator)
+        protected LogicalJoin(string operatorName, string existingLogicalJoin)
+            : base(operatorName, existingLogicalJoin)
         {
         }
 
-        protected LogicalJoin(string operatorName, XElement existingNestedOperator)
-            : base(operatorName, existingNestedOperator)
+        protected LogicalJoin(string operatorName, XElement existingLogicalJoin)
+            : base(operatorName, existingLogicalJoin)
         {
         }
 
-        private void InitOperators(IEnumerable<Operator> operators)
+        protected void InitOperators(IEnumerable<Operator> operators)
         {
             if (operators != null)
             {
                 Operators = operators as Operator[] ?? operators.Where(op => op != null).ToArray();
-                if (Operators.Length != OperatorCount)
+                if (Operators.Length < OperatorCount)
                 {
-                    throw new NotSupportedException($"Count of operators must be {OperatorCount}.");
+                    throw new NotSupportedException($"Should be at least of {OperatorCount} operators.");
                 }
-                if (Operators.OfType<LogicalJoin>().Count() > NestedOperatorCount)
+                if (Operators.OfType<LogicalJoin>().Count() == Operators.Length)
                 {
-                    throw new NotSupportedException($"Max count of logical operators must be {NestedOperatorCount}.");
+                    throw new NotSupportedException("All operators are logical joins.");
                 }
-
                 foreach (var @operator in Operators.OfType<LogicalJoin>())
                 {
                     @operator.Parent = this;
@@ -51,9 +48,9 @@ namespace SharePoint.Remote.Access.Caml.Operators
             }
         }
 
-        protected override void OnParsing(XElement existingNestedOperator)
+        protected override void OnParsing(XElement existingLogicalJoin)
         {
-            var operators = existingNestedOperator.Elements().Select(el =>
+            var operators = existingLogicalJoin.Elements().Select(el =>
             {
                 var op = GetOperator(el);
                 var @operator = op as LogicalJoin;
@@ -66,9 +63,11 @@ namespace SharePoint.Remote.Access.Caml.Operators
             InitOperators(operators);
         }
 
-        public void CombineAnd(LogicalJoin logicalJoin)
+        public abstract void Combine(Operator @operator);
+
+        internal LogicalJoin CombineAnd(Operator combinedOperator)
         {
-            if (logicalJoin == null) throw new ArgumentNullException(nameof(logicalJoin));
+            if (combinedOperator == null) throw new ArgumentNullException(nameof(combinedOperator));
             var @operator = this;
             var operators = new List<Operator>();
             var childOperator = @operator.Operators.OfType<LogicalJoin>()
@@ -78,13 +77,17 @@ namespace SharePoint.Remote.Access.Caml.Operators
                 @operator = childOperator;
             }
             operators.AddRange(@operator.Operators.Where(@op => !(@op is LogicalJoin)).Take(OperatorCount - 1));
-            operators.Add(new And(new List<Operator>(@operator.Operators.Where(@op => !operators.Contains(@op))) { logicalJoin }.ToArray()));
+            var result =
+                new And(
+                    new List<Operator>(@operator.Operators.Where(@op => !operators.Contains(@op))) { combinedOperator }.ToArray());
+            operators.Add(result);
             @operator.InitOperators(operators);
+            return result;
         }
 
-        public void CombineOr(LogicalJoin logicalJoin)
+        internal LogicalJoin CombineOr(Operator combinedOperator)
         {
-            if (logicalJoin == null) throw new ArgumentNullException(nameof(logicalJoin));
+            if (combinedOperator == null) throw new ArgumentNullException(nameof(combinedOperator));
             var @operator = this;
             var operators = new List<Operator>();
             var childOperator = @operator.Operators.OfType<LogicalJoin>()
@@ -94,10 +97,14 @@ namespace SharePoint.Remote.Access.Caml.Operators
                 @operator = childOperator;
             }
             operators.AddRange(@operator.Operators.Where(@op => !(@op is LogicalJoin)).Take(OperatorCount - 1));
-            operators.Add(new Or(new List<Operator>(@operator.Operators.Where(@op => !operators.Contains(@op))) { logicalJoin }.ToArray()));
+            var result =
+                new Or(
+                    new List<Operator>(@operator.Operators.Where(@op => !operators.Contains(@op))) { combinedOperator }
+                        .ToArray());
+            operators.Add(result);
             @operator.InitOperators(operators);
+            return result;
         }
-
         public override XElement ToXElement()
         {
             var el = base.ToXElement();

@@ -18,7 +18,7 @@ namespace SharePoint.Remote.Access.Caml
             }
             foreach (Operator op in operators)
             {
-                query.Where.And(op);
+                query.Where.Operator.And(op);
             }
         }
 
@@ -32,26 +32,44 @@ namespace SharePoint.Remote.Access.Caml
             }
             foreach (Operator op in operators)
             {
-                query.Where.Or(op);
+                query.Where.Operator.Or(op);
             }
         }
 
-        public static CamlWhere CombineAnd(this CamlWhere firstWhere, CamlWhere secondWhere)
+        public static CamlWhere And(this CamlWhere firstWhere, CamlWhere secondWhere)
         {
             if (firstWhere == null) throw new ArgumentNullException(nameof(firstWhere));
             if (secondWhere == null) throw new ArgumentNullException(nameof(secondWhere));
             firstWhere = new CamlWhere(firstWhere.Operator);
-            firstWhere.And(secondWhere.Operator);
+            firstWhere.Operator.And(secondWhere.Operator);
             return firstWhere;
         }
 
-        public static CamlWhere CombineOr(this CamlWhere firstWhere, CamlWhere secondWhere)
+        public static CamlWhere Or(this CamlWhere firstWhere, CamlWhere secondWhere)
         {
             if (firstWhere == null) throw new ArgumentNullException(nameof(firstWhere));
             if (secondWhere == null) throw new ArgumentNullException(nameof(secondWhere));
             firstWhere = new CamlWhere(firstWhere.Operator);
-            firstWhere.Or(secondWhere.Operator);
+            firstWhere.Operator.Or(secondWhere.Operator);
             return firstWhere;
+        }
+
+        public static Operator And(this Operator firstOperator, Operator secondOperator)
+        {
+            if (firstOperator == null) throw new ArgumentNullException(nameof(firstOperator));
+            if (secondOperator == null) throw new ArgumentNullException(nameof(secondOperator));
+
+            var logicalJoin = firstOperator as LogicalJoin;
+            return logicalJoin != null ? logicalJoin.CombineAnd(secondOperator) : new And(firstOperator, secondOperator);
+        }
+
+        public static Operator Or(this Operator firstOperator, Operator secondOperator)
+        {
+            if (firstOperator == null) throw new ArgumentNullException(nameof(firstOperator));
+            if (secondOperator == null) throw new ArgumentNullException(nameof(secondOperator));
+
+            var logicalJoin = firstOperator as LogicalJoin;
+            return logicalJoin != null ? logicalJoin.CombineOr(secondOperator) : new Or(firstOperator, secondOperator);
         }
 
         public static CamlOrderBy ThenBy(this CamlOrderBy orderBy, Guid fieldId, bool? ascending = null)

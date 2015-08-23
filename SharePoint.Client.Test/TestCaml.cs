@@ -27,10 +27,11 @@ namespace SharePoint.Client.Test
 
             //string q = GetTestQuery7();
             //string s = new CamlWhere(q);
-            var view = new View(new[] { "Title", "ID" }, new Join[] { new InnerJoin("Test", "List 1"), new LeftJoin("Test", "List 1", "List 2") }) { Query = { Where = /*GetTestQuery8()*/ null } };
+            var view = new View(new[] { "Title", "ID" }, new Join[] { new InnerJoin("Test", "List 1"), new LeftJoin("Test", "List 1", "List 2") }) { Query = { Where = GetTestQuery2() } };
 
-            view.Query.WhereAny(new And(new Lt<int>("ProductID", 1000, FieldType.Integer),
-                new Gt<int>("ProductID", 100, FieldType.Integer)), new Eq<bool>("IsCompleted", false, FieldType.Boolean));
+            view.Query.WhereAny(new Eq<bool>("IsCompleted", false, FieldType.Boolean), new Lt<int>("ProductID", 1000, FieldType.Integer));
+
+            //view.Query.WhereAny(new Or(new Eq<bool>("IsCompleted", false, FieldType.Boolean), new And(new IsNull("IsCompleted"), new BeginsWith("Title", "test"))));
             view.Query.GroupBy = new CamlGroupBy(new[] { "Title" }, true);
             view.Query.OrderBy = new CamlOrderBy(new[] { new CamlFieldRef { Name = "Title", Ascending = true } });
 

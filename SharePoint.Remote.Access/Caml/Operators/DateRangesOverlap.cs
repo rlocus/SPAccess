@@ -20,7 +20,7 @@ namespace SharePoint.Remote.Access.Caml.Operators
         {
         }
 
-        protected DateRangesOverlap(Guid startField, Guid endField, Guid recurrenceField, CamlValue.DateCamlValue value)
+        public DateRangesOverlap(Guid startField, Guid endField, Guid recurrenceField, CamlValue.DateCamlValue value)
             : base(DateRangesOverlapTag, new[] {startField, endField, recurrenceField}, value, FieldType.DateTime)
         {
         }
@@ -36,7 +36,7 @@ namespace SharePoint.Remote.Access.Caml.Operators
         {
         }
 
-        protected DateRangesOverlap(Guid startField, Guid endField, Guid recurrenceField, DateTime value)
+        public DateRangesOverlap(Guid startField, Guid endField, Guid recurrenceField, DateTime value)
             : base(DateRangesOverlapTag, new[] {startField, endField, recurrenceField}, value, FieldType.DateTime)
         {
         }

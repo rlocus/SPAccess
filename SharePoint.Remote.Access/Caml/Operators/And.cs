@@ -9,13 +9,28 @@ namespace SharePoint.Remote.Access.Caml.Operators
     {
         internal const string AndTag = "And";
 
-        internal And(params Operator[] operators)
+        internal And(IEnumerable<Operator> operators)
             : base(AndTag, operators)
         {
         }
 
-        public And(Operator firstOperator, Operator secondOperator)
-            : base(AndTag, new[] {firstOperator, secondOperator})
+        //public And(Operator firstOperator, Operator secondOperator)
+        //    : base(AndTag, new[] {firstOperator, secondOperator})
+        //{
+        //}
+
+        public And(ComparisonOperator comparisonOperator, LogicalJoin logicalJoin, params Operator[] operators)
+           : base(AndTag, comparisonOperator, logicalJoin, operators)
+        {
+        }
+
+        public And(LogicalJoin logicalJoin, ComparisonOperator comparisonOperator, params Operator[] operators)
+          : base(AndTag, logicalJoin, comparisonOperator, operators)
+        {
+        }
+
+        public And(ComparisonOperator firstComparisonOperator, ComparisonOperator secondComparisonOperator, params Operator[] operators)
+         : base(AndTag, firstComparisonOperator, secondComparisonOperator, operators)
         {
         }
 
@@ -42,7 +57,7 @@ namespace SharePoint.Remote.Access.Caml.Operators
                 var operators = new List<Operator>();
                 operators.AddRange(Operators.Where(@op => !(@op is LogicalJoin)).Take(OperatorCount - 1));
                 operators.Add(
-                    new And(new List<Operator>(Operators.Where(@op => !operators.Contains(@op))) {@operator}.ToArray()));
+                    new And(new List<Operator>(Operators.Where(@op => !operators.Contains(@op))) { @operator }.ToArray()));
                 InitOperators(operators);
             }
         }

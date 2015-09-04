@@ -7,7 +7,7 @@ using SharePoint.Remote.Access.Extensions;
 
 namespace SharePoint.Remote.Access.Caml.Operators
 {
-    public abstract class CamlMultiValue<T> : Operator, ICamlMultiValue<T>
+    public abstract class CamlMultiValue<T> : ComparisonOperator, ICamlMultiValue<T>
     {
         internal const string ValuesTag = "Values";
 

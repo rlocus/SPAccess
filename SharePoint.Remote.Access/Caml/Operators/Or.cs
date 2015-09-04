@@ -9,13 +9,28 @@ namespace SharePoint.Remote.Access.Caml.Operators
     {
         internal const string OrTag = "Or";
 
-        public Or(params Operator[] operators)
+        internal Or(IEnumerable<Operator> operators)
             : base(OrTag, operators)
         {
         }
 
-        public Or(Operator firstOperator, Operator secondOperator)
-            : base(OrTag, new[] {firstOperator, secondOperator})
+        //public Or(Operator firstOperator, Operator secondOperator)
+        //    : base(OrTag, new[] {firstOperator, secondOperator})
+        //{
+        //}
+
+        public Or(ComparisonOperator comparisonOperator, LogicalJoin logicalJoin, params Operator[] operators)
+           : base(OrTag, comparisonOperator, logicalJoin, operators)
+        {
+        }
+
+        public Or(LogicalJoin logicalJoin, ComparisonOperator comparisonOperator, params Operator[] operators)
+          : base(OrTag, logicalJoin, comparisonOperator, operators)
+        {
+        }
+
+        public Or(ComparisonOperator firstComparisonOperator, ComparisonOperator secondComparisonOperator, params Operator[] operators)
+         : base(OrTag, firstComparisonOperator, secondComparisonOperator, operators)
         {
         }
 

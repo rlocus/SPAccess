@@ -45,8 +45,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AuthType.cs" />
-    <Compile Include="Caml\Join.cs" />
     <Compile Include="Caml\Clauses\CamlClause.cs" />
+    <Compile Include="Caml\Join.cs" />
     <Compile Include="Caml\Clauses\CamlGroupBy.cs" />
     <Compile Include="Caml\Clauses\CamlOrderBy.cs" />
     <Compile Include="Caml\Clauses\CamlWhere.cs" />
@@ -60,6 +60,7 @@
     <Compile Include="Caml\Interfaces\ICamlSpecialValue.cs" />
     <Compile Include="Caml\Operators\And.cs" />
     <Compile Include="Caml\Operators\BeginsWith.cs" />
+    <Compile Include="Caml\Operators\ComparisonOperator.cs" />
     <Compile Include="Caml\Operators\Contains.cs" />
     <Compile Include="Caml\JoinComparison.cs" />
     <Compile Include="Caml\Operators\DateRangesOverlap.cs" />
@@ -84,9 +85,7 @@
     <Compile Include="Caml\Operators\FieldOperator.cs" />
     <Compile Include="Caml\Operators\FieldValueOperator.cs" />
     <Compile Include="Caml\Operators\ValueOperator.cs" />
-    <Compile Include="Caml\JoinsCamlElement.cs" />
     <Compile Include="Caml\ViewFieldsCamlElement.cs" />
-    <Compile Include="Caml\View.cs" />
     <Compile Include="Caml\Query.cs" />
     <Compile Include="Caml\CamlElement.cs" />
     <Compile Include="Caml\CamlValue.cs" />

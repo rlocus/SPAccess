@@ -5,7 +5,7 @@ using SharePoint.Remote.Access.Extensions;
 
 namespace SharePoint.Remote.Access.Caml.Operators
 {
-    public abstract class FieldOperator : Operator, ICamlField
+    public abstract class FieldOperator : ComparisonOperator, ICamlField
     {
         protected FieldOperator(string operatorName, CamlFieldRef fieldRef)
             : base(operatorName)

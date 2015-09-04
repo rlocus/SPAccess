@@ -5,7 +5,7 @@ using SharePoint.Remote.Access.Caml.Interfaces;
 
 namespace SharePoint.Remote.Access.Caml.Operators
 {
-    public abstract class ValueOperator<T> : Operator, ICamlValue<T>
+    public abstract class ValueOperator<T> : ComparisonOperator, ICamlValue<T>
     {
         protected ValueOperator(string operatorName, CamlValue<T> value)
             : base(operatorName)

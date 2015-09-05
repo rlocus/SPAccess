@@ -5,7 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SharePoint.Remote.Access.Caml;
 using SharePoint.Remote.Access.Caml.Clauses;
 using SharePoint.Remote.Access.Caml.Operators;
-//using View = SharePoint.Remote.Access.Caml.View;
+using View = SharePoint.Remote.Access.Caml.View;
 
 namespace SharePoint.Client.Test
 {
@@ -15,14 +15,28 @@ namespace SharePoint.Client.Test
         [TestMethod]
         public void TestMethod1()
         {
-            string ssss = new Or((ComparisonOperator)GetTestQuery8().Operator, (LogicalJoin)GetTestQuery2().Operator, GetTestQuery3().Operator, GetTestQuery2().Operator);
-            string ss = GetTestQuery8().And(GetTestQuery2());
+            //var view = new View(2, true);
+            //view.Query.Where = new CamlWhere(
+            //    new Lt<int>("ProductID", 1000, FieldType.Integer)
+            //        .Or(new Gt<int>("ProductID", 100, FieldType.Integer),
+            //            new Eq<bool>("IsCompleted", false, FieldType.Boolean),
+            //            new IsNull("IsCompleted"))
+            //        .And(new Membership("Author", MembershipType.WebUsers), new IsNotNull("title"))
+            //    );
 
-            var q = GetTestQuery();
-            var q1 = GetTestQuery1();
-            var q2 = GetTestQuery2();
-            var q5 = q.And(q1).Or(q2);
-            string s = q5;
+            //string dd = view.ToString();
+
+            //var v = new View(dd);
+            //string ggg = v.ToString();
+
+
+            //string ss = GetTestQuery8().And(GetTestQuery2());
+
+            //var q = GetTestQuery();
+            //var q1 = GetTestQuery1();
+            //var q2 = GetTestQuery2();
+            //var q5 = q.And(q1).Or(q2);
+            //string s = q5;
             //string q3 = GetTestQuery1().CombineOr(GetTestQuery2());
             //string q4 = GetTestQuery2().CombineOr(GetTestQuery1());
 
@@ -31,18 +45,21 @@ namespace SharePoint.Client.Test
 
             //string q = GetTestQuery7();
             //string s = new CamlWhere(q);
-            //var view = new View(new[] { "Title", "ID" }, new Join[] { new InnerJoin("Test", "List 1"), new LeftJoin("Test", "List 1", "List 2") }) { Query = { Where = GetTestQuery2() } };
+            var view = new View() { Query = { Where = GetTestQuery2() } };
 
-            //view.Query.WhereAny(new Eq<bool>("IsCompleted", false, FieldType.Boolean), new Lt<int>("ProductID", 1000, FieldType.Integer));
+            view.Query.WhereAny(new Eq<bool>("IsCompleted", false, FieldType.Boolean), new Lt<int>("ProductID", 1000, FieldType.Integer));
 
-            //view.Query.WhereAny(new Or(new Eq<bool>("IsCompleted", false, FieldType.Boolean), new And(new IsNull("IsCompleted"), new BeginsWith("Title", "test"))));
-            //view.Query.GroupBy = new CamlGroupBy(new[] { "Title" }, true);
-            //view.Query.OrderBy = new CamlOrderBy(new[] { new CamlFieldRef { Name = "Title", Ascending = true } });
+            view.Query.WhereAny(new Or(new Eq<bool>("IsCompleted", false, FieldType.Boolean), new And(new IsNull("IsCompleted"), new BeginsWith("Title", "test"))));
+            view.Query.GroupBy = new CamlGroupBy(new[] { "Title" }, true);
+            view.Query.OrderBy = new CamlOrderBy(new[] { new CamlFieldRef { Name = "Title", Ascending = true } });
 
-            //view.Query.Where.Or(new Eq<int>(new CamlFieldRef { Name = "ID" }, 1, FieldType.Counter)).Or(new Eq<int>(new CamlFieldRef { Name = "ID" }, 2, FieldType.Counter)).And(new Eq<string>(new CamlFieldRef { Name = "Title" }, "", FieldType.Text));
+            view.Query.Where.Or(new Eq<int>(new CamlFieldRef { Name = "ID" }, 1, FieldType.Counter)).Or(new Eq<int>(new CamlFieldRef { Name = "ID" }, 2, FieldType.Counter)).And(new Eq<string>(new CamlFieldRef { Name = "Title" }, "", FieldType.Text));
 
-            //string q = view;
-            //string v = new View(q);
+            view.ViewFields.View("Title", "ID");
+            view.Joins.Join(new InnerJoin("field 1", "list 1").LeftJoin("field 2", "list 2").ToArray())
+                .Join(new LeftJoin("field 3", "List 3"));
+            string q = view.ToString();
+            string v = new View(q).ToString();
 
 
             //var q = new Query() { Where = new CamlWhere(new Contains("Title", "e")) };

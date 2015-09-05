@@ -13,12 +13,7 @@ namespace SharePoint.Remote.Access.Caml.Operators
             : base(AndTag, operators)
         {
         }
-
-        //public And(Operator firstOperator, Operator secondOperator)
-        //    : base(AndTag, new[] {firstOperator, secondOperator})
-        //{
-        //}
-
+        
         public And(ComparisonOperator comparisonOperator, LogicalJoin logicalJoin, params Operator[] operators)
            : base(AndTag, comparisonOperator, logicalJoin, operators)
         {

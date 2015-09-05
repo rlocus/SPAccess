@@ -92,9 +92,9 @@ namespace SharePoint.Remote.Access.Caml
             return ToString(disableFormatting);
         }
 
-        public static implicit operator string(CamlElement caml)
-        {
-            return caml?.ToString() ?? string.Empty;
-        }
+        //public static implicit operator string(CamlElement caml)
+        //{
+        //    return caml?.ToString() ?? string.Empty;
+        //}
     }
 }

@@ -95,50 +95,38 @@ namespace SharePoint.Remote.Access.Caml.Operators
 
         public abstract void Combine(Operator @operator);
 
-        internal LogicalJoin CombineAnd(Operator combinedOperator)
+        internal LogicalJoin CombineAnd(params Operator[] combinedOperator)
         {
             if (combinedOperator == null) throw new ArgumentNullException(nameof(combinedOperator));
-            LogicalJoin @operator;
             var childOperator = Operators.OfType<LogicalJoin>()
                 .FirstOrDefaultFromMany(op => op.Operators.OfType<LogicalJoin>(),
                     op => !op.Operators.OfType<LogicalJoin>().Any());
 
-            if (childOperator != null)
+            LogicalJoin @operator = childOperator ?? this;
+            var operators = new List<Operator>
             {
-                @operator = childOperator;
-            }
-            else
-            {
-                @operator = this;
-            }
-            var operators = new List<Operator>();
-            operators.Add(@operator.Operators.First());
-            operators.Add(new And(new Operator[] { @operator.Operators.Last(), combinedOperator }));
+                @operator.Operators.First(),
+                new And(new List<Operator> {@operator.Operators.Last()}.Union(combinedOperator))
+            };
             @operator.InitOperators(operators);
             return this;
         }
 
-        internal LogicalJoin CombineOr(Operator combinedOperator)
+        internal LogicalJoin CombineOr(params Operator[] combinedOperator)
         {
             if (combinedOperator == null) throw new ArgumentNullException(nameof(combinedOperator));
             if (combinedOperator == null) throw new ArgumentNullException(nameof(combinedOperator));
 
-            LogicalJoin @operator;
             var childOperator = Operators.OfType<LogicalJoin>()
                 .FirstOrDefaultFromMany(op => op.Operators.OfType<LogicalJoin>(),
                     op => !op.Operators.OfType<LogicalJoin>().Any());
 
-            if (childOperator != null)
+            LogicalJoin @operator = childOperator ?? this;
+            var operators = new List<Operator>
             {
-                @operator = childOperator;
-            }
-            else
-            {
-                @operator = this;
-            }
-            var operators = new List<Operator>();
-            operators.Add(@operator.Operators.First());
-            operators.Add(new Or(new Operator[] { @operator.Operators.Last(), combinedOperator }));
+                @operator.Operators.First(),
+                new Or(new List<Operator> {@operator.Operators.Last()}.Union(combinedOperator))
+            };
             @operator.InitOperators(operators);
             return this;
         }

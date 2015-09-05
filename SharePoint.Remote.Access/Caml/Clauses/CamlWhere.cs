@@ -26,7 +26,7 @@ namespace SharePoint.Remote.Access.Caml.Clauses
         {
         }
 
-        public Operator Operator { get; private set; }
+        internal Operator Operator { get; private set; }
 
         protected override void OnParsing(XElement existingWhere)
         {

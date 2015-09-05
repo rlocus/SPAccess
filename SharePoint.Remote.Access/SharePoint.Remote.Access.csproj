@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AuthType.cs" />
+    <Compile Include="Caml\CamlRowLimit.cs" />
     <Compile Include="Caml\Clauses\CamlClause.cs" />
     <Compile Include="Caml\Join.cs" />
     <Compile Include="Caml\Clauses\CamlGroupBy.cs" />
@@ -58,6 +59,7 @@
     <Compile Include="Caml\Interfaces\ICamlMultiValue.cs" />
     <Compile Include="Caml\Interfaces\ICamlValue.cs" />
     <Compile Include="Caml\Interfaces\ICamlSpecialValue.cs" />
+    <Compile Include="Caml\JoinsCamlElement.cs" />
     <Compile Include="Caml\Operators\And.cs" />
     <Compile Include="Caml\Operators\BeginsWith.cs" />
     <Compile Include="Caml\Operators\ComparisonOperator.cs" />
@@ -85,6 +87,7 @@
     <Compile Include="Caml\Operators\FieldOperator.cs" />
     <Compile Include="Caml\Operators\FieldValueOperator.cs" />
     <Compile Include="Caml\Operators\ValueOperator.cs" />
+    <Compile Include="Caml\View.cs" />
     <Compile Include="Caml\ViewFieldsCamlElement.cs" />
     <Compile Include="Caml\Query.cs" />
     <Compile Include="Caml\CamlElement.cs" />

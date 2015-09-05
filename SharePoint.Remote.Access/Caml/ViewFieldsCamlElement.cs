@@ -12,7 +12,10 @@ namespace SharePoint.Remote.Access.Caml
 
         public ViewFieldsCamlElement(IEnumerable<string> viewFields) : base(ViewFieldsTag)
         {
-            if (viewFields != null) FieldRefs = viewFields.Select(viewField => new CamlFieldRef {Name = viewField});
+            if (viewFields != null)
+            {
+                FieldRefs = viewFields.Select(viewField => new CamlFieldRef {Name = viewField});
+            }
         }
 
         public ViewFieldsCamlElement(string existingViewFields) : base(ViewFieldsTag, existingViewFields)
@@ -23,7 +26,7 @@ namespace SharePoint.Remote.Access.Caml
         {
         }
 
-        public IEnumerable<CamlFieldRef> FieldRefs { get; private set; }
+        public IEnumerable<CamlFieldRef> FieldRefs { get; internal set; }
 
         public override XElement ToXElement()
         {

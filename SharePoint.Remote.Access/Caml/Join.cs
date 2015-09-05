@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 using SharePoint.Remote.Access.Extensions;
@@ -133,16 +134,28 @@ namespace SharePoint.Remote.Access.Caml
             {
                 var type = existingJoin.AttributeIgnoreCase(TypeAttr);
                 var typeValue = type.Value.Trim();
-                if (string.Equals(typeValue, LeftJoin.Left))
+                if (string.Equals(typeValue, Caml.LeftJoin.Left))
                 {
                     return new LeftJoin(existingJoin);
                 }
-                if (string.Equals(typeValue, InnerJoin.Inner))
+                if (string.Equals(typeValue, Caml.InnerJoin.Inner))
                 {
                     return new InnerJoin(existingJoin);
                 }
             }
             throw new NotSupportedException(nameof(tag));
+        }
+
+        public IEnumerable<Join> InnerJoin(string fieldName, string listAlias)
+        {
+            yield return this;
+            yield return new InnerJoin(fieldName, ListAlias, listAlias);
+        }
+
+        public IEnumerable<Join> LeftJoin(string fieldName, string listAlias)
+        {
+            yield return this;
+            yield return new LeftJoin(fieldName, ListAlias, listAlias);
         }
     }
 }

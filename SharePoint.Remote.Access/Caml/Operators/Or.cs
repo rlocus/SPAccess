@@ -13,12 +13,7 @@ namespace SharePoint.Remote.Access.Caml.Operators
             : base(OrTag, operators)
         {
         }
-
-        //public Or(Operator firstOperator, Operator secondOperator)
-        //    : base(OrTag, new[] {firstOperator, secondOperator})
-        //{
-        //}
-
+        
         public Or(ComparisonOperator comparisonOperator, LogicalJoin logicalJoin, params Operator[] operators)
            : base(OrTag, comparisonOperator, logicalJoin, operators)
         {

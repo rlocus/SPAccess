@@ -79,7 +79,7 @@ namespace SharePoint.Remote.Access.Caml
                 : new CamlWhere(firstWhere.Operator.Or(secondWhere.Operator));
             return where;
         }
-        
+
         public static Operator And(this Operator @operator, params Operator[] operators)
         {
             if (@operator == null) throw new ArgumentNullException(nameof(@operator));
@@ -100,7 +100,7 @@ namespace SharePoint.Remote.Access.Caml
             if (@operator == null) throw new ArgumentNullException(nameof(@operator));
             return new And(new List<Operator> { @operator }.Union(operators));
         }
-        
+
         public static Operator Or(this Operator @operator, params Operator[] operators)
         {
             if (@operator == null) throw new ArgumentNullException(nameof(@operator));
@@ -199,6 +199,34 @@ namespace SharePoint.Remote.Access.Caml
                 camlViewFields.FieldRefs = mergedViewFields.ToArray();
             }
             return camlViewFields;
+        }
+
+        public static ProjectedFieldsCamlElement ShowField(this ProjectedFieldsCamlElement camlProjectedFields, params CamlProjectedField[] projectedFields)
+        {
+            if (projectedFields != null)
+            {
+                var mergedFields = new List<CamlProjectedField>();
+                if (camlProjectedFields.ProjectedFields != null)
+                {
+                    mergedFields.AddRange(camlProjectedFields.ProjectedFields);
+                }
+                mergedFields.AddRange(projectedFields);
+                camlProjectedFields.ProjectedFields = mergedFields.ToArray();
+            }
+            return camlProjectedFields;
+        }
+
+        public static ProjectedFieldsCamlElement ShowField(this ProjectedFieldsCamlElement camlProjectedFields, string fieldName, string listAlias, string lookupField)
+        {
+            var mergedFields = new List<CamlProjectedField>();
+            if (camlProjectedFields.ProjectedFields != null)
+            {
+                mergedFields.AddRange(camlProjectedFields.ProjectedFields);
+            }
+            mergedFields.Add(new CamlProjectedField(fieldName, listAlias, lookupField));
+            camlProjectedFields.ProjectedFields = mergedFields.ToArray();
+
+            return camlProjectedFields;
         }
     }
 }

@@ -129,7 +129,7 @@ namespace SharePoint.Remote.Access.Caml
 
         public override XElement ToXElement()
         {
-            var el = new XElement(FieldRefTag);
+            var el = base.ToXElement();
             if (!string.IsNullOrWhiteSpace(List))
             {
                 el.Add(new XAttribute(ListAttr, List));

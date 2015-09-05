@@ -58,6 +58,7 @@ namespace SharePoint.Client.Test
             view.ViewFields.View("Title", "ID");
             view.Joins.Join(new InnerJoin("field 1", "list 1").LeftJoin("field 2", "list 2").ToArray())
                 .Join(new LeftJoin("field 3", "List 3"));
+            view.ProjectedFields.ShowField("title", "list 1", "t").ShowField("title 2", "list 1", "t2");
             string q = view.ToString();
             string v = new View(q).ToString();
 

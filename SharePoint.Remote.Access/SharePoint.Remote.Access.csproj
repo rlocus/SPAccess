@@ -47,6 +47,7 @@
     <Compile Include="AuthType.cs" />
     <Compile Include="Caml\CamlRowLimit.cs" />
     <Compile Include="Caml\Clauses\CamlClause.cs" />
+    <Compile Include="Caml\CamlProjectedField.cs" />
     <Compile Include="Caml\Join.cs" />
     <Compile Include="Caml\Clauses\CamlGroupBy.cs" />
     <Compile Include="Caml\Clauses\CamlOrderBy.cs" />
@@ -59,6 +60,7 @@
     <Compile Include="Caml\Interfaces\ICamlMultiValue.cs" />
     <Compile Include="Caml\Interfaces\ICamlValue.cs" />
     <Compile Include="Caml\Interfaces\ICamlSpecialValue.cs" />
+    <Compile Include="Caml\ProjectedFieldsCamlElement.cs" />
     <Compile Include="Caml\JoinsCamlElement.cs" />
     <Compile Include="Caml\Operators\And.cs" />
     <Compile Include="Caml\Operators\BeginsWith.cs" />

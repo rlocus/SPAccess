@@ -11,23 +11,24 @@ namespace SharePoint.Remote.Access.Caml
     {
         internal const string ViewTag = "View";
 
-        public View(uint rowLimit = 0, bool? paged = null) : this(null, null, rowLimit, paged)
+        public View(uint rowLimit = 0, bool? paged = null) : this(null, null, null, rowLimit, paged)
         {
         }
 
-        public View(IEnumerable<string> viewFields, uint rowLimit = 0, bool? paged = null) : this(viewFields, null, rowLimit, paged)
+        public View(IEnumerable<string> viewFields, uint rowLimit = 0, bool? paged = null) : this(viewFields, null, null, rowLimit, paged)
         {
         }
 
-        public View(IEnumerable<Join> joins, uint rowLimit = 0, bool? paged = null) : this(null, joins, rowLimit, paged)
+        public View(IEnumerable<Join> joins, IEnumerable<CamlProjectedField> projectedFields, uint rowLimit = 0, bool? paged = null) : this(null, joins, projectedFields, rowLimit, paged)
         {
         }
 
-        public View(IEnumerable<string> viewFields, IEnumerable<Join> joins, uint rowLimit = 0, bool? paged = null) : base(ViewTag)
+        public View(IEnumerable<string> viewFields, IEnumerable<Join> joins, IEnumerable<CamlProjectedField> projectedFields, uint rowLimit = 0, bool? paged = null) : base(ViewTag)
         {
             Query = new Query();
             ViewFields = new ViewFieldsCamlElement(viewFields);
             Joins = new JoinsCamlElement(joins);
+            ProjectedFields = new ProjectedFieldsCamlElement(projectedFields);
             RowLimit = new CamlRowLimit(rowLimit, paged);
         }
 
@@ -56,6 +57,7 @@ namespace SharePoint.Remote.Access.Caml
 
         public ViewFieldsCamlElement ViewFields { get; private set; }
         public JoinsCamlElement Joins { get; private set; }
+        public ProjectedFieldsCamlElement ProjectedFields { get; private set; }
 
         protected override void OnParsing(XElement existingView)
         {
@@ -79,6 +81,11 @@ namespace SharePoint.Remote.Access.Caml
             {
                 Joins = new JoinsCamlElement(existingJoins);
             }
+            var projectedFields = existingView.ElementIgnoreCase(ProjectedFieldsCamlElement.ProjectedFieldsTag);
+            if (projectedFields != null)
+            {
+                ProjectedFields = new ProjectedFieldsCamlElement(projectedFields);
+            }
         }
 
         public override XElement ToXElement()
@@ -89,10 +96,6 @@ namespace SharePoint.Remote.Access.Caml
             {
                 el.Add(queryElement);
             }
-            if (RowLimit != null && RowLimit.Limit > 0)
-            {
-                el.Add(RowLimit.ToXElement());
-            }
             if (ViewFields?.FieldRefs != null && ViewFields.FieldRefs.Any())
             {
                 el.Add(ViewFields.ToXElement());
@@ -100,6 +103,14 @@ namespace SharePoint.Remote.Access.Caml
             if (Joins?.Joins != null && Joins.Joins.Any())
             {
                 el.Add(Joins.ToXElement());
+            }
+            if (ProjectedFields?.ProjectedFields != null && ProjectedFields.ProjectedFields.Any())
+            {
+                el.Add(ProjectedFields.ToXElement());
+            }
+            if (RowLimit != null && RowLimit.Limit > 0)
+            {
+                el.Add(RowLimit.ToXElement());
             }
             return el;
         }

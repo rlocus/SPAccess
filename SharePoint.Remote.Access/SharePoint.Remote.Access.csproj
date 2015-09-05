@@ -98,6 +98,8 @@
     <Compile Include="Extensions\LinqExtensions.cs" />
     <Compile Include="Extensions\XElementExtensions.cs" />
     <Compile Include="Helpers\Deferred.cs" />
+    <Compile Include="Helpers\RecurrenceRule.cs" />
+    <Compile Include="Helpers\SPRecurrenceHelper.cs" />
     <Compile Include="Helpers\SPClientView.cs" />
     <Compile Include="Helpers\SPClientContext.cs" />
     <Compile Include="Helpers\SPClientContentType.cs" />

@@ -5,6 +5,8 @@ namespace SharePoint.Remote.Access.Helpers
     [Serializable]
     public abstract class RecurrenceRule
     {
+        private int? _numberOfOccurrences;
+
         internal RecurrenceRule()
         {
         }
@@ -12,7 +14,13 @@ namespace SharePoint.Remote.Access.Helpers
         public DateTime StartDate { get; internal set; }
         public DateTime? EndDate { get; internal set; }
         public bool HasEnd { get; internal set; }
-        public int? NumberOfOccurrences { get; internal set; }
+
+        public int? NumberOfOccurrences
+        {
+            get { return _numberOfOccurrences ?? (_numberOfOccurrences = GetNumberOfOccurrences()); }
+        }
+
+        protected abstract int GetNumberOfOccurrences();
     }
 
     [Serializable]
@@ -22,12 +30,30 @@ namespace SharePoint.Remote.Access.Helpers
         {
         }
         public int Interval { get; internal set; }
+        public System.DayOfWeek FirstDayOfWeek { get; internal set; }
     }
 
     public sealed class DyilyRecurrenceRule : IntervalRecurrenceRule
     {
         internal DyilyRecurrenceRule()
         {
+        }
+
+        protected override int GetNumberOfOccurrences()
+        {
+            DateTime date = StartDate.Date;
+            while (date.DayOfWeek != FirstDayOfWeek)
+            {
+                date = date.AddDays(1);
+            }
+            int occurenceCounter = 0;
+            while (!((!EndDate.HasValue && occurenceCounter >= NumberOfOccurrences) ||
+              (EndDate.HasValue && date > EndDate.Value.Date)))
+            {
+                ++occurenceCounter;
+                date = date.AddDays(Interval);
+            }
+            return occurenceCounter;
         }
     }
 
@@ -38,7 +64,11 @@ namespace SharePoint.Remote.Access.Helpers
         {
         }
         public DayOfWeek[] DaysOfWeek { get; internal set; }
-        public System.DayOfWeek FirstDayOfWeek { get; internal set; }
+        //public System.DayOfWeek FirstDayOfWeek { get; internal set; }
+        protected override int GetNumberOfOccurrences()
+        {
+            throw new NotImplementedException();
+        }
     }
 
     [Serializable]
@@ -48,6 +78,10 @@ namespace SharePoint.Remote.Access.Helpers
         {
         }
         public int DayOfMonth { get; internal set; }
+        protected override int GetNumberOfOccurrences()
+        {
+            throw new NotImplementedException();
+        }
     }
 
     [Serializable]
@@ -58,20 +92,29 @@ namespace SharePoint.Remote.Access.Helpers
         }
         public DayOfWeek DayOfWeek { get; internal set; }
         public DayOfWeekOrdinal DayOfWeekOrdinal { get; internal set; }
+        protected override int GetNumberOfOccurrences()
+        {
+            throw new NotImplementedException();
+        }
     }
 
     [Serializable]
-    public sealed class YearlyRecurrenceRule : RecurrenceRule
+    public sealed class YearlyRecurrenceRule : IntervalRecurrenceRule//RecurrenceRule
     {
         internal YearlyRecurrenceRule()
         {
         }
         public int DayOfMonth { get; set; }
         public Month Month { get; set; }
+        public int RepeatInstances { get; internal set; }
+        protected override int GetNumberOfOccurrences()
+        {
+            throw new NotImplementedException();
+        }
     }
 
     [Serializable]
-    public sealed class YearlyByDayRecurrenceRule : RecurrenceRule
+    public sealed class YearlyByDayRecurrenceRule : IntervalRecurrenceRule//RecurrenceRule
     {
         internal YearlyByDayRecurrenceRule()
         {
@@ -79,6 +122,11 @@ namespace SharePoint.Remote.Access.Helpers
         public DayOfWeek DayOfWeek { get; internal set; }
         public DayOfWeekOrdinal DayOfWeekOrdinal { get; internal set; }
         public Month Month { get; internal set; }
+        public int RepeatInstances { get; internal set; }
+        protected override int GetNumberOfOccurrences()
+        {
+            throw new NotImplementedException();
+        }
     }
 
     //[Serializable]

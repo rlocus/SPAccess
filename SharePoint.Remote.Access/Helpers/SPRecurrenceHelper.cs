@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Xml.Linq;
 using SharePoint.Remote.Access.Extensions;
 
@@ -8,28 +9,216 @@ namespace SharePoint.Remote.Access.Helpers
 {
     public static class SPRecurrenceHelper
     {
-        public static RecurrenceRule ParseRule(string ruleXml)
+        public static RecurrenceRule ParseRule(DateTime startDate, DateTime endDate, string recurrenceData)
         {
-            var ruleParser = new RecurrenceRuleParser(ruleXml);
+            RecurrenceRule recurrenceRule = null;
+            var ruleParser = new RecurrenceRuleParser(recurrenceData);
             if (ruleParser.Type.HasValue)
             {
                 switch (ruleParser.Type)
                 {
                     case RecurrenceType.Daily:
-                        return new DyilyRecurrenceRule();
+                        var dyilyRecurrenceRule = new DyilyRecurrenceRule
+                        {
+                            StartDate = startDate,
+                            EndDate = endDate,
+                            HasEnd = ruleParser.WindowEnd.HasValue
+                        };
+                        if (ruleParser.Frequency != null)
+                        {
+                            dyilyRecurrenceRule.Interval = ruleParser.Frequency.Value;
+                        }
+                        recurrenceRule = dyilyRecurrenceRule;
+                        break;
                     case RecurrenceType.Weekly:
-                        return new WeeklyRecurrenceRule();
+                        var weeklyRecurrenceRule = new WeeklyRecurrenceRule
+                        {
+                            StartDate = startDate,
+                            EndDate = endDate,
+                            HasEnd = ruleParser.WindowEnd.HasValue
+                        };
+                        if (ruleParser.Frequency != null)
+                        {
+                            weeklyRecurrenceRule.Interval = ruleParser.Frequency.Value;
+                        }
+                        var daysOfWeek = new List<DayOfWeek>(ruleParser.DaysOfWeek.Select(GetDayOfWeek));
+                        if (ruleParser.IsDay)
+                        {
+                            daysOfWeek.Add(DayOfWeek.Day);
+                        }
+                        if (ruleParser.IsWeekday)
+                        {
+                            daysOfWeek.Add(DayOfWeek.Weekday);
+                        }
+                        if (ruleParser.IsWeekendDay)
+                        {
+                            daysOfWeek.Add(DayOfWeek.WeekendDay);
+                        }
+                        weeklyRecurrenceRule.DaysOfWeek = daysOfWeek.ToArray();
+                        if (ruleParser.FirstDayOfWeek.HasValue)
+                        {
+                            weeklyRecurrenceRule.FirstDayOfWeek = ruleParser.FirstDayOfWeek.Value;
+                        }
+                        recurrenceRule = weeklyRecurrenceRule;
+                        break;
                     case RecurrenceType.Monthly:
-                        return new MonthlyRecurrenceRule();
+                        var monthlyRecurrenceRule = new MonthlyRecurrenceRule
+                        {
+                            StartDate = startDate,
+                            EndDate = endDate,
+                            HasEnd = ruleParser.WindowEnd.HasValue
+                        };
+                        if (ruleParser.Frequency != null)
+                        {
+                            monthlyRecurrenceRule.Interval = ruleParser.Frequency.Value;
+                        }
+                        if (ruleParser.Day != null)
+                        {
+                            monthlyRecurrenceRule.DayOfMonth = ruleParser.Day.Value;
+                        }
+                        recurrenceRule = monthlyRecurrenceRule;
+                        break;
                     case RecurrenceType.MonthlyByDay:
-                        return new MonthlyByDayRecurrenceRule();
+                        var monthlyByDayRecurrenceRule = new MonthlyByDayRecurrenceRule
+                        {
+                            StartDate = startDate,
+                            EndDate = endDate,
+                            HasEnd = ruleParser.WindowEnd.HasValue
+                        };
+                        if (ruleParser.Frequency != null)
+                        {
+                            monthlyByDayRecurrenceRule.Interval = ruleParser.Frequency.Value;
+                        }
+                        if (ruleParser.IsDay)
+                        {
+                            monthlyByDayRecurrenceRule.DayOfWeek = DayOfWeek.Day;
+                        }
+                        else if (ruleParser.IsWeekday)
+                        {
+                            monthlyByDayRecurrenceRule.DayOfWeek = DayOfWeek.Weekday;
+                        }
+                        else if (ruleParser.IsWeekendDay)
+                        {
+                            monthlyByDayRecurrenceRule.DayOfWeek = DayOfWeek.WeekendDay;
+                        }
+                        else if (ruleParser.DaysOfWeek.Length > 0)
+                        {
+                            monthlyByDayRecurrenceRule.DayOfWeek = GetDayOfWeek(ruleParser.DaysOfWeek.First());
+                        }
+                        if (ruleParser.Ordinal != null)
+                        {
+                            monthlyByDayRecurrenceRule.DayOfWeekOrdinal = ruleParser.Ordinal.Value;
+                        }
+                        recurrenceRule = monthlyByDayRecurrenceRule;
+                        break;
                     case RecurrenceType.Yearly:
-                        return new YearlyByDayRecurrenceRule();
+                        var yearlyRecurrenceRule = new YearlyRecurrenceRule()
+                        {
+                            StartDate = startDate,
+                            EndDate = endDate,
+                            HasEnd = ruleParser.WindowEnd.HasValue
+                        };
+                        if (ruleParser.Frequency != null)
+                        {
+                            yearlyRecurrenceRule.Interval = ruleParser.Frequency.Value;
+                        }
+                        if (ruleParser.Month != null)
+                        {
+                            yearlyRecurrenceRule.Month = (Month)ruleParser.Month;
+                        }
+                        if (ruleParser.Day != null)
+                        {
+                            yearlyRecurrenceRule.DayOfMonth = ruleParser.Day.Value;
+                        }
+                        if (ruleParser.RepeatInstances != null)
+                        {
+                            yearlyRecurrenceRule.RepeatInstances = ruleParser.RepeatInstances.Value;
+                        }
+                        recurrenceRule = yearlyRecurrenceRule;
+                        break;
                     case RecurrenceType.YearlyByDay:
-                        return new YearlyByDayRecurrenceRule();
+                        var yearlyByDayRecurrenceRule = new YearlyByDayRecurrenceRule()
+                        {
+                            StartDate = startDate,
+                            EndDate = endDate,
+                            HasEnd = ruleParser.WindowEnd.HasValue
+                        };
+                        if (ruleParser.Frequency != null)
+                        {
+                            yearlyByDayRecurrenceRule.Interval = ruleParser.Frequency.Value;
+                        }
+                        if (ruleParser.Month != null)
+                        {
+                            yearlyByDayRecurrenceRule.Month = (Month)ruleParser.Month;
+                        }
+                        if (ruleParser.IsDay)
+                        {
+                            yearlyByDayRecurrenceRule.DayOfWeek = DayOfWeek.Day;
+                        }
+                        else if (ruleParser.IsWeekday)
+                        {
+                            yearlyByDayRecurrenceRule.DayOfWeek = DayOfWeek.Weekday;
+                        }
+                        else if (ruleParser.IsWeekendDay)
+                        {
+                            yearlyByDayRecurrenceRule.DayOfWeek = DayOfWeek.WeekendDay;
+                        }
+                        else if (ruleParser.DaysOfWeek.Length > 0)
+                        {
+                            yearlyByDayRecurrenceRule.DayOfWeek = GetDayOfWeek(ruleParser.DaysOfWeek.First());
+                        }
+                        if (ruleParser.Ordinal != null)
+                        {
+                            yearlyByDayRecurrenceRule.DayOfWeekOrdinal = ruleParser.Ordinal.Value;
+                        }
+                        if (ruleParser.RepeatInstances != null)
+                        {
+                            yearlyByDayRecurrenceRule.RepeatInstances = ruleParser.RepeatInstances.Value;
+                        }
+                        recurrenceRule = yearlyByDayRecurrenceRule;
+                        break;
+                }
+
+                if (recurrenceRule != null)
+                {
+                    recurrenceRule.StartDate = startDate;
+                    if (ruleParser.WindowEnd.HasValue)
+                    {
+                        recurrenceRule.EndDate = endDate > ruleParser.WindowEnd.Value
+                            ? ruleParser.WindowEnd.Value
+                            : endDate;
+                        recurrenceRule.HasEnd = true;
+                    }
+                    else
+                    {
+                        recurrenceRule.EndDate = endDate;
+                        recurrenceRule.HasEnd = false;
+                    }
                 }
             }
-            return null;
+            return recurrenceRule;
+        }
+        
+        private static DayOfWeek GetDayOfWeek(System.DayOfWeek dayOfWeek)
+        {
+            switch (dayOfWeek)
+            {
+                case System.DayOfWeek.Sunday:
+                    return DayOfWeek.Sunday;
+                case System.DayOfWeek.Monday:
+                    return DayOfWeek.Monday;
+                case System.DayOfWeek.Tuesday:
+                    return DayOfWeek.Tuesday;
+                case System.DayOfWeek.Wednesday:
+                    return DayOfWeek.Wednesday;
+                case System.DayOfWeek.Thursday:
+                    return DayOfWeek.Thursday;
+                case System.DayOfWeek.Friday:
+                    return DayOfWeek.Friday;
+                case System.DayOfWeek.Saturday:
+                    return DayOfWeek.Saturday;
+            }
+            return DayOfWeek.Sunday;
         }
 
         internal enum RecurrenceType
@@ -57,10 +246,7 @@ namespace SharePoint.Remote.Access.Helpers
             private const string YearlyTag = "yearly";
             private const string YearlyByDayTag = "yearlyByDay";
 
-            public DateTime? WindowEnd
-            {
-                get; private set;
-            }
+            public DateTime? WindowEnd { get; private set; }
 
             public RecurrenceType? Type { get; private set; }
 
@@ -107,6 +293,7 @@ namespace SharePoint.Remote.Access.Helpers
                     XAttribute weekFrequency = weekly.AttributeIgnoreCase("weekFrequency");
                     Frequency = (Convert.ToInt32(weekFrequency.Value, CultureInfo.InvariantCulture));
                     Type = RecurrenceType.Weekly;
+                    SetDaysOfWeek(weekly);
                     return;
                 }
                 XElement monthly = repeat.ElementIgnoreCase(MonthlyTag);
@@ -123,6 +310,8 @@ namespace SharePoint.Remote.Access.Helpers
                     XAttribute monthFrequency = monthlyByDay.AttributeIgnoreCase("monthFrequency");
                     Frequency = (Convert.ToInt32(monthFrequency.Value, CultureInfo.InvariantCulture));
                     Type = RecurrenceType.MonthlyByDay;
+                    SetDaysOfWeek(monthlyByDay);
+                    SetOrdinal(monthlyByDay);
                     return;
                 }
                 XElement yearly = repeat.ElementIgnoreCase(YearlyTag);
@@ -139,43 +328,45 @@ namespace SharePoint.Remote.Access.Helpers
                     XAttribute yearFrequency = yearlyByDay.AttributeIgnoreCase("yearFrequency");
                     Frequency = (Convert.ToInt32(yearFrequency.Value, CultureInfo.InvariantCulture));
                     Type = RecurrenceType.YearlyByDay;
+                    SetDaysOfWeek(yearlyByDay);
+                    SetOrdinal(yearlyByDay);
                 }
             }
 
-            private void SetDaysOfWeek(XElement repeat)
+            private void SetDaysOfWeek(XElement recurrByDay)
             {
                 List<System.DayOfWeek> days = new List<System.DayOfWeek>();
-                XAttribute su = repeat.AttributeIgnoreCase("su");
+                XAttribute su = recurrByDay.AttributeIgnoreCase("su");
                 if (su != null && Convert.ToBoolean(su.Value))
                 {
                     days.Add(System.DayOfWeek.Sunday);
                 }
-                XAttribute mo = repeat.AttributeIgnoreCase("mo");
+                XAttribute mo = recurrByDay.AttributeIgnoreCase("mo");
                 if (mo != null && Convert.ToBoolean(mo.Value))
                 {
                     days.Add(System.DayOfWeek.Monday);
                 }
-                XAttribute tu = repeat.AttributeIgnoreCase("tu");
+                XAttribute tu = recurrByDay.AttributeIgnoreCase("tu");
                 if (tu != null && Convert.ToBoolean(tu.Value))
                 {
                     days.Add(System.DayOfWeek.Tuesday);
                 }
-                XAttribute we = repeat.AttributeIgnoreCase("we");
+                XAttribute we = recurrByDay.AttributeIgnoreCase("we");
                 if (we != null && Convert.ToBoolean(we.Value))
                 {
                     days.Add(System.DayOfWeek.Wednesday);
                 }
-                XAttribute th = repeat.AttributeIgnoreCase("th");
+                XAttribute th = recurrByDay.AttributeIgnoreCase("th");
                 if (th != null && Convert.ToBoolean(th.Value))
                 {
                     days.Add(System.DayOfWeek.Thursday);
                 }
-                XAttribute fr = repeat.AttributeIgnoreCase("fr");
+                XAttribute fr = recurrByDay.AttributeIgnoreCase("fr");
                 if (fr != null && Convert.ToBoolean(fr.Value))
                 {
                     days.Add(System.DayOfWeek.Friday);
                 }
-                XAttribute sa = repeat.AttributeIgnoreCase("sa");
+                XAttribute sa = recurrByDay.AttributeIgnoreCase("sa");
                 if (sa != null && Convert.ToBoolean(sa.Value))
                 {
                     days.Add(System.DayOfWeek.Saturday);
@@ -183,9 +374,9 @@ namespace SharePoint.Remote.Access.Helpers
                 DaysOfWeek = days.ToArray();
             }
 
-            private void SetOrdinal(XElement repeat)
+            private void SetOrdinal(XElement recurrByDay)
             {
-                var weekdayOfMonth = repeat.AttributeIgnoreCase("weekdayOfMonth");
+                var weekdayOfMonth = recurrByDay.AttributeIgnoreCase("weekdayOfMonth");
                 if (weekdayOfMonth != null && (Type == RecurrenceType.MonthlyByDay || Type == RecurrenceType.YearlyByDay))
                 {
                     string value = weekdayOfMonth.Value;
@@ -276,8 +467,6 @@ namespace SharePoint.Remote.Access.Helpers
                                 IsWeekday = Convert.ToBoolean(weekday);
                             }
                             SetRecurrenceType(repeat);
-                            SetDaysOfWeek(repeat);
-                            SetOrdinal(repeat);
                             XAttribute day = repeat.AttributeIgnoreCase("day");
                             if (day != null)
                             {

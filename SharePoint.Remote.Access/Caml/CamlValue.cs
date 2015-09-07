@@ -3,6 +3,7 @@ using System.Xml.Linq;
 using Microsoft.SharePoint.Client;
 using SharePoint.Remote.Access.Caml.Interfaces;
 using SharePoint.Remote.Access.Extensions;
+using System.Globalization;
 
 namespace SharePoint.Remote.Access.Caml
 {
@@ -328,7 +329,8 @@ namespace SharePoint.Remote.Access.Caml
                 {
                     if (!string.IsNullOrEmpty(existingValue.Value))
                     {
-                        var date = DateTime.Parse(existingValue.Value);
+                        string dateString = existingValue.Value;
+                        var date = new DateTime(Convert.ToInt32(dateString.Substring(0, 4)), Convert.ToInt32(dateString.Substring(5, 2)), Convert.ToInt32(dateString.Substring(8, 2)), Convert.ToInt32(dateString.Substring(11, 2)), Convert.ToInt32(dateString.Substring(14, 2)), Convert.ToInt32(dateString.Substring(17, 2)), new GregorianCalendar());
                         Value = (T)(object)date;
                     }
                 }

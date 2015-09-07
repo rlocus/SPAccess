@@ -166,6 +166,21 @@ namespace SharePoint.Remote.Access.Helpers
             return recurrenceRule;
         }
 
+        internal static bool IsDayOfTheWeekMatched(DateTime date, DayOfWeek[] dayOfWeeks)
+        {
+            return
+                (date.DayOfWeek == System.DayOfWeek.Sunday &&
+                 (dayOfWeeks.Contains(DayOfWeek.Sunday) || dayOfWeeks.Contains(DayOfWeek.WeekendDay))) ||
+                (date.DayOfWeek == System.DayOfWeek.Monday && dayOfWeeks.Contains(DayOfWeek.Monday)) ||
+                (date.DayOfWeek == System.DayOfWeek.Tuesday && dayOfWeeks.Contains(DayOfWeek.Tuesday)) ||
+                (date.DayOfWeek == System.DayOfWeek.Wednesday && dayOfWeeks.Contains(DayOfWeek.Wednesday)) ||
+                (date.DayOfWeek == System.DayOfWeek.Thursday && dayOfWeeks.Contains(DayOfWeek.Thursday)) ||
+                (date.DayOfWeek == System.DayOfWeek.Friday && dayOfWeeks.Contains(DayOfWeek.Friday)) ||
+                (date.DayOfWeek == System.DayOfWeek.Saturday &&
+                 (dayOfWeeks.Contains(DayOfWeek.Saturday) || dayOfWeeks.Contains(DayOfWeek.WeekendDay)));
+        }
+
+
         private static DayOfWeek GetDayOfWeek(System.DayOfWeek dayOfWeek)
         {
             switch (dayOfWeek)

@@ -1,3 +1,4 @@
 C:\Users\rpohomenko\Documents\GitHubVisualStudio\SPAccess\SP2013Access\bin\Debug\SP2013Access.exe.config
 C:\Users\rpohomenko\Documents\GitHubVisualStudio\SPAccess\SP2013Access\obj\Debug\SP2013Access.exe
 C:\Users\rpohomenko\Documents\GitHubVisualStudio\SPAccess\SP2013Access\obj\Debug\SP2013Access.pdb
+D:\Git\SP2013Access\bin\Debug\SP2013Access.exe.config

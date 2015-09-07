@@ -13,8 +13,8 @@ namespace SharePoint.Client.Test
         {
             RecurrenceRule rule = SPRecurrenceHelper.ParseRule(DateTime.Now, DateTime.Now.AddYears(10), "<recurrence><rule><firstDayOfWeek>su</firstDayOfWeek><repeat><daily dayFrequency='1'/></repeat><windowEnd>2016-01-02T13:00:00Z</windowEnd></rule></recurrence>");
 
-            var occurences = rule.GetOccurrences(new TimeSpan(10, 0, 0), new TimeSpan(20, 0, 0)).ToArray();
-            //var occurences = rule.GetOccurrences().ToArray();
+            //var occurences = rule.GetOccurrences(new TimeSpan(10, 0, 0), new TimeSpan(20, 0, 0)).ToArray();
+            var occurences = rule.GetOccurrences().ToArray();
 
             //every 1 week on a specific day, end after 10 occurrences:
             RecurrenceRule rule1 = SPRecurrenceHelper.ParseRule(DateTime.Now, DateTime.Now.AddDays(1), "<recurrence><rule><firstDayOfWeek>su</firstDayOfWeek><repeat><weekly tu='TRUE' weekFrequency='1' /></repeat><repeatInstances>10</repeatInstances></rule></recurrence>");

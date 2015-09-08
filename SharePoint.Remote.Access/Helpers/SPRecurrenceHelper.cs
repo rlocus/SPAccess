@@ -18,19 +18,11 @@ namespace SharePoint.Remote.Access.Helpers
                 switch (ruleParser.Type)
                 {
                     case RecurrenceType.Daily:
-                        var dyilyRecurrenceRule = new DyilyRecurrenceRule();
-                        if (ruleParser.Frequency != null)
-                        {
-                            dyilyRecurrenceRule.Interval = ruleParser.Frequency.Value;
-                        }
+                        var dyilyRecurrenceRule = new DyilyRecurrenceRule {IsWeekday = ruleParser.IsWeekday};
                         recurrenceRule = dyilyRecurrenceRule;
                         break;
                     case RecurrenceType.Weekly:
                         var weeklyRecurrenceRule = new WeeklyRecurrenceRule();
-                        if (ruleParser.Frequency != null)
-                        {
-                            weeklyRecurrenceRule.Interval = ruleParser.Frequency.Value;
-                        }
                         var daysOfWeek = new List<DayOfWeek>(ruleParser.DaysOfWeek.Select(GetDayOfWeek));
                         if (ruleParser.IsDay)
                         {
@@ -53,10 +45,6 @@ namespace SharePoint.Remote.Access.Helpers
                         break;
                     case RecurrenceType.Monthly:
                         var monthlyRecurrenceRule = new MonthlyRecurrenceRule();
-                        if (ruleParser.Frequency != null)
-                        {
-                            monthlyRecurrenceRule.Interval = ruleParser.Frequency.Value;
-                        }
                         if (ruleParser.Day != null)
                         {
                             monthlyRecurrenceRule.DayOfMonth = ruleParser.Day.Value;
@@ -65,10 +53,6 @@ namespace SharePoint.Remote.Access.Helpers
                         break;
                     case RecurrenceType.MonthlyByDay:
                         var monthlyByDayRecurrenceRule = new MonthlyByDayRecurrenceRule();
-                        if (ruleParser.Frequency != null)
-                        {
-                            monthlyByDayRecurrenceRule.Interval = ruleParser.Frequency.Value;
-                        }
                         if (ruleParser.IsDay)
                         {
                             monthlyByDayRecurrenceRule.DayOfWeek = DayOfWeek.Day;
@@ -93,10 +77,6 @@ namespace SharePoint.Remote.Access.Helpers
                         break;
                     case RecurrenceType.Yearly:
                         var yearlyRecurrenceRule = new YearlyRecurrenceRule();
-                        if (ruleParser.Frequency != null)
-                        {
-                            yearlyRecurrenceRule.Interval = ruleParser.Frequency.Value;
-                        }
                         if (ruleParser.Month != null)
                         {
                             yearlyRecurrenceRule.Month = (Month)ruleParser.Month;
@@ -109,10 +89,6 @@ namespace SharePoint.Remote.Access.Helpers
                         break;
                     case RecurrenceType.YearlyByDay:
                         var yearlyByDayRecurrenceRule = new YearlyByDayRecurrenceRule();
-                        if (ruleParser.Frequency != null)
-                        {
-                            yearlyByDayRecurrenceRule.Interval = ruleParser.Frequency.Value;
-                        }
                         if (ruleParser.Month != null)
                         {
                             yearlyByDayRecurrenceRule.Month = (Month)ruleParser.Month;
@@ -143,6 +119,10 @@ namespace SharePoint.Remote.Access.Helpers
 
                 if (recurrenceRule != null)
                 {
+                    if (ruleParser.Frequency != null)
+                    {
+                        recurrenceRule.Interval = ruleParser.Frequency.Value;
+                    }
                     if (ruleParser.WindowEnd.HasValue)
                     {
                         recurrenceRule.EndDate = endDate < ruleParser.WindowEnd.Value

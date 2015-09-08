@@ -11,13 +11,13 @@ namespace SharePoint.Client.Test
         [TestMethod]
         public void TestRecurrence1()
         {
-            RecurrenceRule rule = SPRecurrenceHelper.ParseRule(DateTime.Now, DateTime.Now.AddYears(10), "<recurrence><rule><firstDayOfWeek>su</firstDayOfWeek><repeat><daily dayFrequency='1'/></repeat><windowEnd>2016-01-02T13:00:00Z</windowEnd></rule></recurrence>");
+            RecurrenceRule rule = SPRecurrenceHelper.ParseRule(DateTime.Now, DateTime.Now.AddYears(10), "<recurrence><rule><firstDayOfWeek>su</firstDayOfWeek><repeat><daily dayFrequency='1'/></repeat><windowEnd>2016-01-02T23:00:00Z</windowEnd></rule></recurrence>");
 
-            var occurences1 = rule.GetOccurrences(new TimeSpan(10, 0, 0), new TimeSpan(20, 0, 0)).ToArray();
+            var occurences1 = rule.GetOccurrences().ToArray();
             //var occurences = rule.GetOccurrences().ToArray();
 
             //every 1 week on a specific day, end after 10 occurrences:
-            RecurrenceRule rule1 = SPRecurrenceHelper.ParseRule(DateTime.Now, DateTime.Now.AddYears(2), "<recurrence><rule><firstDayOfWeek>su</firstDayOfWeek><repeat><weekly tu='TRUE' weekFrequency='1' /></repeat><repeatInstances>0</repeatInstances><windowEnd>2016-01-02T13:00:00Z</windowEnd></rule></recurrence>");
+            RecurrenceRule rule1 = SPRecurrenceHelper.ParseRule(DateTime.Now, DateTime.Now.AddYears(2), "<recurrence><rule><firstDayOfWeek>su</firstDayOfWeek><repeat><weekly tu='TRUE' weekFrequency='2' /></repeat><repeatInstances>0</repeatInstances><windowEnd>2016-01-02T23:00:00Z</windowEnd></rule></recurrence>");
 
             var occurences2 = rule1.GetOccurrences().ToArray();
 
@@ -28,11 +28,11 @@ namespace SharePoint.Client.Test
 
             var occurences3 = rule3.GetOccurrences().ToArray();
             //on a specific date of the month, no end date:
-            RecurrenceRule rule4 = SPRecurrenceHelper.ParseRule(DateTime.Now, DateTime.Now.AddYears(1), "<recurrence><rule><firstDayOfWeek>su</firstDayOfWeek><repeat><monthly monthFrequency='1' day='1' /></repeat><repeatForever>FALSE</repeatForever><repeatInstances>1</repeatInstances></rule></recurrence>");
+            RecurrenceRule rule4 = SPRecurrenceHelper.ParseRule(DateTime.Now, DateTime.Now.AddYears(1), "<recurrence><rule><firstDayOfWeek>su</firstDayOfWeek><repeat><monthly monthFrequency='4' day='1' /></repeat><repeatForever>FALSE</repeatForever><repeatInstances>10</repeatInstances></rule></recurrence>");
             var occurences4 = rule4.GetOccurrences().ToArray();
 
             //on a specific day every 3 months, end on a specific date:
-            RecurrenceRule rule5 = SPRecurrenceHelper.ParseRule(DateTime.Now, DateTime.Now.AddYears(1), "<recurrence><rule><firstDayOfWeek>su</firstDayOfWeek><repeat><monthlyByDay tu='TRUE' weekdayOfMonth='first' monthFrequency='1' /></repeat><windowEnd>2016-04-26T20:00:00Z</windowEnd></rule></recurrence>");
+            RecurrenceRule rule5 = SPRecurrenceHelper.ParseRule(DateTime.Now, DateTime.Now.AddYears(1), "<recurrence><rule><firstDayOfWeek>su</firstDayOfWeek><repeat><monthlyByDay tu='TRUE' weekdayOfMonth='first' monthFrequency='4' /></repeat><windowEnd>2016-04-26T20:00:00Z</windowEnd></rule></recurrence>");
 
             var occurences5 = rule5.GetOccurrences().ToArray();
 

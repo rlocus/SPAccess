@@ -166,22 +166,31 @@ namespace SharePoint.Remote.Access.Helpers
             return recurrenceRule;
         }
 
-        internal static bool IsDayOfTheWeekMatched(DateTime date, DayOfWeek[] dayOfWeeks)
+        public static bool IsDayOfWeekMatched(IEnumerable<DayOfWeek> dayOfWeeks, DateTime date)
         {
-            return
-                (date.DayOfWeek == System.DayOfWeek.Sunday &&
-                 (dayOfWeeks.Contains(DayOfWeek.Sunday) || dayOfWeeks.Contains(DayOfWeek.WeekendDay))) ||
-                (date.DayOfWeek == System.DayOfWeek.Monday && dayOfWeeks.Contains(DayOfWeek.Monday)) ||
-                (date.DayOfWeek == System.DayOfWeek.Tuesday && dayOfWeeks.Contains(DayOfWeek.Tuesday)) ||
-                (date.DayOfWeek == System.DayOfWeek.Wednesday && dayOfWeeks.Contains(DayOfWeek.Wednesday)) ||
-                (date.DayOfWeek == System.DayOfWeek.Thursday && dayOfWeeks.Contains(DayOfWeek.Thursday)) ||
-                (date.DayOfWeek == System.DayOfWeek.Friday && dayOfWeeks.Contains(DayOfWeek.Friday)) ||
-                (date.DayOfWeek == System.DayOfWeek.Saturday &&
-                 (dayOfWeeks.Contains(DayOfWeek.Saturday) || dayOfWeeks.Contains(DayOfWeek.WeekendDay)));
+            if (dayOfWeeks == null) throw new ArgumentNullException("dayOfWeeks");
+            switch (date.DayOfWeek)
+            {
+                case System.DayOfWeek.Sunday:
+                    return dayOfWeeks.Any(dayOfWeek => dayOfWeek == DayOfWeek.Sunday || dayOfWeek == DayOfWeek.WeekendDay);
+                case System.DayOfWeek.Monday:
+                    return dayOfWeeks.Any(dayOfWeek => dayOfWeek == DayOfWeek.Monday || dayOfWeek == DayOfWeek.Weekday);
+                case System.DayOfWeek.Tuesday:
+                    return dayOfWeeks.Any(dayOfWeek => dayOfWeek == DayOfWeek.Tuesday || dayOfWeek == DayOfWeek.Weekday);
+                case System.DayOfWeek.Wednesday:
+                    return dayOfWeeks.Any(dayOfWeek => dayOfWeek == DayOfWeek.Wednesday || dayOfWeek == DayOfWeek.Weekday);
+                case System.DayOfWeek.Thursday:
+                    return dayOfWeeks.Any(dayOfWeek => dayOfWeek == DayOfWeek.Thursday || dayOfWeek == DayOfWeek.Weekday);
+                case System.DayOfWeek.Friday:
+                    return dayOfWeeks.Any(dayOfWeek => dayOfWeek == DayOfWeek.Friday || dayOfWeek == DayOfWeek.Weekday);
+                case System.DayOfWeek.Saturday:
+                    return dayOfWeeks.Any(dayOfWeek => dayOfWeek == DayOfWeek.Saturday || dayOfWeek == DayOfWeek.WeekendDay);
+            }
+            return false;
         }
 
 
-        private static DayOfWeek GetDayOfWeek(System.DayOfWeek dayOfWeek)
+        public static DayOfWeek GetDayOfWeek(System.DayOfWeek dayOfWeek)
         {
             switch (dayOfWeek)
             {
@@ -201,6 +210,37 @@ namespace SharePoint.Remote.Access.Helpers
                     return DayOfWeek.Saturday;
             }
             return DayOfWeek.Sunday;
+        }
+
+        public static IEnumerable<int> GetMatchedDays(DateTime startDate, DayOfWeekOrdinal dayOfWeekOrdinal, DayOfWeek dayOfWeek)
+        {
+            int ordinal = 0;
+            DateTime currentDate = new DateTime(startDate.Year, startDate.Month,
+                dayOfWeekOrdinal == DayOfWeekOrdinal.Last ? DateTime.DaysInMonth(startDate.Year, startDate.Month) : 1);
+            while (currentDate.Month == startDate.Month)
+            {
+                if (IsDayOfWeekMatched(new[] { dayOfWeek }, currentDate))
+                {
+                    if (dayOfWeekOrdinal == DayOfWeekOrdinal.Last)
+                    {
+                        if (currentDate.Day >= startDate.Day)
+                        {
+                            yield return currentDate.Day;
+                        }
+                        break;
+                    }
+                    ordinal++;
+                    if (ordinal == (int) dayOfWeekOrdinal || dayOfWeekOrdinal == DayOfWeekOrdinal.None)
+                    {
+                        if (currentDate.Day >= startDate.Day)
+                        {
+                            yield return currentDate.Day;
+                        }
+                        break;
+                    }
+                }
+                currentDate = currentDate.AddDays(dayOfWeekOrdinal == DayOfWeekOrdinal.Last ? -1 : 1);
+            }
         }
 
         internal enum RecurrenceType

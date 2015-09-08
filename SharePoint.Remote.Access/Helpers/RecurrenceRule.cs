@@ -11,13 +11,13 @@ namespace SharePoint.Remote.Access.Helpers
         {
         }
 
-        public DateTime StartDate { get; internal set; }
-        public DateTime? EndDate { get; internal set; }
+        public DateTime StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
         public bool HasEnd
         {
             get { return NumberOfOccurrences > 0 || EndDate.HasValue; }
         }
-        public int NumberOfOccurrences { get; internal set; }
+        public int NumberOfOccurrences { get; set; }
 
         public IEnumerable<Occurrence> GetOccurrences(TimeSpan? startTime = null, TimeSpan? endTime = null)
         {
@@ -28,28 +28,23 @@ namespace SharePoint.Remote.Access.Helpers
                     : new TimeSpan(endTime.Value.Hours, endTime.Value.Minutes, endTime.Value.Seconds))
                 : /*new TimeSpan(start.Hours, start.Minutes, start.Seconds)*/new TimeSpan(1, 0, 0, 0);
             int occurrenceCounter = 0;
-            DateTime startDate = StartDate.Date.Add(start);
-            if (StartDate > startDate)
-            {
-                startDate = StartDate;
-            }
+
             if (HasEnd)
             {
                 Occurrence occurrence = null;
-                while ((occurrence = GetNextOccurrence(startDate, start, end, occurrence)).Events.Length > 0)
+                while ((occurrence = GetNextOccurrence(occurrence, start, end)).Events.Length > 0)
                 {
                     occurrenceCounter++;
                     yield return occurrence;
-                    if (!EndDate.HasValue && NumberOfOccurrences <= occurrenceCounter)
+                    if (NumberOfOccurrences == occurrenceCounter)
                     {
                         break;
                     }
-                    //startDate = occurrence.LastEvent.Start;
                 }
             }
         }
 
-        protected abstract Occurrence GetNextOccurrence(DateTime startDate, TimeSpan startTime, TimeSpan endTime, Occurrence lastOccurrence);
+        protected abstract Occurrence GetNextOccurrence(Occurrence lastOccurrence, TimeSpan startTime, TimeSpan endTime);
     }
 
     [Serializable]
@@ -58,7 +53,7 @@ namespace SharePoint.Remote.Access.Helpers
         internal IntervalRecurrenceRule()
         {
         }
-        public int Interval { get; internal set; }
+        public int Interval { get; set; }
     }
 
     public sealed class DyilyRecurrenceRule : IntervalRecurrenceRule
@@ -67,11 +62,20 @@ namespace SharePoint.Remote.Access.Helpers
         {
         }
 
-        protected override Occurrence GetNextOccurrence(DateTime startDate, TimeSpan startTime, TimeSpan endTime, Occurrence lastOccurrence)
+        protected override Occurrence GetNextOccurrence(Occurrence lastOccurrence, TimeSpan startTime, TimeSpan endTime)
         {
-            if (lastOccurrence != null)
+            DateTime startDate;
+            if (lastOccurrence != null && lastOccurrence.Events.Length > 0)
             {
-                startDate = lastOccurrence.FirstEvent.Start.Date.Add(startTime).AddDays(Interval);
+                startDate = lastOccurrence.LastEvent.Start.Date.Add(startTime).AddDays(Interval);
+            }
+            else
+            {
+                startDate = StartDate.Date.Add(startTime);
+                if (StartDate > startDate)
+                {
+                    startDate = StartDate;
+                }
             }
             var events = new List<RecurrentEvent>();
             if (!EndDate.HasValue || startDate <= EndDate.Value)
@@ -99,32 +103,109 @@ namespace SharePoint.Remote.Access.Helpers
     [Serializable]
     public sealed class WeeklyRecurrenceRule : IntervalRecurrenceRule
     {
-        internal WeeklyRecurrenceRule()
+        public DayOfWeek[] DaysOfWeek { get; set; }
+        public System.DayOfWeek FirstDayOfWeek { get; set; }
+
+        protected override Occurrence GetNextOccurrence(Occurrence lastOccurrence, TimeSpan startTime, TimeSpan endTime)
+        {
+            DateTime startDate;
+            if (lastOccurrence != null && lastOccurrence.Events.Length > 0)
+            {
+                startDate = lastOccurrence.LastEvent.Start.Date.Add(startTime);
+                int frequency = Interval;
+                if (frequency <= 1)
+                {
+                    while (startDate.DayOfWeek != FirstDayOfWeek)
+                    {
+                        startDate = startDate.AddDays(1);
+                    }
+                }
+                else
+                {
+                    while (frequency > 1)
+                    {
+                        startDate = startDate.AddDays(7);
+                        while (startDate.DayOfWeek != FirstDayOfWeek)
+                        {
+                            startDate = startDate.AddDays(1);
+                        }
+                        frequency--;
+                    }
+                }
+            }
+            else
+            {
+                startDate = StartDate.Date.Add(startTime);
+                if (StartDate > startDate)
+                {
+                    startDate = StartDate;
+                }
+            }
+            var events = new List<RecurrentEvent>();
+            do
+            {
+                if (EndDate.HasValue && startDate > EndDate.Value)
+                {
+                    break;
+                }
+                DateTime endDate = startDate.Date.Add(endTime);
+                if (startDate <= endDate)
+                {
+                    if (SPRecurrenceHelper.IsDayOfWeekMatched(DaysOfWeek, startDate))
+                    {
+                        if (EndDate.HasValue && endDate >= EndDate.Value)
+                        {
+                            events.Add(new RecurrentEvent(startDate, EndDate.Value));
+                        }
+                        else
+                        {
+                            events.Add(new RecurrentEvent(startDate, endDate));
+                        }
+                    }
+                }
+                startDate = startDate.AddDays(1);
+            } while (startDate.DayOfWeek != FirstDayOfWeek);
+            return new Occurrence
+            {
+                Events = events.ToArray()
+            };
+        }
+    }
+
+    [Serializable]
+    public sealed class MonthlyRecurrenceRule : IntervalRecurrenceRule
+    {
+        internal MonthlyRecurrenceRule()
         {
         }
 
-        public DayOfWeek[] DaysOfWeek { get; internal set; }
-        public System.DayOfWeek FirstDayOfWeek { get; internal set; }
+        public int DayOfMonth { get; set; }
 
-        protected override Occurrence GetNextOccurrence(DateTime startDate, TimeSpan startTime, TimeSpan endTime, Occurrence lastOccurrence)
+        protected override Occurrence GetNextOccurrence(Occurrence lastOccurrence, TimeSpan startTime, TimeSpan endTime)
         {
-            int countDaysOfWeek = 7;
-            if (lastOccurrence != null)
+            DateTime startDate;
+            if (lastOccurrence != null && lastOccurrence.Events.Length > 0)
             {
-                startDate = lastOccurrence.FirstEvent.Start.Date.Add(startTime).AddDays(countDaysOfWeek * Interval);
+                startDate = lastOccurrence.LastEvent.Start.Date.Add(startTime).AddMonths(Interval);
+                startDate = startDate.AddDays(-startDate.Day);
             }
+            else
+            {
+                startDate = StartDate.Date.Add(startTime);
+                if (StartDate > startDate)
+                {
+                    startDate = StartDate;
+                }
+            }
+
+            if (startDate.Day > DayOfMonth)
+            {
+                startDate = startDate.AddMonths(1);
+            }
+            startDate = startDate.AddDays(-startDate.Day + 1);
             var events = new List<RecurrentEvent>();
-
-            while (startDate.DayOfWeek == FirstDayOfWeek)
-            {
-                startDate = startDate.AddDays(1);
-            }
-
-            if (DaysOfWeek.Any(dayOfWeek => dayOfWeek == DayOfWeek.WeekendDay))
-            {
-
-            }
-
+            int daysInMonth = DateTime.DaysInMonth(startDate.Year, startDate.Month);
+            startDate = startDate.AddDays(((daysInMonth < DayOfMonth) ? daysInMonth : DayOfMonth) - 1);
             if (!EndDate.HasValue || startDate <= EndDate.Value)
             {
                 DateTime endDate = startDate.Date.Add(endTime);
@@ -148,33 +229,64 @@ namespace SharePoint.Remote.Access.Helpers
     }
 
     [Serializable]
-    public sealed class MonthlyRecurrenceRule : IntervalRecurrenceRule
-    {
-        internal MonthlyRecurrenceRule()
-        {
-        }
-        public int DayOfMonth { get; internal set; }
-
-
-        protected override Occurrence GetNextOccurrence(DateTime startDate, TimeSpan startTime, TimeSpan endTime, Occurrence lastOccurrence)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    [Serializable]
     public sealed class MonthlyByDayRecurrenceRule : IntervalRecurrenceRule
     {
         internal MonthlyByDayRecurrenceRule()
         {
         }
-        public DayOfWeek DayOfWeek { get; internal set; }
-        public DayOfWeekOrdinal DayOfWeekOrdinal { get; internal set; }
+        public DayOfWeek DayOfWeek { get; set; }
+        public DayOfWeekOrdinal DayOfWeekOrdinal { get; set; }
 
-
-        protected override Occurrence GetNextOccurrence(DateTime startDate, TimeSpan startTime, TimeSpan endTime, Occurrence lastOccurrence)
+        protected override Occurrence GetNextOccurrence(Occurrence lastOccurrence, TimeSpan startTime, TimeSpan endTime)
         {
-            throw new NotImplementedException();
+            DateTime startDate;
+            if (lastOccurrence != null && lastOccurrence.Events.Length > 0)
+            {
+                startDate = lastOccurrence.LastEvent.Start.Date.Add(startTime).AddMonths(Interval);
+                startDate = startDate.AddDays(1 - startDate.Day);
+            }
+            else
+            {
+                startDate = StartDate.Date.Add(startTime);
+                if (StartDate > startDate)
+                {
+                    startDate = StartDate;
+                }
+            }
+            var events = new List<RecurrentEvent>();
+            int[] days;
+            do
+            {
+                days = SPRecurrenceHelper.GetMatchedDays(startDate, DayOfWeekOrdinal, DayOfWeek).ToArray();
+                if (days.Length == 0)
+                {
+                    startDate = startDate.AddMonths(1).AddDays(1 - startDate.Day);
+                }
+            } while (days.Length == 0);
+
+            foreach (int day in days)
+            {
+                startDate = startDate.AddDays(day - startDate.Day);
+                if (!EndDate.HasValue || startDate <= EndDate.Value)
+                {
+                    DateTime endDate = startDate.Date.Add(endTime);
+                    if (startDate <= endDate)
+                    {
+                        if (EndDate.HasValue && endDate >= EndDate.Value)
+                        {
+                            events.Add(new RecurrentEvent(startDate, EndDate.Value));
+                        }
+                        else
+                        {
+                            events.Add(new RecurrentEvent(startDate, endDate));
+                        }
+                    }
+                }
+            }
+            return new Occurrence
+            {
+                Events = events.ToArray()
+            };
         }
     }
 
@@ -187,11 +299,51 @@ namespace SharePoint.Remote.Access.Helpers
         public int DayOfMonth { get; set; }
         public Month Month { get; set; }
 
-
-        protected override Occurrence GetNextOccurrence(DateTime startDate, TimeSpan startTime, TimeSpan endTime, Occurrence lastOccurrence)
+        protected override Occurrence GetNextOccurrence(Occurrence lastOccurrence, TimeSpan startTime, TimeSpan endTime)
         {
-            throw new NotImplementedException();
+            DateTime startDate;
+            if (lastOccurrence != null && lastOccurrence.Events.Length > 0)
+            {
+                startDate = lastOccurrence.LastEvent.Start.Date.Add(startTime).AddYears(Interval);
+                startDate = startDate.AddDays(-startDate.Day);
+            }
+            else
+            {
+                startDate = StartDate.Date.Add(startTime);
+                if (StartDate > startDate)
+                {
+                    startDate = StartDate;
+                }
+            }
+            if (startDate.Month > (int)Month || (startDate.Month == (int)Month && startDate.Day > DayOfMonth))
+            {
+                startDate = startDate.AddYears(1).AddMonths(-startDate.Month + (int)Month);
+            }
+            startDate = startDate.AddDays(1 - startDate.Day);
+            var events = new List<RecurrentEvent>();
+            int daysInMonth = DateTime.DaysInMonth(startDate.Year, startDate.Month);
+            startDate = startDate.AddDays(((daysInMonth < DayOfMonth) ? daysInMonth : DayOfMonth) - 1);
+            if (!EndDate.HasValue || startDate <= EndDate.Value)
+            {
+                DateTime endDate = startDate.Date.Add(endTime);
+                if (startDate <= endDate)
+                {
+                    if (EndDate.HasValue && endDate >= EndDate.Value)
+                    {
+                        events.Add(new RecurrentEvent(startDate, EndDate.Value));
+                    }
+                    else
+                    {
+                        events.Add(new RecurrentEvent(startDate, endDate));
+                    }
+                }
+            }
+            return new Occurrence
+            {
+                Events = events.ToArray()
+            };
         }
+
     }
 
     [Serializable]
@@ -200,12 +352,11 @@ namespace SharePoint.Remote.Access.Helpers
         internal YearlyByDayRecurrenceRule()
         {
         }
-        public DayOfWeek DayOfWeek { get; internal set; }
-        public DayOfWeekOrdinal DayOfWeekOrdinal { get; internal set; }
+        public DayOfWeek DayOfWeek { get; set; }
+        public DayOfWeekOrdinal DayOfWeekOrdinal { get; set; }
         public Month Month { get; internal set; }
 
-
-        protected override Occurrence GetNextOccurrence(DateTime startDate, TimeSpan startTime, TimeSpan endTime, Occurrence lastOccurrence)
+        protected override Occurrence GetNextOccurrence(Occurrence lastOccurrence, TimeSpan startTime, TimeSpan endTime)
         {
             throw new NotImplementedException();
         }
@@ -222,7 +373,7 @@ namespace SharePoint.Remote.Access.Helpers
         {
             get { return Events.LastOrDefault(); }
         }
-        public RecurrentEvent[] Events { get; internal set; }
+        public RecurrentEvent[] Events { get; set; }
     }
 
     [Serializable]

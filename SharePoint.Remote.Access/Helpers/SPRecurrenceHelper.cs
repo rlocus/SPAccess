@@ -169,26 +169,27 @@ namespace SharePoint.Remote.Access.Helpers
         public static bool IsDayOfWeekMatched(IEnumerable<DayOfWeek> dayOfWeeks, DateTime date)
         {
             if (dayOfWeeks == null) throw new ArgumentNullException("dayOfWeeks");
+            var dayOfWeekArray = dayOfWeeks as DayOfWeek[] ?? dayOfWeeks.ToArray();
+            if (dayOfWeekArray.Any(dayOfWeek => dayOfWeek == DayOfWeek.Day)) return true;
             switch (date.DayOfWeek)
             {
                 case System.DayOfWeek.Sunday:
-                    return dayOfWeeks.Any(dayOfWeek => dayOfWeek == DayOfWeek.Sunday || dayOfWeek == DayOfWeek.WeekendDay);
+                    return dayOfWeekArray.Any(dayOfWeek => dayOfWeek == DayOfWeek.Sunday || dayOfWeek == DayOfWeek.WeekendDay);
                 case System.DayOfWeek.Monday:
-                    return dayOfWeeks.Any(dayOfWeek => dayOfWeek == DayOfWeek.Monday || dayOfWeek == DayOfWeek.Weekday);
+                    return dayOfWeekArray.Any(dayOfWeek => dayOfWeek == DayOfWeek.Monday || dayOfWeek == DayOfWeek.Weekday);
                 case System.DayOfWeek.Tuesday:
-                    return dayOfWeeks.Any(dayOfWeek => dayOfWeek == DayOfWeek.Tuesday || dayOfWeek == DayOfWeek.Weekday);
+                    return dayOfWeekArray.Any(dayOfWeek => dayOfWeek == DayOfWeek.Tuesday || dayOfWeek == DayOfWeek.Weekday);
                 case System.DayOfWeek.Wednesday:
-                    return dayOfWeeks.Any(dayOfWeek => dayOfWeek == DayOfWeek.Wednesday || dayOfWeek == DayOfWeek.Weekday);
+                    return dayOfWeekArray.Any(dayOfWeek => dayOfWeek == DayOfWeek.Wednesday || dayOfWeek == DayOfWeek.Weekday);
                 case System.DayOfWeek.Thursday:
-                    return dayOfWeeks.Any(dayOfWeek => dayOfWeek == DayOfWeek.Thursday || dayOfWeek == DayOfWeek.Weekday);
+                    return dayOfWeekArray.Any(dayOfWeek => dayOfWeek == DayOfWeek.Thursday || dayOfWeek == DayOfWeek.Weekday);
                 case System.DayOfWeek.Friday:
-                    return dayOfWeeks.Any(dayOfWeek => dayOfWeek == DayOfWeek.Friday || dayOfWeek == DayOfWeek.Weekday);
+                    return dayOfWeekArray.Any(dayOfWeek => dayOfWeek == DayOfWeek.Friday || dayOfWeek == DayOfWeek.Weekday);
                 case System.DayOfWeek.Saturday:
-                    return dayOfWeeks.Any(dayOfWeek => dayOfWeek == DayOfWeek.Saturday || dayOfWeek == DayOfWeek.WeekendDay);
+                    return dayOfWeekArray.Any(dayOfWeek => dayOfWeek == DayOfWeek.Saturday || dayOfWeek == DayOfWeek.WeekendDay);
             }
             return false;
         }
-
 
         public static DayOfWeek GetDayOfWeek(System.DayOfWeek dayOfWeek)
         {

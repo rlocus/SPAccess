@@ -7,10 +7,6 @@ namespace SharePoint.Remote.Access.Helpers
     [Serializable]
     public abstract class RecurrenceRule
     {
-        internal RecurrenceRule()
-        {
-        }
-
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public bool HasEnd
@@ -19,20 +15,34 @@ namespace SharePoint.Remote.Access.Helpers
         }
         public int NumberOfOccurrences { get; set; }
 
-        public IEnumerable<Occurrence> GetOccurrences(TimeSpan? startTime = null, TimeSpan? endTime = null)
+        public IEnumerable<Occurrence> GetOccurrences()
         {
-            TimeSpan start = startTime.HasValue ? new TimeSpan(startTime.Value.Hours, startTime.Value.Minutes, startTime.Value.Seconds) : new TimeSpan(0, 0, 0);
-            var end = endTime.HasValue
-                ? (start > endTime.Value
-                    ? new TimeSpan(start.Hours, start.Minutes, start.Seconds)
-                    : new TimeSpan(endTime.Value.Hours, endTime.Value.Minutes, endTime.Value.Seconds))
-                : /*new TimeSpan(start.Hours, start.Minutes, start.Seconds)*/new TimeSpan(1, 0, 0, 0);
-            int occurrenceCounter = 0;
+            TimeSpan startTime = StartDate.TimeOfDay;
+            TimeSpan endTime = EndDate.HasValue
+                ? (startTime >= EndDate.Value.TimeOfDay
+                    ? startTime
+                    : EndDate.Value.TimeOfDay)
+                : new TimeSpan(1, 0, 0, 0);
+            return GetOccurrences(startTime, endTime);
+        }
 
+        public IEnumerable<Occurrence> GetOccurrences(TimeSpan endTime)
+        {
+            TimeSpan startTime = new TimeSpan(StartDate.Hour, StartDate.Minute, StartDate.Second);
+            return GetOccurrences(startTime, endTime);
+        }
+
+        public IEnumerable<Occurrence> GetOccurrences(TimeSpan startTime, TimeSpan endTime)
+        {
+            if (startTime > endTime)
+            {
+                throw new ArgumentException("endTime");
+            }
+            int occurrenceCounter = 0;
             if (HasEnd)
             {
                 Occurrence occurrence = null;
-                while ((occurrence = GetNextOccurrence(occurrence, start, end)).Events.Length > 0)
+                while ((occurrence = GetNextOccurrence(occurrence, startTime, endTime)).Events.Length > 0)
                 {
                     occurrenceCounter++;
                     yield return occurrence;
@@ -50,9 +60,6 @@ namespace SharePoint.Remote.Access.Helpers
     [Serializable]
     public abstract class IntervalRecurrenceRule : RecurrenceRule
     {
-        internal IntervalRecurrenceRule()
-        {
-        }
         public int Interval { get; set; }
     }
 
@@ -93,10 +100,7 @@ namespace SharePoint.Remote.Access.Helpers
                     }
                 }
             }
-            return new Occurrence
-            {
-                Events = events.ToArray()
-            };
+            return new Occurrence(events);
         }
     }
 
@@ -165,20 +169,13 @@ namespace SharePoint.Remote.Access.Helpers
                 }
                 startDate = startDate.AddDays(1);
             } while (startDate.DayOfWeek != FirstDayOfWeek);
-            return new Occurrence
-            {
-                Events = events.ToArray()
-            };
+            return new Occurrence(events);
         }
     }
 
     [Serializable]
     public sealed class MonthlyRecurrenceRule : IntervalRecurrenceRule
     {
-        internal MonthlyRecurrenceRule()
-        {
-        }
-
         public int DayOfMonth { get; set; }
 
         protected override Occurrence GetNextOccurrence(Occurrence lastOccurrence, TimeSpan startTime, TimeSpan endTime)
@@ -200,7 +197,7 @@ namespace SharePoint.Remote.Access.Helpers
 
             if (startDate.Day > DayOfMonth)
             {
-                startDate = startDate.AddMonths(1);
+                startDate = startDate.AddMonths(Interval);
             }
             startDate = startDate.AddDays(-startDate.Day + 1);
             var events = new List<RecurrentEvent>();
@@ -221,29 +218,25 @@ namespace SharePoint.Remote.Access.Helpers
                     }
                 }
             }
-            return new Occurrence
-            {
-                Events = events.ToArray()
-            };
+            return new Occurrence(events);
         }
     }
 
     [Serializable]
     public sealed class MonthlyByDayRecurrenceRule : IntervalRecurrenceRule
     {
-        internal MonthlyByDayRecurrenceRule()
-        {
-        }
         public DayOfWeek DayOfWeek { get; set; }
         public DayOfWeekOrdinal DayOfWeekOrdinal { get; set; }
 
         protected override Occurrence GetNextOccurrence(Occurrence lastOccurrence, TimeSpan startTime, TimeSpan endTime)
         {
+            int[] days;
             DateTime startDate;
             if (lastOccurrence != null && lastOccurrence.Events.Length > 0)
             {
                 startDate = lastOccurrence.LastEvent.Start.Date.Add(startTime).AddMonths(Interval);
                 startDate = startDate.AddDays(1 - startDate.Day);
+                days = SPRecurrenceHelper.GetMatchedDays(startDate, DayOfWeekOrdinal, DayOfWeek).ToArray();
             }
             else
             {
@@ -252,18 +245,14 @@ namespace SharePoint.Remote.Access.Helpers
                 {
                     startDate = StartDate;
                 }
-            }
-            var events = new List<RecurrentEvent>();
-            int[] days;
-            do
-            {
                 days = SPRecurrenceHelper.GetMatchedDays(startDate, DayOfWeekOrdinal, DayOfWeek).ToArray();
                 if (days.Length == 0)
                 {
-                    startDate = startDate.AddMonths(1).AddDays(1 - startDate.Day);
+                    startDate = startDate.AddMonths(Interval).AddDays(1 - startDate.Day);
+                    days = SPRecurrenceHelper.GetMatchedDays(startDate, DayOfWeekOrdinal, DayOfWeek).ToArray();
                 }
-            } while (days.Length == 0);
-
+            }
+            var events = new List<RecurrentEvent>();
             foreach (int day in days)
             {
                 startDate = startDate.AddDays(day - startDate.Day);
@@ -283,19 +272,13 @@ namespace SharePoint.Remote.Access.Helpers
                     }
                 }
             }
-            return new Occurrence
-            {
-                Events = events.ToArray()
-            };
+            return new Occurrence(events);
         }
     }
 
     [Serializable]
     public sealed class YearlyRecurrenceRule : IntervalRecurrenceRule
     {
-        internal YearlyRecurrenceRule()
-        {
-        }
         public int DayOfMonth { get; set; }
         public Month Month { get; set; }
 
@@ -314,11 +297,12 @@ namespace SharePoint.Remote.Access.Helpers
                 {
                     startDate = StartDate;
                 }
+                if (startDate.Month > (int)Month || (startDate.Month == (int)Month && startDate.Day > DayOfMonth))
+                {
+                    startDate = startDate.AddYears(Interval).AddMonths((int)Month - startDate.Month);
+                }
             }
-            if (startDate.Month > (int)Month || (startDate.Month == (int)Month && startDate.Day > DayOfMonth))
-            {
-                startDate = startDate.AddYears(1).AddMonths(-startDate.Month + (int)Month);
-            }
+
             startDate = startDate.AddDays(1 - startDate.Day);
             var events = new List<RecurrentEvent>();
             int daysInMonth = DateTime.DaysInMonth(startDate.Year, startDate.Month);
@@ -338,33 +322,71 @@ namespace SharePoint.Remote.Access.Helpers
                     }
                 }
             }
-            return new Occurrence
-            {
-                Events = events.ToArray()
-            };
+            return new Occurrence(events);
         }
-
     }
 
     [Serializable]
     public sealed class YearlyByDayRecurrenceRule : IntervalRecurrenceRule
     {
-        internal YearlyByDayRecurrenceRule()
-        {
-        }
         public DayOfWeek DayOfWeek { get; set; }
         public DayOfWeekOrdinal DayOfWeekOrdinal { get; set; }
         public Month Month { get; internal set; }
 
         protected override Occurrence GetNextOccurrence(Occurrence lastOccurrence, TimeSpan startTime, TimeSpan endTime)
         {
-            throw new NotImplementedException();
+            DateTime startDate;
+            if (lastOccurrence != null && lastOccurrence.Events.Length > 0)
+            {
+                startDate = lastOccurrence.LastEvent.Start.Date.Add(startTime).AddYears(Interval);
+                startDate = startDate.AddDays(1 - startDate.Day);
+            }
+            else
+            {
+                startDate = StartDate.Date.Add(startTime);
+                if (StartDate > startDate)
+                {
+                    startDate = StartDate;
+                }
+                if (startDate.Month > (int)Month)
+                {
+                    startDate = startDate.AddYears(Interval).AddMonths((int)Month - startDate.Month).AddDays(1 - startDate.Day);
+                }
+            }
+            var days = SPRecurrenceHelper.GetMatchedDays(startDate, DayOfWeekOrdinal, DayOfWeek).ToArray();
+            var events = new List<RecurrentEvent>();
+            foreach (int day in days)
+            {
+                startDate = startDate.AddDays(day - startDate.Day);
+                if (!EndDate.HasValue || startDate <= EndDate.Value)
+                {
+                    DateTime endDate = startDate.Date.Add(endTime);
+                    if (startDate <= endDate)
+                    {
+                        if (EndDate.HasValue && endDate >= EndDate.Value)
+                        {
+                            events.Add(new RecurrentEvent(startDate, EndDate.Value));
+                        }
+                        else
+                        {
+                            events.Add(new RecurrentEvent(startDate, endDate));
+                        }
+                    }
+                }
+            }
+            return new Occurrence(events);
         }
     }
 
     [Serializable]
     public sealed class Occurrence
     {
+        public Occurrence(IEnumerable<RecurrentEvent> events)
+        {
+            if (events == null) throw new ArgumentNullException("events");
+            Events = events.ToArray();
+        }
+
         public RecurrentEvent FirstEvent
         {
             get { return Events.FirstOrDefault(); }
@@ -373,7 +395,7 @@ namespace SharePoint.Remote.Access.Helpers
         {
             get { return Events.LastOrDefault(); }
         }
-        public RecurrentEvent[] Events { get; set; }
+        public RecurrentEvent[] Events { get; private set; }
     }
 
     [Serializable]
@@ -386,6 +408,11 @@ namespace SharePoint.Remote.Access.Helpers
         }
         public DateTime End { get; private set; }
         public DateTime Start { get; private set; }
+
+        public TimeSpan Duration
+        {
+            get { return (End - Start).Duration(); }
+        }
     }
 
     public enum Month

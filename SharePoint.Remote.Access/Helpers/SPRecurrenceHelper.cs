@@ -281,6 +281,7 @@ namespace SharePoint.Remote.Access.Helpers
                 XElement daily = repeat.ElementIgnoreCase(DailyTag);
                 if (daily != null)
                 {
+                    SetDay(daily);
                     if (IsWeekday)
                     {
                         Frequency = 1;
@@ -464,7 +465,7 @@ namespace SharePoint.Remote.Access.Helpers
                 {
                     try
                     {
-                        IsDay = Convert.ToBoolean(day, CultureInfo.InvariantCulture);
+                        IsDay = Convert.ToBoolean(day.Value, CultureInfo.InvariantCulture);
                     }
                     catch
                     {
@@ -474,12 +475,12 @@ namespace SharePoint.Remote.Access.Helpers
                 XAttribute weekendDay = recurrenceType.AttributeIgnoreCase("weekend_day");
                 if (weekendDay != null)
                 {
-                    IsWeekendDay = Convert.ToBoolean(weekendDay);
+                    IsWeekendDay = Convert.ToBoolean(weekendDay.Value);
                 }
                 XAttribute weekday = recurrenceType.AttributeIgnoreCase("weekday");
                 if (weekday != null)
                 {
-                    IsWeekday = Convert.ToBoolean(weekday);
+                    IsWeekday = Convert.ToBoolean(weekday.Value);
                 }
             }
 

@@ -44,7 +44,7 @@ namespace SharePoint.Client.Test
             //annually on a specific date, ends on a specific date:
             RecurrenceRule rule7 = SPRecurrenceHelper.ParseRule(DateTime.Now, DateTime.Now.AddYears(1), "<recurrence><rule><firstDayOfWeek>su</firstDayOfWeek><repeat><yearly yearFrequency='1' month='4' day='26' /></repeat><windowEnd>2012-04-26T20:00:00Z</windowEnd></rule></recurrence>");
             //Recurring annually on a specific day, ends after 10 occurrences:
-            RecurrenceRule rule8 = SPRecurrenceHelper.ParseRule(DateTime.Now, DateTime.Now.AddYears(80), "<recurrence><rule><firstDayOfWeek>su</firstDayOfWeek><repeat><yearlyByDay yearFrequency='1' tu='TRUE' weekdayOfMonth='first' month='4' /></repeat><repeatInstances>10</repeatInstances></rule></recurrence>");
+            RecurrenceRule rule8 = SPRecurrenceHelper.ParseRule(DateTime.Now, DateTime.Now.AddHours(2).AddYears(8), "<recurrence><rule><firstDayOfWeek>su</firstDayOfWeek><repeat><yearlyByDay yearFrequency='1' tu='TRUE' weekdayOfMonth='first' month='4' /></repeat><repeatInstances>10</repeatInstances></rule></recurrence>");
 
             var occurences8 = rule8.GetOccurrences().ToArray();
         }

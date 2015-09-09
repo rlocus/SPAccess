@@ -183,8 +183,7 @@ namespace SharePoint.Remote.Access.Helpers
             DateTime startDate;
             if (lastOccurrence != null)
             {
-                startDate = lastOccurrence.Start.Date.Add(startTime).AddMonths(Interval);
-                startDate = startDate.AddDays(1 - startDate.Day);
+                startDate = lastOccurrence.Start.Date.Add(startTime).AddDays(1 - lastOccurrence.Start.Day).AddMonths(Interval);
             }
             else
             {
@@ -195,11 +194,9 @@ namespace SharePoint.Remote.Access.Helpers
                 }
                 if (startDate.Day > DayOfMonth)
                 {
-                    startDate = startDate.AddMonths(1).AddDays(1 - startDate.Day);
+                    startDate = startDate.AddDays(1 - startDate.Day).AddMonths(1);
                 }
             }
-
-            //startDate = startDate.AddDays(-startDate.Day + 1);
             int daysInMonth = DateTime.DaysInMonth(startDate.Year, startDate.Month);
             startDate = startDate.AddDays(((daysInMonth < DayOfMonth) ? daysInMonth : DayOfMonth) - 1);
             if (!EndDate.HasValue || startDate <= EndDate.Value)
@@ -232,8 +229,7 @@ namespace SharePoint.Remote.Access.Helpers
             DateTime startDate;
             if (lastOccurrence != null)
             {
-                startDate = lastOccurrence.Start.Date.Add(startTime).AddMonths(Interval);
-                startDate = startDate.AddDays(1 - startDate.Day);
+                startDate = lastOccurrence.Start.Date.Add(startTime).AddDays(1 - lastOccurrence.Start.Day).AddMonths(Interval);
                 days = SPRecurrenceHelper.GetMatchedDays(startDate, DayOfWeekOrdinal, DayOfWeek).ToArray();
             }
             else
@@ -246,7 +242,7 @@ namespace SharePoint.Remote.Access.Helpers
                 days = SPRecurrenceHelper.GetMatchedDays(startDate, DayOfWeekOrdinal, DayOfWeek).ToArray();
                 if (days.Length == 0)
                 {
-                    startDate = startDate.AddMonths(1).AddDays(1 - startDate.Day);
+                    startDate = startDate.AddDays(1 - startDate.Day).AddMonths(1);
                     days = SPRecurrenceHelper.GetMatchedDays(startDate, DayOfWeekOrdinal, DayOfWeek).ToArray();
                 }
             }
@@ -280,8 +276,7 @@ namespace SharePoint.Remote.Access.Helpers
             DateTime startDate;
             if (lastOccurrence != null)
             {
-                startDate = lastOccurrence.Start.Date.Add(startTime).AddYears(Interval);
-                startDate = startDate.AddDays(-startDate.Day);
+                startDate = lastOccurrence.Start.Date.Add(startTime).AddDays(1 - lastOccurrence.Start.Day).AddYears(Interval);
             }
             else
             {
@@ -292,14 +287,11 @@ namespace SharePoint.Remote.Access.Helpers
                 }
                 if (startDate.Month > (int)Month || (startDate.Month == (int)Month && startDate.Day > DayOfMonth))
                 {
-                    startDate = startDate.AddYears(1).AddMonths((int)Month - startDate.Month);
+                    startDate = startDate.AddMonths((int)Month - startDate.Month).AddYears(1);
                 }
             }
-
-            startDate = startDate.AddDays(1 - startDate.Day);
             int daysInMonth = DateTime.DaysInMonth(startDate.Year, startDate.Month);
             startDate = startDate.AddDays(((daysInMonth < DayOfMonth) ? daysInMonth : DayOfMonth) - 1);
-
             DateTime endDate = startDate.Date.Add(endTime);
             if (startDate <= endDate)
             {
@@ -327,8 +319,7 @@ namespace SharePoint.Remote.Access.Helpers
             DateTime startDate;
             if (lastOccurrence != null)
             {
-                startDate = lastOccurrence.Start.Date.Add(startTime).AddYears(Interval);
-                startDate = startDate.AddDays(1 - startDate.Day);
+                startDate = lastOccurrence.Start.Date.Add(startTime).AddDays(1 - lastOccurrence.Start.Day).AddYears(Interval);
             }
             else
             {
@@ -339,14 +330,13 @@ namespace SharePoint.Remote.Access.Helpers
                 }
                 if (startDate.Month > (int)Month)
                 {
-                    startDate = startDate.AddYears(1).AddMonths((int)Month - startDate.Month).AddDays(1 - startDate.Day);
+                    startDate = startDate.AddDays(1 - startDate.Day).AddMonths((int)Month - startDate.Month).AddYears(1);
                 }
             }
             var days = SPRecurrenceHelper.GetMatchedDays(startDate, DayOfWeekOrdinal, DayOfWeek).ToArray();
             foreach (int day in days)
             {
-                startDate = startDate.AddDays(day - startDate.Day);
-                DateTime endDate = startDate.Date.Add(endTime);
+                DateTime endDate = startDate.Date.Add(endTime).AddDays(day - startDate.Day);
                 if (startDate <= endDate)
                 {
                     if (EndDate.HasValue && endDate >= EndDate.Value)

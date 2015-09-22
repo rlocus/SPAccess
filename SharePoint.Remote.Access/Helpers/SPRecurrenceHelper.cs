@@ -18,7 +18,7 @@ namespace SharePoint.Remote.Access.Helpers
                 switch (ruleParser.Type)
                 {
                     case RecurrenceType.Daily:
-                        var dyilyRecurrenceRule = new DyilyRecurrenceRule {IsWeekday = ruleParser.IsWeekday};
+                        var dyilyRecurrenceRule = new DyilyRecurrenceRule { IsWeekday = ruleParser.IsWeekday };
                         recurrenceRule = dyilyRecurrenceRule;
                         break;
                     case RecurrenceType.Weekly:
@@ -211,7 +211,7 @@ namespace SharePoint.Remote.Access.Helpers
                         break;
                     }
                     ordinal++;
-                    if (ordinal == (int) dayOfWeekOrdinal || dayOfWeekOrdinal == DayOfWeekOrdinal.None)
+                    if (ordinal == (int)dayOfWeekOrdinal || dayOfWeekOrdinal == DayOfWeekOrdinal.None)
                     {
                         if (currentDate.Day >= startDate.Day)
                         {
@@ -256,7 +256,7 @@ namespace SharePoint.Remote.Access.Helpers
 
             public int? Frequency { get; private set; }
 
-            public int? RepeatInstances { get; private set; }
+            public int? RepeatInstances { get; }
 
             public bool IsDay { get; private set; }
 

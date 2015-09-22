@@ -9,10 +9,7 @@ namespace SharePoint.Remote.Access.Helpers
     {
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
-        public bool HasEnd
-        {
-            get { return NumberOfOccurrences > 0 || EndDate.HasValue; }
-        }
+        public bool HasEnd => NumberOfOccurrences > 0 || EndDate.HasValue;
         public int NumberOfOccurrences { get; set; }
         public int Interval { get; set; }
 
@@ -272,10 +269,9 @@ namespace SharePoint.Remote.Access.Helpers
             else
             {
                 startDate = StartDate.Date.Add(startTime);
-                if (StartDate > startDate)
-                {
-                    startDate = StartDate;
-                }
+                startDate = StartDate > startDate
+                    ? StartDate.AddDays(1 - startDate.Day)
+                    : startDate.AddDays(1 - startDate.Day);
                 if (startDate.Month > (int)Month || (startDate.Month == (int)Month && startDate.Day > DayOfMonth))
                 {
                     startDate = startDate.AddDays(1 - startDate.Day).AddMonths((int)Month - startDate.Month).AddYears(1);
@@ -315,10 +311,9 @@ namespace SharePoint.Remote.Access.Helpers
             else
             {
                 startDate = StartDate.Date.Add(startTime);
-                if (StartDate > startDate)
-                {
-                    startDate = StartDate;
-                }
+                startDate = StartDate > startDate
+                    ? StartDate.AddDays(1 - startDate.Day)
+                    : startDate.AddDays(1 - startDate.Day);
                 if (startDate.Month > (int)Month)
                 {
                     startDate = startDate.AddDays(1 - startDate.Day).AddMonths((int)Month - startDate.Month).AddYears(1);
@@ -353,12 +348,9 @@ namespace SharePoint.Remote.Access.Helpers
             End = end;
         }
 
-        public DateTime End { get; private set; }
-        public DateTime Start { get; private set; }
-        public TimeSpan Duration
-        {
-            get { return (End - Start).Duration(); }
-        }
+        public DateTime End { get; }
+        public DateTime Start { get; }
+        public TimeSpan Duration => (End - Start).Duration();
     }
 
     public enum Month

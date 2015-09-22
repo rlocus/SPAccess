@@ -9,37 +9,48 @@ namespace SharePoint.Remote.Access.Caml
 {
     public sealed class CamlValue : CamlValue<object>
     {
-        public CamlValue(object value, FieldType type) : base(value, type)
+        public CamlValue(object value, FieldType type)
+            : base(value, type)
         {
         }
 
-        public CamlValue(string existingValue) : base(existingValue)
+        public CamlValue(string existingValue)
+            : base(existingValue)
         {
         }
 
-        public CamlValue(XElement existingValue) : base(existingValue)
+        public CamlValue(XElement existingValue)
+            : base(existingValue)
         {
         }
-
         public static NowDateCamlValue Now => new NowDateCamlValue();
+
         public static TodayDateCamlValue Today => new TodayDateCamlValue();
+
         public static DayDateCamlValue Day => new DayDateCamlValue();
+
         public static WeekDateCamlValue Week => new WeekDateCamlValue();
+
         public static MonthDateCamlValue Month => new MonthDateCamlValue();
+
         public static YearDateCamlValue Year => new YearDateCamlValue();
+
         public static UserIdCamlValue UserId => new UserIdCamlValue();
 
         public abstract class DateCamlValue : CamlElement, ICamlSpecialValue
         {
-            protected DateCamlValue(string elementName) : base(elementName)
+            protected DateCamlValue(string elementName)
+                : base(elementName)
             {
             }
 
-            protected DateCamlValue(string elementName, string existingElement) : base(elementName, existingElement)
+            protected DateCamlValue(string elementName, string existingElement)
+                : base(elementName, existingElement)
             {
             }
 
-            protected DateCamlValue(string elementName, XElement existingElement) : base(elementName, existingElement)
+            protected DateCamlValue(string elementName, XElement existingElement)
+                : base(elementName, existingElement)
             {
             }
 
@@ -54,7 +65,7 @@ namespace SharePoint.Remote.Access.Caml
 
             internal static DateCamlValue GetValue(XElement existingDateCamlValue)
             {
-                var tag = existingDateCamlValue.Name.LocalName;
+                string tag = existingDateCamlValue.Name.LocalName;
                 if (string.Equals(tag, NowDateCamlValue.NowTag, StringComparison.OrdinalIgnoreCase))
                 {
                     return new NowDateCamlValue(existingDateCamlValue);
@@ -79,7 +90,7 @@ namespace SharePoint.Remote.Access.Caml
                 {
                     return new YearDateCamlValue(existingDateCamlValue);
                 }
-                throw new NotSupportedException(nameof(tag));
+                throw new NotSupportedException("tag");
             }
         }
 
@@ -87,15 +98,18 @@ namespace SharePoint.Remote.Access.Caml
         {
             internal const string NowTag = "Now";
 
-            internal NowDateCamlValue() : base(NowTag)
+            internal NowDateCamlValue()
+                : base(NowTag)
             {
             }
 
-            internal NowDateCamlValue(string existingElement) : base(NowTag, existingElement)
+            internal NowDateCamlValue(string existingElement)
+                : base(NowTag, existingElement)
             {
             }
 
-            internal NowDateCamlValue(XElement existingElement) : base(NowTag, existingElement)
+            internal NowDateCamlValue(XElement existingElement)
+                : base(NowTag, existingElement)
             {
             }
         }
@@ -105,15 +119,18 @@ namespace SharePoint.Remote.Access.Caml
             internal const string TodayTag = "Today";
             internal const string OffsetAttr = "Offset";
 
-            internal TodayDateCamlValue() : base(TodayTag)
+            internal TodayDateCamlValue()
+                : base(TodayTag)
             {
             }
 
-            internal TodayDateCamlValue(string existingElement) : base(TodayTag, existingElement)
+            internal TodayDateCamlValue(string existingElement)
+                : base(TodayTag, existingElement)
             {
             }
 
-            internal TodayDateCamlValue(XElement existingElement) : base(TodayTag, existingElement)
+            internal TodayDateCamlValue(XElement existingElement)
+                : base(TodayTag, existingElement)
             {
             }
 
@@ -143,15 +160,18 @@ namespace SharePoint.Remote.Access.Caml
         {
             internal const string DayTag = "Day";
 
-            internal DayDateCamlValue() : base(DayTag)
+            internal DayDateCamlValue()
+                : base(DayTag)
             {
             }
 
-            internal DayDateCamlValue(string existingElement) : base(DayTag, existingElement)
+            internal DayDateCamlValue(string existingElement)
+                : base(DayTag, existingElement)
             {
             }
 
-            internal DayDateCamlValue(XElement existingElement) : base(DayTag, existingElement)
+            internal DayDateCamlValue(XElement existingElement)
+                : base(DayTag, existingElement)
             {
             }
         }
@@ -160,15 +180,18 @@ namespace SharePoint.Remote.Access.Caml
         {
             internal const string WeekTag = "Week";
 
-            internal WeekDateCamlValue() : base(WeekTag)
+            internal WeekDateCamlValue()
+                : base(WeekTag)
             {
             }
 
-            internal WeekDateCamlValue(string existingElement) : base(WeekTag, existingElement)
+            internal WeekDateCamlValue(string existingElement)
+                : base(WeekTag, existingElement)
             {
             }
 
-            internal WeekDateCamlValue(XElement existingElement) : base(WeekTag, existingElement)
+            internal WeekDateCamlValue(XElement existingElement)
+                : base(WeekTag, existingElement)
             {
             }
         }
@@ -177,15 +200,18 @@ namespace SharePoint.Remote.Access.Caml
         {
             internal const string MonthTag = "Month";
 
-            internal MonthDateCamlValue() : base(MonthTag)
+            internal MonthDateCamlValue()
+                : base(MonthTag)
             {
             }
 
-            internal MonthDateCamlValue(string existingElement) : base(MonthTag, existingElement)
+            internal MonthDateCamlValue(string existingElement)
+                : base(MonthTag, existingElement)
             {
             }
 
-            internal MonthDateCamlValue(XElement existingElement) : base(MonthTag, existingElement)
+            internal MonthDateCamlValue(XElement existingElement)
+                : base(MonthTag, existingElement)
             {
             }
         }
@@ -194,15 +220,18 @@ namespace SharePoint.Remote.Access.Caml
         {
             internal const string YearTag = "Year";
 
-            internal YearDateCamlValue() : base(YearTag)
+            internal YearDateCamlValue()
+                : base(YearTag)
             {
             }
 
-            internal YearDateCamlValue(string existingElement) : base(YearTag, existingElement)
+            internal YearDateCamlValue(string existingElement)
+                : base(YearTag, existingElement)
             {
             }
 
-            internal YearDateCamlValue(XElement existingElement) : base(YearTag, existingElement)
+            internal YearDateCamlValue(XElement existingElement)
+                : base(YearTag, existingElement)
             {
             }
         }
@@ -211,15 +240,18 @@ namespace SharePoint.Remote.Access.Caml
         {
             internal const string UserIdTag = "UserID";
 
-            internal UserIdCamlValue() : base(UserIdTag)
+            internal UserIdCamlValue()
+                : base(UserIdTag)
             {
             }
 
-            internal UserIdCamlValue(string existingElement) : base(UserIdTag, existingElement)
+            internal UserIdCamlValue(string existingElement)
+                : base(UserIdTag, existingElement)
             {
             }
 
-            internal UserIdCamlValue(XElement existingElement) : base(UserIdTag, existingElement)
+            internal UserIdCamlValue(XElement existingElement)
+                : base(UserIdTag, existingElement)
             {
             }
 
@@ -294,7 +326,7 @@ namespace SharePoint.Remote.Access.Caml
                 case FieldType.WorkflowStatus:
                     return typeof(int);
             }
-            throw new NotSupportedException(nameof(Type));
+            throw new NotSupportedException("Type");
         }
 
         protected override void OnParsing(XElement existingValue)
@@ -386,6 +418,11 @@ namespace SharePoint.Remote.Access.Caml
                     el.Value = string.Concat(Convert.ToDateTime(Value).ToString("s"), "Z");
                     return el;
                 }
+            }
+            if (FieldType.Boolean == Type)
+            {
+                el.Value = (Convert.ToBoolean(Value) ? 1 : 0).ToString();
+                return el;
             }
             var value = Value as ICamlSpecialValue;
             if (value != null && value.IsSupported(Type))

@@ -66,7 +66,8 @@ namespace SharePoint.Remote.Access.Caml.Operators
         {
             if (operators != null)
             {
-                Operators = operators as Operator[] ?? operators.Where(op => op != null).Take(OperatorCount).ToArray();
+                operators = operators as Operator[] ?? operators.Where(op => op != null).ToArray();
+                Operators = operators.Take(OperatorCount).ToArray();
                 if (Operators.Length < OperatorCount)
                 {
                     throw new NotSupportedException($"Should be at least of {OperatorCount} operators.");
@@ -80,7 +81,7 @@ namespace SharePoint.Remote.Access.Caml.Operators
                     @operator.Parent = this;
                 }
 
-                foreach (var @operator in operators.Where(op => op != null).Skip(OperatorCount))
+                foreach (var @operator in operators.Skip(OperatorCount))
                 {
                     Combine(@operator);
                 }
@@ -114,7 +115,6 @@ namespace SharePoint.Remote.Access.Caml.Operators
 
         internal LogicalJoin CombineOr(params Operator[] combinedOperator)
         {
-            if (combinedOperator == null) throw new ArgumentNullException(nameof(combinedOperator));
             if (combinedOperator == null) throw new ArgumentNullException(nameof(combinedOperator));
 
             var childOperator = Operators.OfType<LogicalJoin>()

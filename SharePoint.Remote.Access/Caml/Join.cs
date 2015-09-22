@@ -143,7 +143,7 @@ namespace SharePoint.Remote.Access.Caml
                     return new InnerJoin(existingJoin);
                 }
             }
-            throw new NotSupportedException(nameof(tag));
+            throw new NotSupportedException("tag");
         }
 
         public IEnumerable<Join> InnerJoin(string fieldName, string listAlias)

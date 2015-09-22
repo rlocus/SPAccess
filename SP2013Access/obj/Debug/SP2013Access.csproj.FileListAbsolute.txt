@@ -31,7 +31,6 @@ C:\Users\rpohomenko\Documents\GitHubVisualStudio\SPAccess\SP2013Access\obj\Debug
 D:\Git\SP2013Access\bin\Debug\SP2013Access.exe
 D:\Git\SP2013Access\bin\Debug\SP2013Access.pdb
 D:\Git\SP2013Access\bin\Debug\Microsoft.SharePoint.Client.dll
-D:\Git\SP2013Access\bin\Debug\Microsoft.SharePoint.Client.Runtime.dll
 D:\Git\SP2013Access\bin\Debug\NLog.dll
 D:\Git\SP2013Access\bin\Debug\SharePoint.Remote.Access.dll
 D:\Git\SP2013Access\bin\Debug\SharePoint.Remote.Access.pdb

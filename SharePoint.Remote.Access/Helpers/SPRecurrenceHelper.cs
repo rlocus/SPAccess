@@ -12,7 +12,7 @@ namespace SharePoint.Remote.Access.Helpers
         public static RecurrenceRule ParseRule(DateTime startDate, DateTime endDate, string recurrenceData)
         {
             RecurrenceRule recurrenceRule = null;
-            var ruleParser = new RecurrenceRuleParser(recurrenceData);
+            var ruleParser = new SPRecurrenceRuleParser(recurrenceData);
             if (ruleParser.Type.HasValue)
             {
                 switch (ruleParser.Type)
@@ -234,7 +234,7 @@ namespace SharePoint.Remote.Access.Helpers
             YearlyByDay
         }
 
-        internal class RecurrenceRuleParser
+        internal class SPRecurrenceRuleParser
         {
             private const string RecurrenceTag = "recurrence";
             private const string RuleTag = "rule";
@@ -493,7 +493,7 @@ namespace SharePoint.Remote.Access.Helpers
                 }
             }
 
-            public RecurrenceRuleParser(string ruleXml)
+            public SPRecurrenceRuleParser(string ruleXml)
             {
                 XElement recurrence = XElement.Parse(ruleXml);
                 if (string.Equals(recurrence.Name.LocalName, RecurrenceTag, StringComparison.OrdinalIgnoreCase))

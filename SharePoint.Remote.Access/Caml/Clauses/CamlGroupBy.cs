@@ -11,34 +11,38 @@ namespace SharePoint.Remote.Access.Caml.Clauses
     {
         internal const string GroupByTag = "GroupBy";
         internal const string CollapseAttr = "Collapse";
+        internal const string GroupLimitAttr = "GroupLimit";
 
-        public CamlGroupBy(CamlFieldRef fieldRef, bool? collapse = null)
-            : this(new[] {fieldRef}, collapse)
+        public CamlGroupBy(CamlFieldRef fieldRef, bool? collapse = null, int? limit = 30)
+            : this(new[] { fieldRef }, collapse, limit)
         {
         }
 
-        public CamlGroupBy(IEnumerable<CamlFieldRef> fieldRefs, bool? collapse = null)
+        public CamlGroupBy(IEnumerable<CamlFieldRef> fieldRefs, bool? collapse = null, int? limit = 30)
             : base(GroupByTag)
         {
             if (fieldRefs == null) throw new ArgumentNullException(nameof(fieldRefs));
             FieldRefs = fieldRefs;
             Collapse = collapse;
+            Limit = limit;
         }
 
-        public CamlGroupBy(IEnumerable<string> fieldNames, bool? collapse = null)
+        public CamlGroupBy(IEnumerable<string> fieldNames, bool? collapse = null, int? limit = 30)
             : base(GroupByTag)
         {
             if (fieldNames == null) throw new ArgumentNullException(nameof(fieldNames));
-            FieldRefs = fieldNames.Select(fieldName => new CamlFieldRef {Name = fieldName});
+            FieldRefs = fieldNames.Select(fieldName => new CamlFieldRef { Name = fieldName });
             Collapse = collapse;
+            Limit = limit;
         }
 
-        public CamlGroupBy(IEnumerable<Guid> fieldIds, bool? collapse = null)
+        public CamlGroupBy(IEnumerable<Guid> fieldIds, bool? collapse = null, int? limit = 30)
             : base(GroupByTag)
         {
             if (fieldIds == null) throw new ArgumentNullException(nameof(fieldIds));
-            FieldRefs = fieldIds.Select(fieldId => new CamlFieldRef {Id = fieldId});
+            FieldRefs = fieldIds.Select(fieldId => new CamlFieldRef { Id = fieldId });
             Collapse = collapse;
+            Limit = limit;
         }
 
         public CamlGroupBy(string existingGroupBy)
@@ -52,12 +56,16 @@ namespace SharePoint.Remote.Access.Caml.Clauses
         }
 
         public bool? Collapse { get; private set; }
+
+        public int? Limit { get; private set; }
+
         public IEnumerable<CamlFieldRef> FieldRefs { get; private set; }
 
         public override XElement ToXElement()
         {
             var el = base.ToXElement();
-            if (Collapse != null) el.Add(new XAttribute(CollapseAttr, Collapse));
+            if (Collapse != null) el.Add(new XAttribute(CollapseAttr, Collapse.ToString().ToUpper()));
+            if (Limit != null) el.Add(new XAttribute(GroupLimitAttr, Limit));
             if (FieldRefs != null)
             {
                 foreach (var fieldRef in FieldRefs.Where(fieldRef => fieldRef != null))
@@ -72,25 +80,65 @@ namespace SharePoint.Remote.Access.Caml.Clauses
         {
             var existingFieldRefs = existingGroupBy.ElementsIgnoreCase(CamlFieldRef.FieldRefTag);
             FieldRefs = existingFieldRefs.Select(existingFieldRef => new CamlFieldRef(existingFieldRef));
-            var collaps = existingGroupBy.Attribute(CollapseAttr);
+            XAttribute collaps = existingGroupBy.Attribute(CollapseAttr);
             if (collaps != null)
             {
                 Collapse = Convert.ToBoolean(collaps.Value);
+            }
+            XAttribute limit = existingGroupBy.Attribute(GroupLimitAttr);
+            if (limit != null)
+            {
+                Limit = Convert.ToInt32(limit.Value);
+            }
+        }
+
+        public void Combine(CamlGroupBy groupBy)
+        {
+            if (groupBy != null)
+            {
+                var fieldRefs = new List<CamlFieldRef>();
+                if (FieldRefs != null)
+                {
+                    fieldRefs.AddRange(FieldRefs);
+                }
+                if (groupBy.Limit != null)
+                {
+                    Limit = Limit == null ? groupBy.Limit.Value : Math.Max(Limit.Value, groupBy.Limit.Value);
+                }
+                if (groupBy.Collapse != null)
+                {
+                    Collapse = Collapse == null ? groupBy.Collapse.Value : Collapse.Value | groupBy.Collapse.Value;
+                }
+
+                if (groupBy.FieldRefs != null)
+                {
+                    fieldRefs.AddRange(groupBy.FieldRefs);
+                }
+                this.FieldRefs = fieldRefs.ToArray();
             }
         }
 
         public static CamlGroupBy Combine(CamlGroupBy firstGroupBy, CamlGroupBy secondGroupBy)
         {
             CamlGroupBy groupBy = null;
-            var collapse = false;
+            bool collapse = false;
+            int? limit = null;
             var fieldRefs = new List<CamlFieldRef>();
             if (firstGroupBy?.FieldRefs != null)
             {
+                if (firstGroupBy.Limit != null)
+                {
+                    limit = firstGroupBy.Limit;
+                }
                 if (firstGroupBy.Collapse != null) collapse = firstGroupBy.Collapse.Value;
                 fieldRefs.AddRange(firstGroupBy.FieldRefs);
             }
             if (secondGroupBy?.FieldRefs != null)
             {
+                if (secondGroupBy.Limit != null)
+                {
+                    limit = limit != null ? Math.Max(secondGroupBy.Limit.Value, limit.Value) : secondGroupBy.Limit;
+                }
                 if (secondGroupBy.Collapse != null)
                 {
                     collapse = collapse | secondGroupBy.Collapse.Value;
@@ -99,7 +147,7 @@ namespace SharePoint.Remote.Access.Caml.Clauses
             }
             if (fieldRefs.Count > 0)
             {
-                groupBy = new CamlGroupBy(fieldRefs, collapse);
+                groupBy = new CamlGroupBy(fieldRefs, collapse, limit);
             }
             return groupBy;
         }

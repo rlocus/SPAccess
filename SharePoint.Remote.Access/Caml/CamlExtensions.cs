@@ -16,7 +16,7 @@ namespace SharePoint.Remote.Access.Caml
                 query.Where = new CamlWhere(operators.First());
                 operators = operators.Skip(1).ToArray();
             }
-            query.Where.And(operators);
+            query.Where = new CamlWhere(query.Where.And(operators).Operator);
         }
 
         public static void WhereAny(this Query query, params Operator[] operators)
@@ -27,13 +27,13 @@ namespace SharePoint.Remote.Access.Caml
                 query.Where = new CamlWhere(operators.First());
                 operators = operators.Skip(1).ToArray();
             }
-            query.Where.Or(operators);
+            query.Where = new CamlWhere(query.Where.Or(operators).Operator);
         }
 
         public static CamlWhere And(this CamlWhere firstWhere, CamlWhere secondWhere)
         {
-            if (firstWhere == null) throw new ArgumentNullException(nameof(firstWhere));
-            if (secondWhere == null) throw new ArgumentNullException(nameof(secondWhere));
+            if (firstWhere == null) throw new ArgumentNullException("firstWhere");
+            if (secondWhere == null) throw new ArgumentNullException("secondWhere");
             var logicalJoin = firstWhere.Operator as LogicalJoin;
             var @where = logicalJoin != null
                 ? new CamlWhere(logicalJoin.CombineAnd(secondWhere.Operator))
@@ -43,28 +43,24 @@ namespace SharePoint.Remote.Access.Caml
 
         public static CamlWhere Or(this CamlWhere where, params Operator[] operators)
         {
-            if (where == null) throw new ArgumentNullException(nameof(where));
+            if (where == null) throw new ArgumentNullException("where");
             if (operators.Length > 0)
             {
-                where = new CamlWhere(where.Operator);
-                foreach (var @operator in operators)
-                {
-                    if (@operator != null) @where.Operator.Or(@operator);
-                }
+                Operator @operator = operators.Where(op => op != null)
+                    .Aggregate(@where.Operator, (current, op) => current.Or(op));
+                where = new CamlWhere(@operator);
             }
             return where;
         }
 
         public static CamlWhere And(this CamlWhere where, params Operator[] operators)
         {
-            if (where == null) throw new ArgumentNullException(nameof(where));
+            if (where == null) throw new ArgumentNullException(nameof(@where));
             if (operators.Length > 0)
             {
-                where = new CamlWhere(where.Operator);
-                foreach (var @operator in operators)
-                {
-                    if (@operator != null) @where.Operator.And(@operator);
-                }
+                Operator @operator = operators.Where(op => op != null)
+                    .Aggregate(@where.Operator, (current, op) => current.And(op));
+                where = new CamlWhere(@operator);
             }
             return where;
         }
@@ -134,26 +130,69 @@ namespace SharePoint.Remote.Access.Caml
 
         public static CamlOrderBy ThenBy(this CamlOrderBy orderBy, CamlFieldRef fieldRef)
         {
-            if (orderBy == null) throw new ArgumentNullException(nameof(orderBy));
+            if (orderBy == null)
+            {
+                orderBy = new CamlOrderBy(fieldRef);
+            }
             var fields = new List<CamlFieldRef>(orderBy.FieldRefs) { fieldRef };
             return new CamlOrderBy(fields);
         }
 
-        public static CamlGroupBy ThenBy(this CamlGroupBy groupBy, Guid fieldId)
+        public static CamlGroupBy ThenBy(this CamlGroupBy groupBy, Guid fieldId, bool? collapse = null, int? limit = null)
         {
-            return groupBy.ThenBy(new CamlFieldRef { Id = fieldId, Ascending = false });
+            return groupBy.ThenBy(new CamlFieldRef { Id = fieldId, Ascending = false }, collapse, limit);
         }
 
-        public static CamlGroupBy ThenBy(this CamlGroupBy groupBy, string fieldName)
+        public static CamlGroupBy BeforeBy(this CamlGroupBy groupBy, Guid fieldId, bool? collapse = null, int? limit = null)
         {
-            return groupBy.ThenBy(new CamlFieldRef { Name = fieldName, Ascending = false });
+            return groupBy.BeforeBy(new CamlFieldRef { Id = fieldId, Ascending = false }, collapse, limit);
         }
 
-        public static CamlGroupBy ThenBy(this CamlGroupBy groupBy, CamlFieldRef fieldRef)
+        public static CamlGroupBy ThenBy(this CamlGroupBy groupBy, string fieldName, bool? collapse = null, int? limit = null)
         {
-            if (groupBy == null) throw new ArgumentNullException(nameof(groupBy));
+            return groupBy.ThenBy(new CamlFieldRef { Name = fieldName, Ascending = false }, collapse, limit);
+        }
+
+        public static CamlGroupBy BeforeBy(this CamlGroupBy groupBy, string fieldName, bool? collapse = null, int? limit = null)
+        {
+            return groupBy.BeforeBy(new CamlFieldRef { Name = fieldName, Ascending = false }, collapse, limit);
+        }
+
+        public static CamlGroupBy ThenBy(this CamlGroupBy groupBy, CamlFieldRef fieldRef, bool? collapse = null, int? limit = null)
+        {
+            if (groupBy == null)
+            {
+                return new CamlGroupBy(fieldRef, collapse, limit);
+            }
+            if (groupBy.Collapse != null)
+            {
+                collapse = collapse == null ? groupBy.Collapse.Value : collapse.Value | groupBy.Collapse.Value;
+            }
+            if (groupBy.Limit != null)
+            {
+                limit = limit == null ? groupBy.Limit.Value : Math.Max(limit.Value, groupBy.Limit.Value);
+            }
             var fields = new List<CamlFieldRef>(groupBy.FieldRefs) { fieldRef };
-            return new CamlGroupBy(fields, groupBy.Collapse);
+            return new CamlGroupBy(fields, collapse, limit);
+        }
+
+        public static CamlGroupBy BeforeBy(this CamlGroupBy groupBy, CamlFieldRef fieldRef, bool? collapse = null, int? limit = null)
+        {
+            if (groupBy == null)
+            {
+                return new CamlGroupBy(fieldRef, collapse, limit);
+            }
+            if (groupBy.Collapse != null)
+            {
+                collapse = collapse == null ? groupBy.Collapse.Value : collapse.Value | groupBy.Collapse.Value;
+            }
+            if (groupBy.Limit != null)
+            {
+                limit = limit == null ? groupBy.Limit.Value : Math.Max(limit.Value, groupBy.Limit.Value);
+            }
+            var fields = new List<CamlFieldRef> { fieldRef };
+            fields.AddRange(groupBy.FieldRefs);
+            return new CamlGroupBy(fields, collapse, limit);
         }
 
         public static JoinsCamlElement Join(this JoinsCamlElement camlJoins, params Join[] joins)

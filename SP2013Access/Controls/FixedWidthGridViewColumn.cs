@@ -16,7 +16,7 @@ namespace SP2013Access.Controls
         private static object OnCoerceWidth(DependencyObject o, object baseValue)
         {
             var fwc = o as FixedWidthGridViewColumn;
-            return fwc != null ? fwc.FixedWidth : 0.0;
+            return fwc?.FixedWidth ?? 0.0;
         }
 
         #endregion

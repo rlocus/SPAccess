@@ -14,7 +14,7 @@ namespace SP2013Access.ViewModels
         public SPSiteFieldCollectionViewModel(SPClientWeb web, SPWebViewModel parent)
             : this(parent, true)
         {
-            if (web == null) throw new ArgumentNullException("web");
+            if (web == null) throw new ArgumentNullException(nameof(web));
             _web = web;
         }
 
@@ -26,27 +26,11 @@ namespace SP2013Access.ViewModels
         {
         }
 
-        public override string ID
-        {
-            get { return string.Format("SiteFieldCollection_{0}", _web.Web.Id); }
-        }
+        public override string ID => $"SiteFieldCollection_{_web.Web.Id}";
 
-        public override ImageSource ImageSource
-        {
-            get { return new BitmapImage(new Uri("pack://application:,,,/images/SiteColumn.png")); }
-        }
+        public override ImageSource ImageSource => new BitmapImage(new Uri("pack://application:,,,/images/SiteColumn.png"));
 
-        public override string Name
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(base.Name))
-                {
-                    return "Fields";
-                }
-                return base.Name;
-            }
-        }
+        public override string Name => string.IsNullOrEmpty(base.Name) ? "Fields" : base.Name;
 
         protected override IPromise<object, Exception> LoadChildrenAsync()
         {

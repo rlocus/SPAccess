@@ -1,4 +1,5 @@
-﻿using System.Collections.Specialized;
+﻿using System.Collections;
+using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -9,16 +10,15 @@ namespace SP2013Access.Controls
     {
         private ScrollViewer _scrollViewer;
 
-        protected override void OnItemsSourceChanged(System.Collections.IEnumerable oldValue, System.Collections.IEnumerable newValue)
+        protected override void OnItemsSourceChanged(IEnumerable oldValue, IEnumerable newValue)
         {
             base.OnItemsSourceChanged(oldValue, newValue);
 
-            if (oldValue as INotifyCollectionChanged != null)
-                (oldValue as INotifyCollectionChanged).CollectionChanged -= ItemsCollectionChanged;
+            if (oldValue is INotifyCollectionChanged)
+                ((INotifyCollectionChanged) oldValue).CollectionChanged -= ItemsCollectionChanged;
 
-            if (newValue as INotifyCollectionChanged == null) return;
-
-            (newValue as INotifyCollectionChanged).CollectionChanged += ItemsCollectionChanged;
+            if (!(newValue is INotifyCollectionChanged)) return;
+            ((INotifyCollectionChanged) newValue).CollectionChanged += ItemsCollectionChanged;
         }
 
         public override void OnApplyTemplate()
@@ -29,12 +29,11 @@ namespace SP2013Access.Controls
             _scrollViewer = RecursiveVisualChildFinder<ScrollViewer>(this) as ScrollViewer;
         }
 
-        void ItemsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        private void ItemsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             ResizeListViewColumnsToContent();
 
             if (_scrollViewer == null) return;
-            //if (!_scrollViewer.VerticalOffset.Equals(_scrollViewer.ScrollableHeight)) return;
             UpdateLayout();
             _scrollViewer.ScrollToBottom();
         }
@@ -44,12 +43,12 @@ namespace SP2013Access.Controls
             var child = VisualTreeHelper.GetChild(rootObject, 0);
             if (child == null) return null;
 
-            return child.GetType() == typeof(T) ? child : RecursiveVisualChildFinder<T>(child);
+            return child.GetType() == typeof (T) ? child : RecursiveVisualChildFinder<T>(child);
         }
 
         private void ResizeListViewColumnsToContent()
         {
-            var gridView = this.View as GridView;
+            var gridView = View as GridView;
             if (gridView != null)
             {
                 foreach (var column in gridView.Columns)

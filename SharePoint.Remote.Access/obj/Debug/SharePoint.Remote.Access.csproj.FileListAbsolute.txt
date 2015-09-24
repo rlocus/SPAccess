@@ -5,7 +5,6 @@ D:\Проекты\SPAccess\SharePoint.Remote.Access\obj\Debug\SharePoint.Remote.
 D:\Проекты\SPAccess\SharePoint.Remote.Access\obj\Debug\SharePoint.Remote.Access.pdb
 D:\Git\SharePoint.Remote.Access\bin\Debug\SharePoint.Remote.Access.dll
 D:\Git\SharePoint.Remote.Access\bin\Debug\SharePoint.Remote.Access.pdb
-D:\Git\SharePoint.Remote.Access\obj\Debug\SharePoint.Remote.Access.csprojResolveAssemblyReference.cache
 D:\Git\SharePoint.Remote.Access\obj\Debug\SharePoint.Remote.Access.dll
 D:\Git\SharePoint.Remote.Access\obj\Debug\SharePoint.Remote.Access.pdb
 C:\Users\rpohomenko\Documents\GitHubVisualStudio\SPAccess\SharePoint.Remote.Access\obj\Debug\SharePoint.Remote.Access.csprojResolveAssemblyReference.cache

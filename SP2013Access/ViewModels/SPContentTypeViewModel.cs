@@ -12,7 +12,7 @@ namespace SP2013Access.ViewModels
         public SPContentTypeViewModel(SPClientContentType contentType, TreeViewItemViewModel parent)
             : this(parent, false)
         {
-            if (contentType == null) throw new ArgumentNullException("contentType");
+            if (contentType == null) throw new ArgumentNullException(nameof(contentType));
             _contentType = contentType;
         }
 
@@ -24,27 +24,11 @@ namespace SP2013Access.ViewModels
         {
         }
 
-        public override string ID
-        {
-            get { return string.Format("ContentType_{0}", _contentType.ContentType.Id); }
-        }
+        public override string ID => $"ContentType_{_contentType.ContentType.Id}";
 
-        public override string Name
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(base.Name))
-                {
-                    return _contentType.ContentType.Name;
-                }
-                return base.Name;
-            }
-        }
+        public override string Name => string.IsNullOrEmpty(base.Name) ? _contentType.ContentType.Name : base.Name;
 
-        public override ImageSource ImageSource
-        {
-            get { return new BitmapImage(new Uri("pack://application:,,,/images/ContentType.png")); }
-        }
+        public override ImageSource ImageSource => new BitmapImage(new Uri("pack://application:,,,/images/ContentType.png"));
 
         protected override void LoadChildren()
         {

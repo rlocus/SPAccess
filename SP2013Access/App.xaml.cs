@@ -16,7 +16,6 @@ namespace SP2013Access
         {
             // ManualResetEvent acts as a block. It waits for a signal to be set.
             _resetSplashCreated = new ManualResetEvent(false);
-
             // Create a new thread for the splash screen to run on
             _splashThread = new Thread(ShowSplash);
             _splashThread.SetApartmentState(ApartmentState.STA);
@@ -40,6 +39,12 @@ namespace SP2013Access
             // Now that the window is created, allow the rest of the startup to run
             _resetSplashCreated.Set();
             Dispatcher.Run();
+        }
+
+        protected override void OnExit(ExitEventArgs e)
+        {
+            base.OnExit(e);
+            _resetSplashCreated.Dispose();
         }
     }
 }

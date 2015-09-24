@@ -14,7 +14,7 @@ namespace SP2013Access.ViewModels
         public SPWebCollectionViewModel(SPClientWeb web, SPWebViewModel parent)
             : this(parent, true)
         {
-            if (web == null) throw new ArgumentNullException("web");
+            if (web == null) throw new ArgumentNullException(nameof(web));
             _web = web;
         }
 
@@ -26,15 +26,9 @@ namespace SP2013Access.ViewModels
         {
         }
 
-        public override string ID
-        {
-            get { return string.Format("WebCollection_{0}", _web.Web.Id); }
-        }
+        public override string ID => $"WebCollection_{_web.Web.Id}";
 
-        public override ImageSource ImageSource
-        {
-            get { return new BitmapImage(new Uri("pack://application:,,,/images/SubSite.png")); }
-        }
+        public override ImageSource ImageSource => new BitmapImage(new Uri("pack://application:,,,/images/SubSite.png"));
 
         public override string Name
         {
@@ -54,7 +48,7 @@ namespace SP2013Access.ViewModels
             promise.Done(() =>
             {
                 var webs = _web.GetWebs();
-                Name = string.Format("Webs ({0})", webs.Length);
+                Name = $"Webs ({webs.Length})";
                 foreach (var web in webs.OrderBy(w => w.Web.Title))
                 {
                     var w = web;

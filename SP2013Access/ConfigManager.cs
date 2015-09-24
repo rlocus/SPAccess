@@ -63,7 +63,7 @@ namespace SP2013Access
         {
             var config = OpenAndRead(Constants.CONFIG_FILENAME);
 
-            if (config != null && config.RecentSites != null)
+            if (config?.RecentSites != null)
             {
                 RecentSites.AddRange(config.RecentSites);
             }

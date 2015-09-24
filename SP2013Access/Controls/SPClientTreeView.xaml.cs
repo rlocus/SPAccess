@@ -42,7 +42,7 @@ namespace SP2013Access.Controls
             if (menuItem != null)
             {
                 var treeViewItemViewModel = (menuItem.DataContext) as TreeViewItemViewModel;
-                if (treeViewItemViewModel != null) treeViewItemViewModel.Refresh();
+                treeViewItemViewModel?.Refresh();
             }
         }
 

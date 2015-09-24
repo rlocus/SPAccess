@@ -11,7 +11,7 @@ namespace SP2013Access.Controls
     {
         public static string GetWidth(DependencyObject obj)
         {
-            return (string) obj.GetValue(WidthProperty);
+            return (string)obj.GetValue(WidthProperty);
         }
 
         public static void SetWidth(DependencyObject obj, string value)
@@ -21,7 +21,7 @@ namespace SP2013Access.Controls
 
         public static bool GetEnabled(DependencyObject obj)
         {
-            return (bool) obj.GetValue(EnabledProperty);
+            return (bool)obj.GetValue(EnabledProperty);
         }
 
         public static void SetEnabled(DependencyObject obj, bool value)
@@ -44,7 +44,6 @@ namespace SP2013Access.Controls
             }
 
             public string Width { get; set; }
-
             public bool IsStatic => StaticWidth >= 0;
 
             public double StaticWidth
@@ -62,7 +61,7 @@ namespace SP2013Access.Controls
                 {
                     if (!IsStatic)
                     {
-                        return Mulitplier*100;
+                        return Mulitplier * 100;
                     }
                     return 0;
                 }
@@ -93,7 +92,7 @@ namespace SP2013Access.Controls
                 }
                 else
                 {
-                    var width = allowedSpace*(Percentage/totalPercentage);
+                    var width = allowedSpace * (Percentage / totalPercentage);
                     _element.Width = width;
                 }
             }
@@ -106,13 +105,13 @@ namespace SP2013Access.Controls
         /// <summary>
         ///     ListViewResizeBehavior class that gets attached to the ListView control
         /// </summary>
-        public class ListViewResizeBehavior
+        public class ListViewResizeBehavior : IDisposable
         {
             private const int Margin = 25;
             private const long RefreshTime = Timeout.Infinite;
             private const long Delay = 500;
             private readonly ListView _element;
-            private readonly Timer _timer;
+            private Timer _timer;
 
             public ListViewResizeBehavior(ListView element)
             {
@@ -200,6 +199,27 @@ namespace SP2013Access.Controls
                 }
                 return totalWidth;
             }
+
+            protected virtual void Dispose(bool disposing)
+            {
+                if (disposing && _timer != null)
+                {
+                    _timer.Dispose();
+                    _timer = null;
+                }
+            }
+
+            public void Dispose()
+            {
+                Dispose(true);
+                GC.SuppressFinalize(this);
+            }
+
+            ~ListViewResizeBehavior()
+            {
+                // Finalizer calls Dispose(false)
+                Dispose(false);
+            }
         }
 
         #endregion
@@ -207,21 +227,21 @@ namespace SP2013Access.Controls
         #region DependencyProperties
 
         public static readonly DependencyProperty WidthProperty =
-            DependencyProperty.RegisterAttached("Width", typeof (string), typeof (GridViewColumnResize),
+            DependencyProperty.RegisterAttached("Width", typeof(string), typeof(GridViewColumnResize),
                 new PropertyMetadata(OnSetWidthCallback));
 
         public static readonly DependencyProperty GridViewColumnResizeBehaviorProperty =
             DependencyProperty.RegisterAttached("GridViewColumnResizeBehavior",
-                typeof (GridViewColumnResizeBehavior), typeof (GridViewColumnResize),
+                typeof(GridViewColumnResizeBehavior), typeof(GridViewColumnResize),
                 null);
 
         public static readonly DependencyProperty EnabledProperty =
-            DependencyProperty.RegisterAttached("Enabled", typeof (bool), typeof (GridViewColumnResize),
+            DependencyProperty.RegisterAttached("Enabled", typeof(bool), typeof(GridViewColumnResize),
                 new PropertyMetadata(OnSetEnabledCallback));
 
         public static readonly DependencyProperty ListViewResizeBehaviorProperty =
             DependencyProperty.RegisterAttached("ListViewResizeBehaviorProperty",
-                typeof (ListViewResizeBehavior), typeof (GridViewColumnResize), null);
+                typeof(ListViewResizeBehavior), typeof(GridViewColumnResize), null);
 
         #endregion
 
@@ -248,7 +268,7 @@ namespace SP2013Access.Controls
             if (element != null)
             {
                 var behavior = GetOrCreateBehavior(element);
-                behavior.Enabled = (bool) e.NewValue;
+                behavior.Enabled = (bool)e.NewValue;
             }
             else
             {

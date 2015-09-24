@@ -14,7 +14,7 @@ namespace SP2013Access.ViewModels
         public SPFieldCollectionViewModel(SPClientList list, SPListViewModel parent)
             : this(parent, true)
         {
-            if (list == null) throw new ArgumentNullException("list");
+            if (list == null) throw new ArgumentNullException(nameof(list));
             _list = list;
         }
 
@@ -26,27 +26,11 @@ namespace SP2013Access.ViewModels
         {
         }
 
-        public override string ID
-        {
-            get { return string.Format("FieldCollection_{0}_{1}", _list.ClientWeb.Web.Id, _list.List.Id); }
-        }
+        public override string ID => $"FieldCollection_{_list.ClientWeb.Web.Id}_{_list.List.Id}";
 
-        public override ImageSource ImageSource
-        {
-            get { return new BitmapImage(new Uri("pack://application:,,,/images/SiteColumn.png")); }
-        }
+        public override ImageSource ImageSource => new BitmapImage(new Uri("pack://application:,,,/images/SiteColumn.png"));
 
-        public override string Name
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(base.Name))
-                {
-                    return "Fields";
-                }
-                return base.Name;
-            }
-        }
+        public override string Name => string.IsNullOrEmpty(base.Name) ? "Fields" : base.Name;
 
         protected override IPromise<object, Exception> LoadChildrenAsync()
         {
@@ -54,7 +38,7 @@ namespace SP2013Access.ViewModels
             promise.Done(() =>
             {
                 var fields = _list.GetFields();
-                Name = string.Format("Fields ({0})", fields.Length);
+                Name = $"Fields ({fields.Length})";
                 foreach (var field in fields.OrderBy(f => f.Field.Title))
                 {
                     var f = field;

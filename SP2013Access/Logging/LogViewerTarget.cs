@@ -11,11 +11,7 @@ namespace SP2013Access.Logging
         protected override void Write(LogEventInfo logEvent)
         {
             base.Write(logEvent);
-
-            if (TargetLogViewer != null)
-            {
-                TargetLogViewer.LogEntries.Add(logEvent);
-            }
+            TargetLogViewer?.LogEntries.Add(logEvent);
         }
     }
 }

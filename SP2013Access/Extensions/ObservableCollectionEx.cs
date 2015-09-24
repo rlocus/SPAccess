@@ -14,7 +14,7 @@ namespace SP2013Access.Extensions
     /// </summary>
     /// <typeparam name="T"></typeparam>
     [Serializable]
-    public class ObservableCollectionEx<T> : Collection<T>, INotifyCollectionChanged, INotifyPropertyChanged,
+    public sealed class ObservableCollectionEx<T> : Collection<T>, INotifyCollectionChanged, INotifyPropertyChanged,
         IDisposable
     {
         //-----------------------------------------------------

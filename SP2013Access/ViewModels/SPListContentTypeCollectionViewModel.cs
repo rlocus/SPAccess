@@ -14,7 +14,7 @@ namespace SP2013Access.ViewModels
         public SPListContentTypeCollectionViewModel(SPClientList list, SPListViewModel parent)
             : this(parent, true)
         {
-            if (list == null) throw new ArgumentNullException("list");
+            if (list == null) throw new ArgumentNullException(nameof(list));
             _list = list;
         }
 
@@ -26,27 +26,12 @@ namespace SP2013Access.ViewModels
         {
         }
 
-        public override string ID
-        {
-            get { return string.Format("ContentTypeCollection_{0}", _list.List.Id); }
-        }
+        public override string ID => $"ContentTypeCollection_{_list.List.Id}";
 
         public override ImageSource ImageSource
-        {
-            get { return new BitmapImage(new Uri("pack://application:,,,/images/ContentType.png")); }
-        }
+            => new BitmapImage(new Uri("pack://application:,,,/images/ContentType.png"));
 
-        public override string Name
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(base.Name))
-                {
-                    return "Content Types";
-                }
-                return base.Name;
-            }
-        }
+        public override string Name => string.IsNullOrEmpty(base.Name) ? "Content Types" : base.Name;
 
         protected override IPromise<object, Exception> LoadChildrenAsync()
         {
@@ -54,7 +39,7 @@ namespace SP2013Access.ViewModels
             promise.Done(() =>
             {
                 var contentTypes = _list.GetContentTypes();
-                Name = string.Format("Content Types ({0})", contentTypes.Length);
+                Name = $"Content Types ({contentTypes.Length})";
 
                 foreach (var contentType in contentTypes.OrderBy(ct => ct.ContentType.Name))
                 {

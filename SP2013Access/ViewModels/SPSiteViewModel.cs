@@ -12,7 +12,7 @@ namespace SP2013Access.ViewModels
         public SPSiteViewModel(SPClientSite site, TreeViewItemViewModel parent)
             : this(parent, true)
         {
-            if (site == null) throw new ArgumentNullException("site");
+            if (site == null) throw new ArgumentNullException(nameof(site));
             _site = site;
         }
 
@@ -24,20 +24,11 @@ namespace SP2013Access.ViewModels
         {
         }
 
-        public override string ID
-        {
-            get { return string.Format("Site_{0}", _site.Site.Id); }
-        }
+        public override string ID => $"Site_{_site.Site.Id}";
 
-        public override string Name
-        {
-            get { return _site.Site.Url; }
-        }
+        public override string Name => _site.Site.Url;
 
-        public override ImageSource ImageSource
-        {
-            get { return new BitmapImage(new Uri("pack://application:,,,/images/sharepointfoundation16.png")); }
-        }
+        public override ImageSource ImageSource => new BitmapImage(new Uri("pack://application:,,,/images/sharepointfoundation16.png"));
 
         protected override IPromise<object, Exception> LoadChildrenAsync()
         {

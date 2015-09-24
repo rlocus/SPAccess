@@ -5,7 +5,7 @@ using SP2013Access.Commands;
 
 namespace SP2013Access.ViewModels
 {
-    public class SPContextCollectionViewModel : TreeViewItemViewModel, IDisposable
+    public sealed class SPContextCollectionViewModel : TreeViewItemViewModel, IDisposable
     {
         private readonly List<SPClientContext> _clientContexts;
 
@@ -18,27 +18,21 @@ namespace SP2013Access.ViewModels
         public SPContextCollectionViewModel(IEnumerable<SPClientContext> clientContexts)
             : this()
         {
-            if (clientContexts == null) throw new ArgumentNullException("clientContexts");
+            if (clientContexts == null) throw new ArgumentNullException(nameof(clientContexts));
             _clientContexts.AddRange(clientContexts);
         }
 
         /// <summary>
         ///     Initializes a new instance of the SiteItemViewModel class.
         /// </summary>
-        protected SPContextCollectionViewModel(TreeViewItemViewModel parent, bool lazyLoadChildren)
+        public SPContextCollectionViewModel(TreeViewItemViewModel parent, bool lazyLoadChildren)
             : base(parent, lazyLoadChildren)
         {
         }
 
-        public override string ID
-        {
-            get { return "Sites"; }
-        }
+        public override string ID => "Sites";
 
-        public override string Name
-        {
-            get { return "Sites"; }
-        }
+        public override string Name => "Sites";
 
         public void Dispose()
         {

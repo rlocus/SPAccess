@@ -12,7 +12,7 @@ namespace SP2013Access.ViewModels
         public SPViewViewModel(SPClientView view, SPViewCollectionViewModel parent)
             : this(parent, false)
         {
-            if (view == null) throw new ArgumentNullException("view");
+            if (view == null) throw new ArgumentNullException(nameof(view));
             _view = view;
         }
 
@@ -24,27 +24,11 @@ namespace SP2013Access.ViewModels
         {
         }
 
-        public override string ID
-        {
-            get { return string.Format("View_{0}_{1}", _view.ClientList.List.Id, _view.View.Id); }
-        }
+        public override string ID => $"View_{_view.ClientList.List.Id}_{_view.View.Id}";
 
-        public override string Name
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(base.Name))
-                {
-                    return string.Format("{0}", _view.View.Title);
-                }
-                return base.Name;
-            }
-        }
+        public override string Name => string.IsNullOrEmpty(base.Name) ? $"{_view.View.Title}" : base.Name;
 
-        public override ImageSource ImageSource
-        {
-            get { return new BitmapImage(new Uri("pack://application:,,,/images/ITGEN.png")); }
-        }
+        public override ImageSource ImageSource => new BitmapImage(new Uri("pack://application:,,,/images/ITGEN.png"));
 
         public override void Refresh()
         {
@@ -58,7 +42,7 @@ namespace SP2013Access.ViewModels
             {
                 try
                 {
-                    Name = string.Format("{0}", _view.View.Title);
+                    Name = $"{_view.View.Title}";
                     //ListItemCollectionPosition pos;
                     //var items = _view.GetItems(out pos);
                     LoadChildren();

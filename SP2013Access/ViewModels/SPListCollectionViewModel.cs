@@ -14,7 +14,7 @@ namespace SP2013Access.ViewModels
         public SPListCollectionViewModel(SPClientWeb web, SPWebViewModel parent)
             : this(parent, true)
         {
-            if (web == null) throw new ArgumentNullException("web");
+            if (web == null) throw new ArgumentNullException(nameof(web));
             _web = web;
         }
 
@@ -26,27 +26,10 @@ namespace SP2013Access.ViewModels
         {
         }
 
-        public override string ID
-        {
-            get { return string.Format("ListCollection_{0}", _web.Web.Id); }
-        }
+        public override string ID => $"ListCollection_{_web.Web.Id}";
+        public override ImageSource ImageSource => new BitmapImage(new Uri("pack://application:,,,/images/ITGEN.png"));
 
-        public override ImageSource ImageSource
-        {
-            get { return new BitmapImage(new Uri("pack://application:,,,/images/ITGEN.png")); }
-        }
-
-        public override string Name
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(base.Name))
-                {
-                    return "Lists";
-                }
-                return base.Name;
-            }
-        }
+        public override string Name => string.IsNullOrEmpty(base.Name) ? "Lists" : base.Name;
 
         protected override IPromise<object, Exception> LoadChildrenAsync()
         {
@@ -54,7 +37,7 @@ namespace SP2013Access.ViewModels
             promise.Done(() =>
             {
                 var lists = _web.GetLists();
-                Name = string.Format("Lists ({0})", lists.Length);
+                Name = $"Lists ({lists.Length})";
                 foreach (var list in lists.OrderBy(l => l.List.Title))
                 {
                     var l = list;

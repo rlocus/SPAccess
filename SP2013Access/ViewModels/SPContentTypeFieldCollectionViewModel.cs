@@ -14,7 +14,7 @@ namespace SP2013Access.ViewModels
         public SPContentTypeFieldCollectionViewModel(SPClientContentType contentType, SPContentTypeViewModel parent)
             : this(parent, true)
         {
-            if (contentType == null) throw new ArgumentNullException("contentType");
+            if (contentType == null) throw new ArgumentNullException(nameof(contentType));
             _contentType = contentType;
         }
 
@@ -26,27 +26,11 @@ namespace SP2013Access.ViewModels
         {
         }
 
-        public override string ID
-        {
-            get { return string.Format("ContentTypeFieldCollection_{0}", _contentType.ContentType.Id); }
-        }
+        public override string ID => $"ContentTypeFieldCollection_{_contentType.ContentType.Id}";
 
-        public override ImageSource ImageSource
-        {
-            get { return new BitmapImage(new Uri("pack://application:,,,/images/SiteColumn.png")); }
-        }
+        public override ImageSource ImageSource => new BitmapImage(new Uri("pack://application:,,,/images/SiteColumn.png"));
 
-        public override string Name
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(base.Name))
-                {
-                    return "Fields";
-                }
-                return base.Name;
-            }
-        }
+        public override string Name => string.IsNullOrEmpty(base.Name) ? "Fields" : base.Name;
 
         protected override IPromise<object, Exception> LoadChildrenAsync()
         {
@@ -54,7 +38,7 @@ namespace SP2013Access.ViewModels
             promise.Done(() =>
             {
                 var fields = _contentType.GetFields();
-                Name = string.Format("Fields ({0})", fields.Length);
+                Name = $"Fields ({fields.Length})";
                 foreach (var field in fields.OrderBy(f => f.Field.Title))
                 {
                     var f = field;

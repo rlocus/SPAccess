@@ -10,7 +10,7 @@ namespace SP2013Access.ViewModels
         public SPWebViewModel(SPClientWeb web, TreeViewItemViewModel parent)
             : this(parent, false)
         {
-            if (web == null) throw new ArgumentNullException("web");
+            if (web == null) throw new ArgumentNullException(nameof(web));
             Web = web;
         }
 
@@ -22,20 +22,11 @@ namespace SP2013Access.ViewModels
         {
         }
 
-        public override string ID
-        {
-            get { return string.Format("Web_{0}", Web.Web.Id); }
-        }
+        public override string ID => $"Web_{Web.Web.Id}";
 
-        public override string Name
-        {
-            get { return Web.Web.Title; }
-        }
+        public override string Name => Web.Web.Title;
 
-        public override ImageSource ImageSource
-        {
-            get { return new BitmapImage(new Uri("pack://application:,,,/images/siteicon_16x16.png")); }
-        }
+        public override ImageSource ImageSource => new BitmapImage(new Uri("pack://application:,,,/images/siteicon_16x16.png"));
 
         public SPClientWeb Web { get; }
 

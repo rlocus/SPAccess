@@ -12,7 +12,7 @@ namespace SP2013Access.ViewModels
         public SPListViewModel(SPClientList list, SPListCollectionViewModel parent)
             : this(parent, false)
         {
-            if (list == null) throw new ArgumentNullException("list");
+            if (list == null) throw new ArgumentNullException(nameof(list));
             _list = list;
         }
 
@@ -24,27 +24,12 @@ namespace SP2013Access.ViewModels
         {
         }
 
-        public override string ID
-        {
-            get { return string.Format("List_{0}_{1}", _list.ClientWeb.Web.Id, _list.List.Id); }
-        }
+        public override string ID => $"List_{_list.ClientWeb.Web.Id}_{_list.List.Id}";
 
         public override string Name
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(base.Name))
-                {
-                    return string.Format("{0} ({1})", _list.List.Title, _list.List.ItemCount);
-                }
-                return base.Name;
-            }
-        }
+            => string.IsNullOrEmpty(base.Name) ? $"{_list.List.Title} ({_list.List.ItemCount})" : base.Name;
 
-        public override ImageSource ImageSource
-        {
-            get { return new BitmapImage(new Uri("pack://application:,,,/images/ITGEN.png")); }
-        }
+        public override ImageSource ImageSource => new BitmapImage(new Uri("pack://application:,,,/images/ITGEN.png"));
 
         protected override void LoadChildren()
         {
@@ -68,7 +53,7 @@ namespace SP2013Access.ViewModels
             var promise = Utility.ExecuteAsync(_list.LoadAsync());
             promise.Done(() =>
             {
-                Name = string.Format("{0} ({1})", _list.List.Title, _list.List.ItemCount);
+                Name = $"{_list.List.Title} ({_list.List.ItemCount})";
                 LoadChildren();
             });
             promise.Fail(OnFail);

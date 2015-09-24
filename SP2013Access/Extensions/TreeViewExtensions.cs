@@ -103,7 +103,7 @@ namespace SP2013Access.Extensions
             }
             if (child is TreeViewItem)
             {
-                return child as TreeViewItem;
+                return (TreeViewItem) child;
             }
             if (child is TreeView)
             {

@@ -14,7 +14,7 @@ namespace SP2013Access.ViewModels
         public SPWebContentTypeCollectionViewModel(SPClientWeb web, SPWebViewModel parent)
             : this(parent, true)
         {
-            if (web == null) throw new ArgumentNullException("web");
+            if (web == null) throw new ArgumentNullException(nameof(web));
             _web = web;
         }
 
@@ -26,15 +26,9 @@ namespace SP2013Access.ViewModels
         {
         }
 
-        public override string ID
-        {
-            get { return string.Format("ContentTypeCollection_{0}", _web.Web.Id); }
-        }
+        public override string ID => $"ContentTypeCollection_{_web.Web.Id}";
 
-        public override ImageSource ImageSource
-        {
-            get { return new BitmapImage(new Uri("pack://application:,,,/images/ContentType.png")); }
-        }
+        public override ImageSource ImageSource => new BitmapImage(new Uri("pack://application:,,,/images/ContentType.png"));
 
         public override string Name
         {
@@ -54,7 +48,7 @@ namespace SP2013Access.ViewModels
             promise.Done(() =>
             {
                 var contentTypes = _web.GetContentTypes();
-                Name = string.Format("Content Types ({0})", contentTypes.Length);
+                Name = $"Content Types ({contentTypes.Length})";
                 foreach (var contentType in contentTypes.OrderBy(ct => ct.ContentType.Name))
                 {
                     var ct = contentType;

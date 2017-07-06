@@ -22,7 +22,7 @@ namespace SP2013Access
         /// </summary>
         public void Add(SPClientContext clientContext)
         {
-            var recentSite = RecentSites.SingleOrDefault(site => site.Url.Equals(clientContext.Url));
+            var recentSite = RecentSites.SingleOrDefault(site => site.Url != null && site.Url.Equals(clientContext.Url));
             if (clientContext != null)
             {
                 if (recentSite != null)

@@ -19,18 +19,18 @@ namespace SharePoint.Remote.Access.Extensions
             return true;
         }
 
-        public static Task ExecuteQueryAsync(this ClientRuntimeContext clientContext)
+        public static async Task ExecuteQueryAsync(this ClientRuntimeContext clientContext)
         {
-            return Task.Run(new Action(clientContext.ExecuteQuery));
+            await Task.Run(new Action(clientContext.ExecuteQuery));
         }
 
-        public static async void ExecuteQueryAsync(this ClientRuntimeContext clientContext, Action onSucceed,
+        public static async Task ExecuteQueryAsync(this ClientRuntimeContext clientContext, Action onSucceed,
             Action<Exception> onFailed)
         {
             try
             {
                 await ExecuteQueryAsync(clientContext);
-                if (onSucceed != null) onSucceed();
+                onSucceed?.Invoke();
             }
             catch (Exception ex)
             {

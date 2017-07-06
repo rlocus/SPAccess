@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SP2013Access", "SP2013Access\SP2013Access.csproj", "{579A830D-B64E-44BF-ABC0-99E56D275E8D}"
 EndProject
@@ -15,6 +15,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharePoint.Remote.Access", "SharePoint.Remote.Access\SharePoint.Remote.Access.csproj", "{CDE4C77F-ACF4-4D04-8C6C-0F8165AEAF21}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharePoint.Client.Test", "SharePoint.Client.Test\SharePoint.Client.Test.csproj", "{B75088B9-99C2-4D1A-B135-C8ECD692087B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SP2016Access", "SP2013Access\SP2016Access.csproj", "{2476946F-FFC7-4D4A-AB58-5A4D410D73A9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharePoint365.Remote.Access", "SharePoint.Remote.Access\SharePoint365.Remote.Access.csproj", "{409798BF-78DF-4698-88F2-19CEC475EBD9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,6 +38,14 @@ Global
 		{B75088B9-99C2-4D1A-B135-C8ECD692087B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B75088B9-99C2-4D1A-B135-C8ECD692087B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B75088B9-99C2-4D1A-B135-C8ECD692087B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2476946F-FFC7-4D4A-AB58-5A4D410D73A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2476946F-FFC7-4D4A-AB58-5A4D410D73A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2476946F-FFC7-4D4A-AB58-5A4D410D73A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2476946F-FFC7-4D4A-AB58-5A4D410D73A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{409798BF-78DF-4698-88F2-19CEC475EBD9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{409798BF-78DF-4698-88F2-19CEC475EBD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{409798BF-78DF-4698-88F2-19CEC475EBD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{409798BF-78DF-4698-88F2-19CEC475EBD9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

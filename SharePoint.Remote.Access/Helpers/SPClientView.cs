@@ -36,7 +36,7 @@ namespace SharePoint.Remote.Access.Helpers
                 ListItemCollectionPosition = position,
                 ViewXml = View.ListViewXml
             });
-            View.Context.Load(_items, retrievals);
+            (View.Context as SPClientContext).Load(_items, retrievals);
             _executeQuery = true;
             return this;
         }
@@ -55,7 +55,7 @@ namespace SharePoint.Remote.Access.Helpers
         {
             if (!IsLoaded)
             {
-                View.Context.Load(View);
+                (View.Context as SPClientContext).Load(View);
                 _executeQuery = true;
             }
 
@@ -71,13 +71,13 @@ namespace SharePoint.Remote.Access.Helpers
         {
             if (!IsLoaded)
             {
-                View.Context.Load(View);
+                (View.Context as SPClientContext).Load(View);
                 _executeQuery = true;
             }
 
             if (_executeQuery)
             {
-                await View.Context.ExecuteQueryAsync();
+                await (View.Context as SPClientContext).ExecuteQueryAsync();
                 IsLoaded = true;
             }
             _executeQuery = false;

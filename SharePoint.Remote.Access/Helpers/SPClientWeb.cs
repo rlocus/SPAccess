@@ -37,7 +37,7 @@ namespace SharePoint.Remote.Access.Helpers
         public SPClientWeb IncludeWebs(params Expression<Func<WebCollection, object>>[] retrievals)
         {
             WebsForCurrentUser = Web.GetSubwebsForCurrentUser(null);
-            Web.Context.Load(WebsForCurrentUser, retrievals);
+            (Web.Context as SPClientContext).Load(WebsForCurrentUser, retrievals);
             _executeQuery = true;
             return this;
         }
@@ -54,7 +54,7 @@ namespace SharePoint.Remote.Access.Helpers
         public SPClientWeb IncludeLists(params Expression<Func<ListCollection, object>>[] retrievals)
         {
             var lists = Web.Lists;
-            Web.Context.Load(lists, retrievals);
+            (Web.Context as SPClientContext).Load(lists, retrievals);
             _executeQuery = true;
             return this;
         }
@@ -79,7 +79,7 @@ namespace SharePoint.Remote.Access.Helpers
         public SPClientWeb IncludeContentTypes(params Expression<Func<ContentTypeCollection, object>>[] retrievals)
         {
             var contentTypes = Web.ContentTypes;
-            Web.Context.Load(contentTypes, retrievals);
+            (Web.Context as SPClientContext).Load(contentTypes, retrievals);
             _executeQuery = true;
             return this;
         }
@@ -104,7 +104,7 @@ namespace SharePoint.Remote.Access.Helpers
         public SPClientWeb IncludeFields(params Expression<Func<FieldCollection, object>>[] retrievals)
         {
             var fields = Web.Fields;
-            Web.Context.Load(fields, retrievals);
+            (Web.Context as SPClientContext).Load(fields, retrievals);
             _executeQuery = true;
             return this;
         }
@@ -130,7 +130,7 @@ namespace SharePoint.Remote.Access.Helpers
         {
             if (!IsLoaded)
             {
-                Web.Context.Load(Web);
+                (Web.Context as SPClientContext).Load(Web);
                 _executeQuery = true;
             }
 
@@ -147,13 +147,13 @@ namespace SharePoint.Remote.Access.Helpers
             if (!IsLoaded)
             {
                 //this.Web.RefreshLoad();
-                Web.Context.Load(Web);
+                (Web.Context as SPClientContext).Load(Web);
                 _executeQuery = true;
             }
 
             if (_executeQuery)
             {
-                await Web.Context.ExecuteQueryAsync();
+                await (Web.Context as SPClientContext).ExecuteQueryAsync();
                 IsLoaded = true;
             }
             _executeQuery = false;

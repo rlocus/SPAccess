@@ -24,7 +24,7 @@ namespace SharePoint.Remote.Access.Helpers
         public SPClientList IncludeViews(params Expression<Func<ViewCollection, object>>[] retrievals)
         {
             var views = List.Views;
-            List.Context.Load(views, retrievals);
+            (List.Context as SPClientContext).Load(views, retrievals);
             _executeQuery = true;
             return this;
         }
@@ -48,7 +48,7 @@ namespace SharePoint.Remote.Access.Helpers
         public SPClientList IncludeContentTypes(params Expression<Func<ContentTypeCollection, object>>[] retrievals)
         {
             var contentTypes = List.ContentTypes;
-            List.Context.Load(contentTypes, retrievals);
+            (List.Context as SPClientContext).Load(contentTypes, retrievals);
             _executeQuery = true;
             return this;
         }
@@ -73,7 +73,7 @@ namespace SharePoint.Remote.Access.Helpers
         public SPClientList IncludeFields(params Expression<Func<FieldCollection, object>>[] retrievals)
         {
             var fields = List.Fields;
-            List.Context.Load(fields, retrievals);
+            (List.Context as SPClientContext).Load(fields, retrievals);
             _executeQuery = true;
             return this;
         }
@@ -100,7 +100,7 @@ namespace SharePoint.Remote.Access.Helpers
         {
             if (!IsLoaded)
             {
-                List.Context.Load(List);
+                (List.Context as SPClientContext).Load(List);
                 _executeQuery = true;
             }
 
@@ -116,13 +116,13 @@ namespace SharePoint.Remote.Access.Helpers
         {
             if (!IsLoaded)
             {
-                List.Context.Load(List);
+                (List.Context as SPClientContext).Load(List);
                 _executeQuery = true;
             }
 
             if (_executeQuery)
             {
-                await List.Context.ExecuteQueryAsync();
+                await (List.Context as SPClientContext).ExecuteQueryAsync();
                 IsLoaded = true;
             }
             _executeQuery = false;
@@ -155,7 +155,7 @@ namespace SharePoint.Remote.Access.Helpers
 
             if (!fields.AreItemsAvailable)
             {
-                List.Context.Load(fields);
+                (List.Context as SPClientContext).Load(fields);
             }
             return fields;
         }

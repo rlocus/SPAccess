@@ -30,7 +30,7 @@ namespace SharePoint.Remote.Access.Helpers
         public SPClientContentType IncludeFields(params Expression<Func<FieldCollection, object>>[] retrievals)
         {
             var fields = ContentType.Fields;
-            ContentType.Context.Load(fields, retrievals);
+            (ContentType.Context as SPClientContext).Load(fields, retrievals);
             _executeQuery = true;
             return this;
         }
@@ -56,7 +56,7 @@ namespace SharePoint.Remote.Access.Helpers
         {
             if (!IsLoaded)
             {
-                ContentType.Context.Load(ContentType);
+                (ContentType.Context as SPClientContext).Load(ContentType);
                 _executeQuery = true;
             }
 
@@ -72,13 +72,13 @@ namespace SharePoint.Remote.Access.Helpers
         {
             if (!IsLoaded)
             {
-                ContentType.Context.Load(ContentType);
+                (ContentType.Context as SPClientContext).Load(ContentType);
                 _executeQuery = true;
             }
 
             if (_executeQuery)
             {
-                await ContentType.Context.ExecuteQueryAsync();
+                await (ContentType.Context as SPClientContext).ExecuteQueryAsync();
                 IsLoaded = true;
             }
             _executeQuery = false;

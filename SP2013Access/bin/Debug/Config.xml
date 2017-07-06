@@ -4,6 +4,10 @@
     <RecentSite Url="https://artezio.sharepoint.com/sites/art_dev1" UseCurrentUserCredentials="false" UserName="rpohomenko@artezio.com" Authentication="SharePointOnline" />
     <RecentSite Url="https://artezio.sharepoint.com/" UseCurrentUserCredentials="false" UserName="rpohomenko@artezio.com" Authentication="SharePointOnline" />
     <RecentSite Url="https://artezio.sharepoint.com/sites/dev" UseCurrentUserCredentials="false" UserName="rpohomenko@artezio.com" Authentication="SharePointOnline" />
+    <RecentSite Url="http://ps80-g:9680/sites/cd" UseCurrentUserCredentials="false" UserName="ps80-g\user" Authentication="Default" />
+    <RecentSite UseCurrentUserCredentials="false" UserName="ruslan.pohomenko@dev-SPS16.com" Authentication="Default" />
+    <RecentSite UseCurrentUserCredentials="false" UserName="ruslan.pohomenko@dev-SPS16.com" Authentication="Default" />
+    <RecentSite Url="http://rp-dev-sps16.westeurope.cloudapp.azure.com/" UseCurrentUserCredentials="false" UserName="ruslan.pohomenko@dev-SPS16.com" Authentication="Default" />
     <RecentSite Url="https://artezio.sharepoint.com/sites/art_dev3" UseCurrentUserCredentials="false" UserName="rpohomenko@artezio.com" Authentication="SharePointOnline" />
   </RecentSites>
 </Configuration>

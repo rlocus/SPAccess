@@ -44,7 +44,7 @@ namespace SharePoint.Remote.Access.Helpers
         {
             if (!IsLoaded)
             {
-                Field.Context.Load(Field);
+                (Field.Context as SPClientContext).Load(Field);
                 _executeQuery = true;
             }
 
@@ -60,13 +60,13 @@ namespace SharePoint.Remote.Access.Helpers
         {
             if (!IsLoaded)
             {
-                Field.Context.Load(Field);
+                (Field.Context as SPClientContext).Load(Field);
                 _executeQuery = true;
             }
 
             if (_executeQuery)
             {
-                await Field.Context.ExecuteQueryAsync();
+                await (Field.Context as SPClientContext).ExecuteQueryAsync();
                 IsLoaded = true;
             }
             _executeQuery = false;

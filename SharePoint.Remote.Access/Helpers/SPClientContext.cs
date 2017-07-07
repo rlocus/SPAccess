@@ -13,9 +13,9 @@ namespace SharePoint.Remote.Access.Helpers
     public sealed class SPClientContext : ClientContext
     {
         private readonly object _lock = new object();
-        private static readonly uint LoadsLimit = 1;
-
+        private static readonly uint BatchLimit = 10;
         private readonly ConcurrentDictionary<ClientObject, List<Expression<Func<ClientObject, object>>>> _retrievals;
+
         private SPClientContext(Uri webFullUrl)
             : base(webFullUrl)
         {
@@ -126,35 +126,37 @@ namespace SharePoint.Remote.Access.Helpers
 
         public override void ExecuteQuery()
         {
-            if (_retrievals.Count > 0)
-            {
-                lock (_lock)
-                {
-                    int pendingRequest = 0;
-                    foreach (var retrieval in _retrievals)
-                    {
-                        List<Expression<Func<ClientObject, object>>> value;
-                        if (_retrievals.TryRemove(retrieval.Key, out value))
-                        {
-                            base.Load(retrieval.Key, retrieval.Value.ToArray());
-                            pendingRequest++;
-                            if (pendingRequest > LoadsLimit)
-                            {
-                                base.ExecuteQuery();
-                                pendingRequest = 0;
-                            }
-                        }
-                    }
-                    _retrievals.Clear();
-                }
-            }
-            if (this.HasPendingRequest)
-            {
-                lock (_lock)
-                {
-                    base.ExecuteQuery();
-                }
-            }
+            //if (_retrievals.Count > 0)
+            //{
+            //    lock (_lock)
+            //    {
+            //        int pendingRequest = 0;
+            //        foreach (var retrieval in _retrievals)
+            //        {
+            //            List<Expression<Func<ClientObject, object>>> value;
+            //            if (_retrievals.TryRemove(retrieval.Key, out value))
+            //            {
+            //                base.Load(retrieval.Key, retrieval.Value.ToArray());
+            //                pendingRequest++;
+            //                if (pendingRequest > LoadsLimit)
+            //                {
+            //                    base.ExecuteQuery();
+            //                    pendingRequest = 0;
+            //                }
+            //            }
+            //        }
+            //        _retrievals.Clear();
+            //    }
+            //}
+            //if (this.HasPendingRequest)
+            //{
+            //    lock (_lock)
+            //    {
+            //        base.ExecuteQuery();
+            //    }
+            //}
+
+            ExecuteQueryAsync().Wait();
         }
 
         public async Task ExecuteQueryAsync()
@@ -162,6 +164,10 @@ namespace SharePoint.Remote.Access.Helpers
             var tasks = new List<Task>();
             if (_retrievals.Count > 0)
             {
+                if (this.HasPendingRequest)
+                {
+                    tasks.Add(BaseExecuteQueryAsync());
+                }
                 lock (_lock)
                 {
                     int pendingRequest = 0;
@@ -172,16 +178,16 @@ namespace SharePoint.Remote.Access.Helpers
                         {
                             base.Load(retrieval.Key, retrieval.Value.ToArray());
                             pendingRequest++;
-                            if (pendingRequest > LoadsLimit)
+                            if (pendingRequest > BatchLimit)
                             {
-                                tasks.Add(ClientRuntimeContextExtentions.ExecuteQueryAsync(this));
+                                tasks.Add(BaseExecuteQueryAsync());
                                 pendingRequest = 0;
                             }
                         }
                     }
                     if (pendingRequest > 0)
                     {
-                        tasks.Add(ClientRuntimeContextExtentions.ExecuteQueryAsync(this));
+                        tasks.Add(BaseExecuteQueryAsync());
                     }
                     _retrievals.Clear();
                 }
@@ -194,8 +200,22 @@ namespace SharePoint.Remote.Access.Helpers
 
             if (this.HasPendingRequest)
             {
-                await ClientRuntimeContextExtentions.ExecuteQueryAsync(this);
+                await BaseExecuteQueryAsync();
             }
+        }
+
+        private async Task BaseExecuteQueryAsync()
+        {
+            await Task.Run(() =>
+            {
+                lock (_lock)
+                {
+                    if (this.HasPendingRequest)
+                    {
+                        base.ExecuteQuery();
+                    }
+                }
+            });
         }
     }
 }

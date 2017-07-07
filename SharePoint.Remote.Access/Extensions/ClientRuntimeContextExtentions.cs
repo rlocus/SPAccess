@@ -14,14 +14,23 @@ namespace SharePoint.Remote.Access.Extensions
         /// <returns></returns>
         public static bool IsMinimalServerVersion(this ClientRuntimeContext context, ServerVersion version)
         {
-            if (context.ServerSchemaVersion.Major < (int) version)
+            if (context.ServerSchemaVersion.Major < (int)version)
                 return false;
             return true;
         }
 
         public static async Task ExecuteQueryAsync(this ClientRuntimeContext clientContext)
         {
-            await Task.Run(new Action(clientContext.ExecuteQuery));
+            await Task.Run(() =>
+            {
+                lock (clientContext)
+                {
+                    if (clientContext.HasPendingRequest)
+                    {
+                        clientContext.ExecuteQuery();
+                    }
+                }
+            });
         }
 
         public static async Task ExecuteQueryAsync(this ClientRuntimeContext clientContext, Action onSucceed,

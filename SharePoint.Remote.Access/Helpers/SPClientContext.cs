@@ -14,16 +14,16 @@ namespace SharePoint.Remote.Access.Helpers
 {
     public sealed class SPClientContext : ClientContext
     {
-        private readonly ConcurrentDictionary<ClientObject, List<Action>> _retrievals;
+        private int _resourcesPerRequest;
 
         private SPClientContext(Uri webFullUrl)
             : base(webFullUrl)
         {
             ClientSite = SPClientSite.FromSite(Site);
-            _retrievals = new ConcurrentDictionary<ClientObject, List<Action>>();
-            RetryCount = 5;
-            Delay = 500;
+            //RetryCount = 5;
+            //Delay = 500;
             MaxResourcesPerRequest = 30;
+            _resourcesPerRequest = 0;
         }
 
         public SPClientContext(string webFullUrl, AuthType authType = AuthType.Default, string userName = null,
@@ -76,88 +76,12 @@ namespace SharePoint.Remote.Access.Helpers
         /// </summary>
         public AuthType Authentication { get; }
 
-        //public uint BatchSize { get; set; }
-
         public uint MaxResourcesPerRequest { get; set; }
 
-        public int RetryCount { get; set; }
+        //public int RetryCount { get; set; }
 
-        public int Delay { get; set; }
-
-        private async Task BaseExecuteQueryAsync()
-        {
-            await Task.Run(() =>
-            {
-                //    if (this.HasPendingRequest)
-                //    {
-                //        base.ExecuteQuery();
-                //    }
-                BaseExecuteQueryRetry();
-            });
-        }
-
-        private void BaseExecuteQueryRetry()
-        {
-            var clientTag = string.Empty;
-
-            int retryAttempts = 0;
-            if (RetryCount <= 0)
-                RetryCount = 1;
-
-            if (Delay <= 0)
-                Delay = 1;
-
-            // Do while retry attempt is less than retry count
-            while (retryAttempts < RetryCount)
-            {
-                try
-                {
-                    // ClientTag property is limited to 32 chars
-                    if (clientTag.Length > 32)
-                    {
-                        clientTag = clientTag.Substring(0, 32);
-                    }
-                    this.ClientTag = clientTag;
-
-                    if (HasPendingRequest)
-                    {
-                        base.ExecuteQuery();
-                    }
-                    return;
-                }
-                catch (ServerException ex)
-                {
-                    //too many resources
-                    if (ex.ServerErrorCode == -2146232832)
-                    {
-                        //TODO:
-                    }
-                    throw;
-                }
-                catch (WebException wex)
-                {
-                    var response = wex.Response as HttpWebResponse;
-                    // Check if request was throttled - http status code 429
-                    // Check is request failed due to server unavailable - http status code 503
-                    if (response != null && (response.StatusCode == (HttpStatusCode)429 ||
-                                             response.StatusCode == (HttpStatusCode)503))
-                    {
-                        //Add delay for retry
-                        Thread.Sleep(Delay);
-
-                        //Add to retry count and increase delay.
-                        retryAttempts++;
-                        Delay = Delay * 2;
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-            }
-            throw new MaximumRetryAttemptedException($"Maximum retry attempts {RetryCount}, has be attempted.");
-        }
-
+        //public int Delay { get; set; }
+        
         public void Connect()
         {
             if (!ClientSite.IsLoaded)
@@ -186,99 +110,24 @@ namespace SharePoint.Remote.Access.Helpers
 
         public new void Load<T>(T clientObject, params Expression<Func<T, object>>[] retrievals) where T : ClientObject
         {
-            var actions = _retrievals.ContainsKey(clientObject) ? _retrievals[clientObject] : new List<Action>();
-            actions.Add(() =>
+            _resourcesPerRequest++;
+            base.Load(clientObject, retrievals);
+            if (MaxResourcesPerRequest > 0 && _resourcesPerRequest >= MaxResourcesPerRequest)
             {
-                base.Load(clientObject, retrievals);
-            });
-            _retrievals[clientObject] = actions;
-            if (_retrievals.Count >= MaxResourcesPerRequest)
-            {
+                _resourcesPerRequest = 0;
                 this.ExecuteQuery();
             }
         }
 
         public async Task LoadAsync<T>(T clientObject, params Expression<Func<T, object>>[] retrievals) where T : ClientObject
         {
-            var actions = _retrievals.ContainsKey(clientObject) ? _retrievals[clientObject] : new List<Action>();
-            actions.Add(() =>
+            _resourcesPerRequest++;
+            base.Load(clientObject, retrievals);
+
+            if (MaxResourcesPerRequest > 0 && _resourcesPerRequest >= MaxResourcesPerRequest)
             {
-                base.Load(clientObject, retrievals);
-            });
-            _retrievals[clientObject] = actions;
-            if (_retrievals.Count >= MaxResourcesPerRequest)
-            {
+                _resourcesPerRequest = 0;
                 await this.ExecuteQueryAsync();
-            }
-        }
-
-        public override void ExecuteQuery()
-        {
-            if (_retrievals.Count > 0)
-            {
-                int pendingRequest = 0;
-                foreach (var retrieval in _retrievals)
-                {
-                    List<Action> actions;
-                    if (_retrievals.TryRemove(retrieval.Key, out actions))
-                    {
-                        foreach (var action in actions)
-                        {
-                            action.Invoke();
-                            pendingRequest++;
-                            if (pendingRequest >= MaxResourcesPerRequest)
-                            {
-                                this.ExecuteQuery();
-                                return;
-                            }
-                        }
-                    }
-                }
-            }
-
-            //if (this.HasPendingRequest)
-            //{
-            //    base.ExecuteQuery();
-            //}
-            BaseExecuteQueryRetry();
-        }
-
-        public async Task ExecuteQueryAsync()
-        {
-            if (_retrievals.Count > 0)
-            {
-                var tasks = new List<Task>();
-                uint resourcesPerRequest = 0;
-                foreach (var retrieval in _retrievals)
-                {
-                    List<Action> actions;
-                    if (_retrievals.TryRemove(retrieval.Key, out actions))
-                    {
-                        foreach (var action in actions)
-                        {
-                            action.Invoke();
-                            resourcesPerRequest++;
-                            if (resourcesPerRequest >= MaxResourcesPerRequest)
-                            {
-                                tasks.Add(BaseExecuteQueryAsync());
-                                resourcesPerRequest = 0;
-                            }
-                        }
-                    }
-                }
-                if (resourcesPerRequest > 0)
-                {
-                    tasks.Add(BaseExecuteQueryAsync());
-                }
-                _retrievals.Clear();
-                if (tasks.Count > 0)
-                {
-                    await Task.WhenAll(tasks);
-                }
-            }
-            else
-            {
-                await BaseExecuteQueryAsync();
             }
         }
 

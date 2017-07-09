@@ -4,4 +4,3 @@ D:\Projects\SPAccess\SharePoint.Remote.Access\bin\Debug\Microsoft.SharePoint.Cli
 D:\Projects\SPAccess\SharePoint.Remote.Access\bin\Debug\Microsoft.SharePoint.Client.Runtime.dll
 D:\Projects\SPAccess\SharePoint.Remote.Access\obj\Debug\SharePoint.Remote.Access.dll
 D:\Projects\SPAccess\SharePoint.Remote.Access\obj\Debug\SharePoint.Remote.Access.pdb
-D:\Projects\SPAccess\SharePoint.Remote.Access\obj\Debug\SharePoint365.Remote.Access.csprojResolveAssemblyReference.cache

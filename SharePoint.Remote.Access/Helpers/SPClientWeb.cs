@@ -46,7 +46,7 @@ namespace SharePoint.Remote.Access.Helpers
         {
             if (WebsForCurrentUser != null && WebsForCurrentUser.AreItemsAvailable)
             {
-                return WebsForCurrentUser.ToList().Select(FromWeb).ToArray();
+                return WebsForCurrentUser.AsEnumerable().Select(FromWeb).ToArray();
             }
             throw new SPAccessException("Web collection is not available.");
         }
@@ -65,7 +65,7 @@ namespace SharePoint.Remote.Access.Helpers
             if (lists != null && lists.AreItemsAvailable)
             {
                 var clientLists = new List<SPClientList>(lists.Count);
-                foreach (var clientList in lists.ToList().Select(SPClientList.FromList))
+                foreach (var clientList in lists.AsEnumerable().Select(SPClientList.FromList))
                 {
                     clientList.ClientWeb = this;
                     clientLists.Add(clientList);
@@ -89,7 +89,7 @@ namespace SharePoint.Remote.Access.Helpers
             var contentTypes = Web.ContentTypes;
             if (contentTypes != null && contentTypes.AreItemsAvailable)
             {
-                return contentTypes.ToList().Select(ct =>
+                return contentTypes.AsEnumerable().Select(ct =>
                 {
                     var clientContentType = SPClientContentType.FromContentType(ct);
                     clientContentType.IsSiteContentType = true;
@@ -114,7 +114,7 @@ namespace SharePoint.Remote.Access.Helpers
             var fields = Web.Fields;
             if (fields != null && fields.AreItemsAvailable)
             {
-                return fields.ToList().Select(field =>
+                return fields.AsEnumerable().Select(field =>
                 {
                     var clientField = SPClientField.FromField(field);
                     clientField.ClientWeb = this;
@@ -147,7 +147,7 @@ namespace SharePoint.Remote.Access.Helpers
             if (!IsLoaded)
             {
                 //this.Web.RefreshLoad();
-                (Web.Context as SPClientContext).Load(Web);
+                await (Web.Context as SPClientContext).LoadAsync(Web);
                 _executeQuery = true;
             }
 
@@ -166,7 +166,7 @@ namespace SharePoint.Remote.Access.Helpers
 
         public string GetSettingsUrl()
         {
-            return string.Format("{0}/_layouts/{1}/settings.aspx", GetUrl().TrimEnd('/'), Web.UIVersion);
+            return $"{GetUrl().TrimEnd('/')}/_layouts/{Web.UIVersion}/settings.aspx";
         }
 
         /// <summary>
@@ -180,7 +180,7 @@ namespace SharePoint.Remote.Access.Helpers
 
         public string GetRestUrl()
         {
-            return string.Format("{0}/_api/web", GetUrl().TrimEnd('/'));
+            return $"{GetUrl().TrimEnd('/')}/_api/web";
         }
 
         public void RefreshLoad()
@@ -189,9 +189,6 @@ namespace SharePoint.Remote.Access.Helpers
             {
                 IsLoaded = false;
                 Web.RefreshLoad();
-                //var newCtx = (ClientSite.Context as SPClientContext).Clone();
-                //this.Web = newCtx.Site.OpenWebById(this.Web.Id);
-                //this.WebsForCurrentUser = this.Web.GetSubwebsForCurrentUser(null);
             }
         }
     }

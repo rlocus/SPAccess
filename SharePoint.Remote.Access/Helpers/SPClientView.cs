@@ -34,7 +34,9 @@ namespace SharePoint.Remote.Access.Helpers
             _items = ClientList.List.GetItems(new CamlQuery
             {
                 ListItemCollectionPosition = position,
-                ViewXml = View.ListViewXml
+                ViewXml = View.ListViewXml,
+                FolderServerRelativeUrl = folderServerRelativeUrl,
+                DatesInUtc = datesInUtc
             });
             (View.Context as SPClientContext).Load(_items, retrievals);
             _executeQuery = true;
@@ -71,7 +73,7 @@ namespace SharePoint.Remote.Access.Helpers
         {
             if (!IsLoaded)
             {
-                (View.Context as SPClientContext).Load(View);
+                await (View.Context as SPClientContext).LoadAsync(View);
                 _executeQuery = true;
             }
 

@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Net;
+using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.SharePoint.Client;
 using SharePoint.Remote.Access.Extensions;
@@ -12,15 +14,16 @@ namespace SharePoint.Remote.Access.Helpers
 {
     public sealed class SPClientContext : ClientContext
     {
-        private readonly object _lock = new object();
-        private static readonly uint BatchLimit = 10;
-        private readonly ConcurrentDictionary<ClientObject, List<Expression<Func<ClientObject, object>>>> _retrievals;
+        private readonly ConcurrentDictionary<ClientObject, List<Action>> _retrievals;
 
         private SPClientContext(Uri webFullUrl)
             : base(webFullUrl)
         {
             ClientSite = SPClientSite.FromSite(Site);
-            _retrievals = new ConcurrentDictionary<ClientObject, List<Expression<Func<ClientObject, object>>>>();
+            _retrievals = new ConcurrentDictionary<ClientObject, List<Action>>();
+            RetryCount = 5;
+            Delay = 500;
+            MaxResourcesPerRequest = 30;
         }
 
         public SPClientContext(string webFullUrl, AuthType authType = AuthType.Default, string userName = null,
@@ -66,12 +69,94 @@ namespace SharePoint.Remote.Access.Helpers
         /// <summary>
         ///     Gets and sets the username for authentication with the site collection.
         /// </summary>
-        public string UserName { get; private set; }
+        public string UserName { get; }
 
         /// <summary>
         ///     Authentication mode used for authentication with the SharePoint.
         /// </summary>
-        public AuthType Authentication { get; private set; }
+        public AuthType Authentication { get; }
+
+        //public uint BatchSize { get; set; }
+
+        public uint MaxResourcesPerRequest { get; set; }
+
+        public int RetryCount { get; set; }
+
+        public int Delay { get; set; }
+
+        private async Task BaseExecuteQueryAsync()
+        {
+            await Task.Run(() =>
+            {
+                //    if (this.HasPendingRequest)
+                //    {
+                //        base.ExecuteQuery();
+                //    }
+                BaseExecuteQueryRetry();
+            });
+        }
+
+        private void BaseExecuteQueryRetry()
+        {
+            var clientTag = string.Empty;
+
+            int retryAttempts = 0;
+            if (RetryCount <= 0)
+                RetryCount = 1;
+
+            if (Delay <= 0)
+                Delay = 1;
+
+            // Do while retry attempt is less than retry count
+            while (retryAttempts < RetryCount)
+            {
+                try
+                {
+                    // ClientTag property is limited to 32 chars
+                    if (clientTag.Length > 32)
+                    {
+                        clientTag = clientTag.Substring(0, 32);
+                    }
+                    this.ClientTag = clientTag;
+
+                    if (HasPendingRequest)
+                    {
+                        base.ExecuteQuery();
+                    }
+                    return;
+                }
+                catch (ServerException ex)
+                {
+                    //too many resources
+                    if (ex.ServerErrorCode == -2146232832)
+                    {
+                        //TODO:
+                    }
+                    throw;
+                }
+                catch (WebException wex)
+                {
+                    var response = wex.Response as HttpWebResponse;
+                    // Check if request was throttled - http status code 429
+                    // Check is request failed due to server unavailable - http status code 503
+                    if (response != null && (response.StatusCode == (HttpStatusCode)429 ||
+                                             response.StatusCode == (HttpStatusCode)503))
+                    {
+                        //Add delay for retry
+                        Thread.Sleep(Delay);
+
+                        //Add to retry count and increase delay.
+                        retryAttempts++;
+                        Delay = Delay * 2;
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+            }
+            throw new MaximumRetryAttemptedException($"Maximum retry attempts {RetryCount}, has be attempted.");
+        }
 
         public void Connect()
         {
@@ -99,123 +184,134 @@ namespace SharePoint.Remote.Access.Helpers
             }
         }
 
-        public SPClientContext Clone()
-        {
-            return new SPClientContext(Url)
-            {
-                Authentication = Authentication,
-                UserName = UserName,
-                AuthenticationMode = AuthenticationMode,
-                Credentials = Credentials,
-                FormsAuthenticationLoginInfo = FormsAuthenticationLoginInfo
-            };
-        }
-
         public new void Load<T>(T clientObject, params Expression<Func<T, object>>[] retrievals) where T : ClientObject
         {
-            lock (_lock)
+            var actions = _retrievals.ContainsKey(clientObject) ? _retrievals[clientObject] : new List<Action>();
+            actions.Add(() =>
             {
-                var allRetrievals = _retrievals.ContainsKey(clientObject) ? _retrievals[clientObject] : new List<Expression<Func<ClientObject, object>>>();
-                foreach (var retrieval in retrievals)
-                {
-                    allRetrievals.Add(retrieval as Expression<Func<ClientObject, object>>);
-                }
-                _retrievals[clientObject] = allRetrievals;
+                base.Load(clientObject, retrievals);
+            });
+            _retrievals[clientObject] = actions;
+            if (_retrievals.Count >= MaxResourcesPerRequest)
+            {
+                this.ExecuteQuery();
+            }
+        }
+
+        public async Task LoadAsync<T>(T clientObject, params Expression<Func<T, object>>[] retrievals) where T : ClientObject
+        {
+            var actions = _retrievals.ContainsKey(clientObject) ? _retrievals[clientObject] : new List<Action>();
+            actions.Add(() =>
+            {
+                base.Load(clientObject, retrievals);
+            });
+            _retrievals[clientObject] = actions;
+            if (_retrievals.Count >= MaxResourcesPerRequest)
+            {
+                await this.ExecuteQueryAsync();
             }
         }
 
         public override void ExecuteQuery()
         {
-            //if (_retrievals.Count > 0)
-            //{
-            //    lock (_lock)
-            //    {
-            //        int pendingRequest = 0;
-            //        foreach (var retrieval in _retrievals)
-            //        {
-            //            List<Expression<Func<ClientObject, object>>> value;
-            //            if (_retrievals.TryRemove(retrieval.Key, out value))
-            //            {
-            //                base.Load(retrieval.Key, retrieval.Value.ToArray());
-            //                pendingRequest++;
-            //                if (pendingRequest > LoadsLimit)
-            //                {
-            //                    base.ExecuteQuery();
-            //                    pendingRequest = 0;
-            //                }
-            //            }
-            //        }
-            //        _retrievals.Clear();
-            //    }
-            //}
+            if (_retrievals.Count > 0)
+            {
+                int pendingRequest = 0;
+                foreach (var retrieval in _retrievals)
+                {
+                    List<Action> actions;
+                    if (_retrievals.TryRemove(retrieval.Key, out actions))
+                    {
+                        foreach (var action in actions)
+                        {
+                            action.Invoke();
+                            pendingRequest++;
+                            if (pendingRequest >= MaxResourcesPerRequest)
+                            {
+                                this.ExecuteQuery();
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+
             //if (this.HasPendingRequest)
             //{
-            //    lock (_lock)
-            //    {
-            //        base.ExecuteQuery();
-            //    }
+            //    base.ExecuteQuery();
             //}
-
-            ExecuteQueryAsync().Wait();
+            BaseExecuteQueryRetry();
         }
 
         public async Task ExecuteQueryAsync()
         {
-            var tasks = new List<Task>();
             if (_retrievals.Count > 0)
             {
-                if (this.HasPendingRequest)
+                var tasks = new List<Task>();
+                uint resourcesPerRequest = 0;
+                foreach (var retrieval in _retrievals)
                 {
-                    tasks.Add(BaseExecuteQueryAsync());
-                }
-                lock (_lock)
-                {
-                    int pendingRequest = 0;
-                    foreach (var retrieval in _retrievals)
+                    List<Action> actions;
+                    if (_retrievals.TryRemove(retrieval.Key, out actions))
                     {
-                        List<Expression<Func<ClientObject, object>>> value;
-                        if (_retrievals.TryRemove(retrieval.Key, out value))
+                        foreach (var action in actions)
                         {
-                            base.Load(retrieval.Key, retrieval.Value.ToArray());
-                            pendingRequest++;
-                            if (pendingRequest > BatchLimit)
+                            action.Invoke();
+                            resourcesPerRequest++;
+                            if (resourcesPerRequest >= MaxResourcesPerRequest)
                             {
                                 tasks.Add(BaseExecuteQueryAsync());
-                                pendingRequest = 0;
+                                resourcesPerRequest = 0;
                             }
                         }
                     }
-                    if (pendingRequest > 0)
-                    {
-                        tasks.Add(BaseExecuteQueryAsync());
-                    }
-                    _retrievals.Clear();
+                }
+                if (resourcesPerRequest > 0)
+                {
+                    tasks.Add(BaseExecuteQueryAsync());
+                }
+                _retrievals.Clear();
+                if (tasks.Count > 0)
+                {
+                    await Task.WhenAll(tasks);
                 }
             }
-
-            if (tasks.Count > 0)
-            {
-                await Task.WhenAll(tasks);
-            }
-
-            if (this.HasPendingRequest)
+            else
             {
                 await BaseExecuteQueryAsync();
             }
         }
 
-        private async Task BaseExecuteQueryAsync()
+        public SPClientContext Clone(Uri siteUrl = null)
         {
-            await Task.Run(() =>
+            SPClientContext clonedClientContext = new SPClientContext(siteUrl ?? new Uri(this.Url))
             {
-                lock (_lock)
+                AuthenticationMode = this.AuthenticationMode,
+                ClientTag = this.ClientTag,
+            };
+
+            // In case of using networkcredentials in on premises or SharePointOnlineCredentials in Office 365
+            if (this.Credentials != null)
+            {
+                clonedClientContext.Credentials = this.Credentials;
+            }
+            else
+            {
+                //Take over the form digest handling setting
+                clonedClientContext.FormDigestHandlingEnabled = this.FormDigestHandlingEnabled;
+
+                // In case of app only or SAML
+                clonedClientContext.ExecutingWebRequest += delegate (object oSender, WebRequestEventArgs webRequestEventArgs)
                 {
-                    if (this.HasPendingRequest)
-                    {
-                        base.ExecuteQuery();
-                    }
-                }
-            });
+                    // Call the ExecutingWebRequest delegate method from the original ClientContext object, but pass along the webRequestEventArgs of 
+                    // the new delegate method
+                    MethodInfo methodInfo = this.GetType().GetMethod("OnExecutingWebRequest", BindingFlags.Instance | BindingFlags.NonPublic);
+                    object[] parametersArray = { webRequestEventArgs };
+                    methodInfo.Invoke(this, parametersArray);
+                };
+            }
+
+            return clonedClientContext;
         }
     }
 }

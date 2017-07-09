@@ -60,7 +60,7 @@ namespace SharePoint.Remote.Access.Helpers
         {
             if (!IsLoaded)
             {
-                (Field.Context as SPClientContext).Load(Field);
+                await (Field.Context as SPClientContext).LoadAsync(Field);
                 _executeQuery = true;
             }
 

@@ -40,7 +40,7 @@ namespace SharePoint.Remote.Access.Helpers
             var fields = ContentType.Fields;
             if (fields != null && fields.AreItemsAvailable)
             {
-                return fields.ToList().Select(field =>
+                return fields.AsEnumerable().Select(field =>
                 {
                     var clientField = SPClientField.FromField(field);
                     clientField.ClientWeb = ClientWeb;
@@ -72,7 +72,7 @@ namespace SharePoint.Remote.Access.Helpers
         {
             if (!IsLoaded)
             {
-                (ContentType.Context as SPClientContext).Load(ContentType);
+                await (ContentType.Context as SPClientContext).LoadAsync(ContentType);
                 _executeQuery = true;
             }
 

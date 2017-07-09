@@ -34,7 +34,7 @@ namespace SharePoint.Remote.Access.Helpers
             var views = List.Views;
             if (views != null && views.AreItemsAvailable)
             {
-                return views.ToList().Select(view =>
+                return views.AsEnumerable().Select(view =>
                 {
                     var clientView = SPClientView.FromView(view);
                     clientView.ClientList = this;
@@ -58,7 +58,7 @@ namespace SharePoint.Remote.Access.Helpers
             var contentTypes = List.ContentTypes;
             if (contentTypes != null && contentTypes.AreItemsAvailable)
             {
-                return contentTypes.ToList().Select(ct =>
+                return contentTypes.AsEnumerable().Select(ct =>
                 {
                     var clientContentType = SPClientContentType.FromContentType(ct);
                     clientContentType.IsSiteContentType = false;
@@ -84,7 +84,7 @@ namespace SharePoint.Remote.Access.Helpers
 
             if (fields != null && fields.AreItemsAvailable)
             {
-                return fields.ToList().Select(field =>
+                return fields.AsEnumerable().Select(field =>
                 {
                     var clientField = SPClientField.FromField(field);
                     clientField.ClientList = this;
@@ -116,7 +116,7 @@ namespace SharePoint.Remote.Access.Helpers
         {
             if (!IsLoaded)
             {
-                (List.Context as SPClientContext).Load(List);
+                await (List.Context as SPClientContext).LoadAsync(List);
                 _executeQuery = true;
             }
 
@@ -135,13 +135,12 @@ namespace SharePoint.Remote.Access.Helpers
 
         public string GetSettingsUrl()
         {
-            return string.Format("{0}/_layouts/{1}/listedit.aspx?List={2}", ClientWeb.GetUrl().TrimEnd('/'),
-                ClientWeb.Web.UIVersion, List.Id);
+            return $"{ClientWeb.GetUrl().TrimEnd('/')}/_layouts/{ClientWeb.Web.UIVersion}/listedit.aspx?List={List.Id}";
         }
 
         public string GetRestUrl()
         {
-            return string.Format("{0}/_api/web/lists(guid'{1}')", ClientWeb.GetUrl().TrimEnd('/'), List.Id);
+            return $"{ClientWeb.GetUrl().TrimEnd('/')}/_api/web/lists(guid'{List.Id}')";
         }
 
         public string GetUrl()

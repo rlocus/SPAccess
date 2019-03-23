@@ -45,6 +45,7 @@
     <Reference Include="NLog">
       <HintPath>..\Assembly\NLog.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationFramework.Aero" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -66,9 +67,10 @@
     <Compile Include="Commands\RelayCommand.cs" />
     <Compile Include="Commands\WeakRefEventManager.cs" />
     <Compile Include="Controls\AutoScrollingListView.cs" />
-    <Compile Include="Controls\CheckableListView.cs" />
+    <Compile Include="Controls\ExListView.cs" />
     <Compile Include="Controls\FixedWidthGridViewColumn.cs" />
     <Compile Include="Controls\GridViewColumnResize.cs" />
+    <Compile Include="Controls\GridViewSort.cs" />
     <Compile Include="Controls\LogViewer.xaml.cs">
       <DependentUpon>LogViewer.xaml</DependentUpon>
     </Compile>

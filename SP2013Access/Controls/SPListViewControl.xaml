@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:uc="clr-namespace:SP2013Access.Controls"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:theme="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
@@ -41,26 +42,42 @@
             <RowDefinition />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <uc:CheckableListView HorizontalContentAlignment="Stretch" Grid.Row="0" VerticalContentAlignment="Stretch"
-                              Margin="0,0,0,10"
+        <uc:ExListView uc:GridViewSort.AutoSort="False" HorizontalContentAlignment="Stretch" Grid.Row="0" VerticalContentAlignment="Stretch"
+                              Margin="0,0,0,10" IsSynchronizedWithCurrentItem="True" GridViewColumnHeader.Click="SortableListViewColumnHeaderClicked"
                               ItemsSource="{Binding ItemsSource, ElementName=PaggingControl, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
             <ListView.View>
-                <GridView>
+                <GridView AllowsColumnReorder="False">
                     <uc:FixedWidthGridViewColumn FixedWidth="30">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
                                     <CheckBox
-                                        IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource FindAncestor,    AncestorType={x:Type uc:CheckableListViewItem}}}" />
+                                        IsChecked="{Binding Path=IsChecked, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type uc:CheckableListViewItem}}}" />
                                 </StackPanel>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </uc:FixedWidthGridViewColumn>
-                    <!--<GridViewColumn Header="Property" />
-                        <GridViewColumn Header="Value" />-->
+                    <GridViewColumn Header="Property" DisplayMemberBinding="{Binding Path=Property}" uc:GridViewColumnResize.Enabled="True" />
+                    <GridViewColumn Header="Value" DisplayMemberBinding="{Binding Path=Value}" uc:GridViewColumnResize.Enabled="True" />
                 </GridView>
             </ListView.View>
-        </uc:CheckableListView>
+            <ListView.Resources>
+                <DataTemplate x:Key="HeaderTemplateArrowUp">
+                    <DockPanel LastChildFill="True" Background="Transparent" Width="{Binding ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type GridViewColumnHeader}}}">
+                        <Path x:Name="arrowUp" Stretch="Uniform"  Fill="Transparent" Stroke="LightSkyBlue" Margin="0,0,0,0" Data="M 0 4 L 3.5 0 L 7 4 Z" DockPanel.Dock="Top" Width="20" SnapsToDevicePixels="True" >
+                        </Path>
+                        <TextBlock Text="{Binding}" HorizontalAlignment="Center" />
+                    </DockPanel>
+                </DataTemplate>
+
+                <DataTemplate x:Key="HeaderTemplateArrowDown">
+                    <DockPanel LastChildFill="True" Width="{Binding ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type GridViewColumnHeader}}}">
+                        <Path Stretch="Uniform" x:Name="arrowDown" Fill="Transparent" Margin="0,0,0,0" Stroke="LightSkyBlue" Data="M 0 0 L 3.5 4 L 7 0 Z" DockPanel.Dock="Top" Width="20" SnapsToDevicePixels="True" />
+                        <TextBlock Text="{Binding}" HorizontalAlignment="Center" />
+                    </DockPanel>
+                </DataTemplate>
+            </ListView.Resources>
+        </uc:ExListView>
         <uc:PaggingControl x:Name="PaggingControl" Grid.Row="1" Height="25"
                            PageContract="{Binding Contract}"
                            PreviewPageChange="PaggingControl_PreviewPageChange"

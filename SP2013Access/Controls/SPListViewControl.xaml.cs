@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace SP2013Access.Controls
@@ -15,7 +16,7 @@ namespace SP2013Access.Controls
             PaggingControl.DataContext = this;
         }
 
-        public IPageControlContract Contract => null;
+        public IPageControlContract Contract => new PageControlContract();
 
         private void PaggingControl_PreviewPageChange(object sender, PageChangedEventArgs args)
         {
@@ -28,6 +29,11 @@ namespace SP2013Access.Controls
             var items = PaggingControl.ItemsSource.ToList();
             var count = items.Count;
         }
+
+        private void SortableListViewColumnHeaderClicked(object sender, RoutedEventArgs e)
+        {
+            ((ExListView)sender).GridViewColumnHeaderClicked(e.OriginalSource as GridViewColumnHeader);
+        }
     }
 
     public class PageControlContract : IPageControlContract
@@ -39,7 +45,12 @@ namespace SP2013Access.Controls
 
         public ICollection<object> FetchRange(uint startingIndex, uint numberOfRecords, object filterTag)
         {
-            return null;
+            return new List<object>()
+            {
+                new {Property = "1", Value = "1"},
+                 new {Property = "2", Value = "2"},
+                  new {Property = "3", Value = "1"}
+            };
         }
     }
 }

@@ -3,3 +3,7 @@
 ################################################################################
 
 /SharePoint.Client.Test
+/SP2013Access/bin/Debug
+/SP2013Access/obj/Debug
+/.vs/SP2013Access/v14/.suo
+/.vs/SP2013Access/v15/Server/sqlite3

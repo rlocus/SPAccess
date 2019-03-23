@@ -115,7 +115,7 @@ namespace SP2013Access.Controls
 
         public PagingControl()
         {
-            Loaded += PaggingControl_Loaded;
+            Loaded += PagingControl_Loaded;
         }
 
         ~PagingControl()
@@ -127,7 +127,7 @@ namespace SP2013Access.Controls
 
         #region EVENTS
 
-        private void PaggingControl_Loaded(object sender, RoutedEventArgs e)
+        private void PagingControl_Loaded(object sender, RoutedEventArgs e)
         {
             if (Template == null)
             {

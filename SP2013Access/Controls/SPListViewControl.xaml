@@ -9,10 +9,10 @@
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
-        <Style TargetType="{x:Type uc:PaggingControl}">
+        <Style TargetType="{x:Type uc:PagingControl}">
             <Setter Property="Template">
                 <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type uc:PaggingControl}">
+                    <ControlTemplate TargetType="{x:Type uc:PagingControl}">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
@@ -44,7 +44,7 @@
         </Grid.RowDefinitions>
         <uc:ExListView uc:GridViewSort.AutoSort="False" HorizontalContentAlignment="Stretch" Grid.Row="0" VerticalContentAlignment="Stretch"
                               Margin="0,0,0,10" IsSynchronizedWithCurrentItem="True" GridViewColumnHeader.Click="SortableListViewColumnHeaderClicked"
-                              ItemsSource="{Binding ItemsSource, ElementName=PaggingControl, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+                              ItemsSource="{Binding ItemsSource, ElementName=PagingControl, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
             <ListView.View>
                 <GridView AllowsColumnReorder="False">
                     <uc:FixedWidthGridViewColumn FixedWidth="30">
@@ -78,14 +78,14 @@
                 </DataTemplate>
             </ListView.Resources>
         </uc:ExListView>
-        <uc:PaggingControl x:Name="PaggingControl" Grid.Row="1" Height="25"
+        <uc:PagingControl x:Name="PagingControl" Grid.Row="1" Height="25"
                            PageContract="{Binding Contract}"
-                           PreviewPageChange="PaggingControl_PreviewPageChange"
-                           PageChanged="PaggingControl_PageChanged">
-            <uc:PaggingControl.PageSizes>
+                           PreviewPageChange="PagingControl_PreviewPageChange"
+                           PageChanged="PagingControl_PageChanged">
+            <uc:PagingControl.PageSizes>
                 <sys:UInt32>30</sys:UInt32>
                 <sys:UInt32>50</sys:UInt32>
-            </uc:PaggingControl.PageSizes>
-        </uc:PaggingControl>
+            </uc:PagingControl.PageSizes>
+        </uc:PagingControl>
     </Grid>
 </UserControl>

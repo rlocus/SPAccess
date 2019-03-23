@@ -13,20 +13,20 @@ namespace SP2013Access.Controls
         public SPListViewControl()
         {
             InitializeComponent();
-            PaggingControl.DataContext = this;
+            PagingControl.DataContext = this;
         }
 
         public IPageControlContract Contract => new PageControlContract();
 
-        private void PaggingControl_PreviewPageChange(object sender, PageChangedEventArgs args)
+        private void PagingControl_PreviewPageChange(object sender, PageChangedEventArgs args)
         {
-            var items = PaggingControl.ItemsSource.ToList();
+            var items = PagingControl.ItemsSource.ToList();
             var count = items.Count;
         }
 
-        private void PaggingControl_PageChanged(object sender, PageChangedEventArgs args)
+        private void PagingControl_PageChanged(object sender, PageChangedEventArgs args)
         {
-            var items = PaggingControl.ItemsSource.ToList();
+            var items = PagingControl.ItemsSource.ToList();
             var count = items.Count;
         }
 

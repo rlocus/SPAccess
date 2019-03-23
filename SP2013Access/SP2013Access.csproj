@@ -74,7 +74,7 @@
     <Compile Include="Controls\LogViewer.xaml.cs">
       <DependentUpon>LogViewer.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\PaggingControl.cs" />
+    <Compile Include="Controls\PagingControl.cs" />
     <Compile Include="Controls\SPClientTreeView.xaml.cs">
       <DependentUpon>SPClientTreeView.xaml</DependentUpon>
     </Compile>

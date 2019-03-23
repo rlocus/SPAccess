@@ -1,6 +1,6 @@
-﻿using System;
+﻿using SharePoint.Remote.Access.Extensions;
+using System;
 using System.Xml.Linq;
-using SharePoint.Remote.Access.Extensions;
 
 namespace SharePoint.Remote.Access.Caml.Operators
 {

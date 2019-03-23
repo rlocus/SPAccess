@@ -83,7 +83,7 @@ namespace SharePoint.Remote.Access.Caml.Operators
             {
                 return new Membership(existingOperator);
             }
-            throw new NotSupportedException(nameof(tag));
+            throw new NotSupportedException("tag");
         }
 
 

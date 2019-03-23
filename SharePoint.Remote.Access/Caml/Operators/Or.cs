@@ -24,6 +24,11 @@ namespace SharePoint.Remote.Access.Caml.Operators
         {
         }
 
+        public Or(LogicalJoin firstLogicalJoin, LogicalJoin secondLogicalJoin, params Operator[] operators)
+            : base(OrTag, firstLogicalJoin, secondLogicalJoin, operators)
+        {
+        }
+
         public Or(ComparisonOperator firstComparisonOperator, ComparisonOperator secondComparisonOperator, params Operator[] operators)
          : base(OrTag, firstComparisonOperator, secondComparisonOperator, operators)
         {
@@ -41,7 +46,7 @@ namespace SharePoint.Remote.Access.Caml.Operators
 
         public override void Combine(Operator @operator)
         {
-            if (@operator == null) throw new ArgumentNullException(nameof(@operator));
+            if (@operator == null) throw new ArgumentNullException("operator");
             var @logicalJoin = Operators.OfType<LogicalJoin>().FirstOrDefault();
             if (@logicalJoin != null)
             {

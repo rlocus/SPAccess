@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Xml.Linq;
+using Microsoft.SharePoint;
 using Microsoft.SharePoint.Client;
 
 namespace SharePoint.Remote.Access.Caml.Operators
@@ -11,11 +12,13 @@ namespace SharePoint.Remote.Access.Caml.Operators
         {
         }
 
-        public In(Guid fieldId, IEnumerable<object> values, FieldType type) : base(fieldId, values, type)
+        public In(Guid fieldId, IEnumerable<object> values, FieldType type)
+            : base(fieldId, values, type)
         {
         }
 
-        public In(string fieldName, IEnumerable<object> values, FieldType type) : base(fieldName, values, type)
+        public In(string fieldName, IEnumerable<object> values, FieldType type)
+            : base(fieldName, values, type)
         {
         }
 
@@ -23,7 +26,8 @@ namespace SharePoint.Remote.Access.Caml.Operators
         {
         }
 
-        public In(CamlFieldRef fieldRef, IEnumerable<object> values, FieldType type) : base(fieldRef, values, type)
+        public In(CamlFieldRef fieldRef, IEnumerable<object> values, FieldType type)
+            : base(fieldRef, values, type)
         {
         }
 

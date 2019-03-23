@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Xml.Linq;
+using Microsoft.SharePoint;
 using Microsoft.SharePoint.Client;
 
 namespace SharePoint.Remote.Access.Caml.Operators
@@ -10,15 +11,18 @@ namespace SharePoint.Remote.Access.Caml.Operators
         {
         }
 
-        public Leq(CamlFieldRef fieldRef, object value, FieldType type) : base(fieldRef, value, type)
+        public Leq(CamlFieldRef fieldRef, object value, FieldType type)
+            : base(fieldRef, value, type)
         {
         }
 
-        public Leq(Guid fieldId, object value, FieldType type) : base(fieldId, value, type)
+        public Leq(Guid fieldId, object value, FieldType type)
+            : base(fieldId, value, type)
         {
         }
 
-        public Leq(string fieldName, object value, FieldType type) : base(fieldName, value, type)
+        public Leq(string fieldName, object value, FieldType type)
+            : base(fieldName, value, type)
         {
         }
 
@@ -61,7 +65,7 @@ namespace SharePoint.Remote.Access.Caml.Operators
         }
 
         public Leq(XElement existingLeqOperator)
-            : base("Gt", existingLeqOperator)
+            : base(LeqTag, existingLeqOperator)
         {
         }
     }

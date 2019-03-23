@@ -1,8 +1,8 @@
-﻿using System;
+﻿using SharePoint.Remote.Access.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
-using SharePoint.Remote.Access.Extensions;
 
 namespace SharePoint.Remote.Access.Caml
 {
@@ -72,8 +72,8 @@ namespace SharePoint.Remote.Access.Caml
 
         protected Join(string fieldName, string primaryListAlias, string listAlias) : base(JoinTag)
         {
-            if (string.IsNullOrWhiteSpace(listAlias)) throw new ArgumentNullException(nameof(listAlias));
-            if (string.IsNullOrWhiteSpace(fieldName)) throw new ArgumentNullException(nameof(fieldName));
+            if (string.IsNullOrWhiteSpace(listAlias)) throw new ArgumentNullException("listAlias");
+            if (string.IsNullOrWhiteSpace(fieldName)) throw new ArgumentNullException("fieldName");
             ListAlias = listAlias;
             JoinComparison = new EqJoinComparison(new[]
             {
@@ -128,7 +128,7 @@ namespace SharePoint.Remote.Access.Caml
 
         public static Join GetJoin(XElement existingJoin)
         {
-            if (existingJoin == null) throw new ArgumentNullException(nameof(existingJoin));
+            if (existingJoin == null) throw new ArgumentNullException("existingJoin");
             var tag = existingJoin.Name.LocalName;
             if (string.Equals(tag, JoinTag, StringComparison.OrdinalIgnoreCase))
             {

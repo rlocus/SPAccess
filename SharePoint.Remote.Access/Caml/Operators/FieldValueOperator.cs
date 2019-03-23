@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Xml.Linq;
-using Microsoft.SharePoint.Client;
 using SharePoint.Remote.Access.Caml.Interfaces;
+using Microsoft.SharePoint;
+using Microsoft.SharePoint.Client;
 using SharePoint.Remote.Access.Extensions;
 
 namespace SharePoint.Remote.Access.Caml.Operators

@@ -1,6 +1,6 @@
-﻿using System;
+﻿using SharePoint.Remote.Access.Extensions;
+using System;
 using System.Xml.Linq;
-using SharePoint.Remote.Access.Extensions;
 
 namespace SharePoint.Remote.Access.Caml
 {
@@ -60,8 +60,8 @@ namespace SharePoint.Remote.Access.Caml
                 Name = name.Value;
             }
             var id = existingFieldRef.AttributeIgnoreCase(IdAttr);
-            var guidString = id?.Value.Trim();
-            if (guidString?.Length > 0)
+            var guidString = id != null ? id.Value.Trim() : null;
+            if (guidString != null && guidString.Length > 0)
             {
                 Id = new Guid(guidString);
             }
@@ -129,7 +129,7 @@ namespace SharePoint.Remote.Access.Caml
 
         public override XElement ToXElement()
         {
-            var el = base.ToXElement();
+            var el = new XElement(FieldRefTag);
             if (!string.IsNullOrWhiteSpace(List))
             {
                 el.Add(new XAttribute(ListAttr, List));
@@ -144,15 +144,15 @@ namespace SharePoint.Remote.Access.Caml
             }
             if (Ascending.HasValue)
             {
-                el.Add(new XAttribute(AscendingAttr, Ascending.Value));
+                el.Add(new XAttribute(AscendingAttr, Ascending.Value.ToString().ToUpper()));
             }
             if (Nullable.HasValue)
             {
-                el.Add(new XAttribute(NullableAttr, Nullable.Value));
+                el.Add(new XAttribute(NullableAttr, Nullable.Value.ToString().ToUpper()));
             }
             if (LookupId.HasValue)
             {
-                el.Add(new XAttribute(LookupIdAttr, LookupId.Value));
+                el.Add(new XAttribute(LookupIdAttr, LookupId.Value.ToString().ToUpper()));
             }
             if (!string.IsNullOrWhiteSpace(Alias))
             {
@@ -168,7 +168,7 @@ namespace SharePoint.Remote.Access.Caml
             }
             if (Explicit.HasValue)
             {
-                el.Add(new XAttribute(ExplicitAttr, Explicit.Value));
+                el.Add(new XAttribute(ExplicitAttr, Explicit.Value.ToString().ToUpper()));
             }
             if (!string.IsNullOrWhiteSpace(Key))
             {
@@ -184,7 +184,7 @@ namespace SharePoint.Remote.Access.Caml
             }
             if (TextOnly.HasValue)
             {
-                el.Add(new XAttribute(TextOnlyAttr, TextOnly.Value));
+                el.Add(new XAttribute(TextOnlyAttr, TextOnly.Value.ToString().ToUpper()));
             }
             return el;
         }

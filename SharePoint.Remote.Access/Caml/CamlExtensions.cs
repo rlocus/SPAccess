@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Linq;
 using SharePoint.Remote.Access.Caml.Clauses;
 using SharePoint.Remote.Access.Caml.Operators;
 
@@ -10,6 +11,7 @@ namespace SharePoint.Remote.Access.Caml
     {
         public static void WhereAll(this Query query, params Operator[] operators)
         {
+            operators = operators.Where(op => op != null).ToArray();
             if (operators.Length == 0) return;
             if (query.Where == null)
             {
@@ -21,6 +23,7 @@ namespace SharePoint.Remote.Access.Caml
 
         public static void WhereAny(this Query query, params Operator[] operators)
         {
+            operators = operators.Where(op => op != null).ToArray();
             if (operators.Length == 0) return;
             if (query.Where == null)
             {
@@ -41,25 +44,90 @@ namespace SharePoint.Remote.Access.Caml
             return where;
         }
 
+        //public static CamlWhere Or(this CamlWhere where, params Operator[] operators)
+        //{
+        //    //if (where == null) throw new ArgumentNullException("where");
+        //    operators = operators.Where(op => op != null).ToArray();
+        //    if (operators.Length > 0)
+        //    {
+        //        Operator @operator;
+        //        if (where == null)
+        //        {
+        //            @operator = operators.First();
+        //            @operator = operators.Skip(1).Aggregate(@operator, (current, op) => current.Or(op));
+        //        }
+        //        else
+        //        {
+        //            @operator = operators.Where(op => op != null)
+        //                .Aggregate(@where.Operator, (current, op) => current.Or(op));
+        //        }
+        //        where = new CamlWhere(@operator);
+        //    }
+        //    return where;
+        //}
+
         public static CamlWhere Or(this CamlWhere where, params Operator[] operators)
         {
-            if (where == null) throw new ArgumentNullException("where");
+            //if (where == null) throw new ArgumentNullException("where");
+            operators = operators.Where(op => op != null).ToArray();
             if (operators.Length > 0)
             {
-                Operator @operator = operators.Where(op => op != null)
-                    .Aggregate(@where.Operator, (current, op) => current.Or(op));
+                Operator @operator;
+                if (where == null)
+                {
+                    @operator = operators.First();
+                    @operator = operators.Skip(1).Aggregate(@operator, (current, op) => current.AppendOr(op));
+                }
+                else
+                {
+                    @operator = operators.Where(op => op != null)
+                        .Aggregate(@where.Operator, (current, op) => current.AppendOr(op));
+                }
                 where = new CamlWhere(@operator);
             }
             return where;
         }
 
+
+        //public static CamlWhere And(this CamlWhere where, params Operator[] operators)
+        //{
+        //    //if (where == null) throw new ArgumentNullException("where");
+        //    operators = operators.Where(op => op != null).ToArray();
+        //    if (operators.Length > 0)
+        //    {
+        //        Operator @operator;
+        //        if (where == null)
+        //        {
+        //            @operator = operators.First();
+        //            @operator = operators.Skip(1).Aggregate(@operator, (current, op) => current.And(op));
+        //        }
+        //        else
+        //        {
+        //            @operator = operators.Where(op => op != null)
+        //                .Aggregate(@where.Operator, (current, op) => current.And(op));
+        //        }
+        //        where = new CamlWhere(@operator);
+        //    }
+        //    return where;
+        //}
+
         public static CamlWhere And(this CamlWhere where, params Operator[] operators)
         {
-            if (where == null) throw new ArgumentNullException(nameof(@where));
+            //if (where == null) throw new ArgumentNullException("where");
+            operators = operators.Where(op => op != null).ToArray();
             if (operators.Length > 0)
             {
-                Operator @operator = operators.Where(op => op != null)
-                    .Aggregate(@where.Operator, (current, op) => current.And(op));
+                Operator @operator;
+                if (where == null)
+                {
+                    @operator = operators.First();
+                    @operator = operators.Skip(1).Aggregate(@operator, (current, op) => current.AppendAnd(op));
+                }
+                else
+                {
+                    @operator = operators.Where(op => op != null)
+                        .Aggregate(@where.Operator, (current, op) => current.AppendAnd(op));
+                }
                 where = new CamlWhere(@operator);
             }
             return where;
@@ -67,8 +135,8 @@ namespace SharePoint.Remote.Access.Caml
 
         public static CamlWhere Or(this CamlWhere firstWhere, CamlWhere secondWhere)
         {
-            if (firstWhere == null) throw new ArgumentNullException(nameof(firstWhere));
-            if (secondWhere == null) throw new ArgumentNullException(nameof(secondWhere));
+            if (firstWhere == null) throw new ArgumentNullException("firstWhere");
+            if (secondWhere == null) throw new ArgumentNullException("secondWhere");
             var logicalJoin = firstWhere.Operator as LogicalJoin;
             var @where = logicalJoin != null
                 ? new CamlWhere(logicalJoin.CombineOr(secondWhere.Operator))
@@ -76,46 +144,64 @@ namespace SharePoint.Remote.Access.Caml
             return where;
         }
 
-        public static Operator And(this Operator @operator, params Operator[] operators)
+        public static LogicalJoin And(this Operator @operator, params Operator[] operators)
         {
-            if (@operator == null) throw new ArgumentNullException(nameof(@operator));
-            var logicalJoin = @operator as LogicalJoin;
-            return logicalJoin != null
-                ? logicalJoin.CombineAnd(operators)
-                : new And(new List<Operator> { @operator }.Union(operators));
-        }
-
-        public static Operator And(this LogicalJoin @operator, params Operator[] operators)
-        {
-            if (@operator == null) throw new ArgumentNullException(nameof(@operator));
-            return @operator.CombineAnd(operators);
-        }
-
-        public static Operator And(this ComparisonOperator @operator, params Operator[] operators)
-        {
-            if (@operator == null) throw new ArgumentNullException(nameof(@operator));
+            if (@operator == null) throw new ArgumentNullException("operator");
             return new And(new List<Operator> { @operator }.Union(operators));
         }
 
-        public static Operator Or(this Operator @operator, params Operator[] operators)
+        public static LogicalJoin And(this LogicalJoin @operator, params Operator[] operators)
         {
-            if (@operator == null) throw new ArgumentNullException(nameof(@operator));
-            var logicalJoin = @operator as LogicalJoin;
-            return logicalJoin != null
-                ? logicalJoin.CombineOr(operators)
-                : new Or(new List<Operator> { @operator }.Union(operators));
+            if (@operator == null) throw new ArgumentNullException("operator");
+            return @operator.CombineAnd(operators);
         }
 
-        public static Operator Or(this LogicalJoin @operator, params Operator[] operators)
+        public static LogicalJoin And(this ComparisonOperator @operator, params Operator[] operators)
         {
-            if (@operator == null) throw new ArgumentNullException(nameof(@operator));
+            if (@operator == null) throw new ArgumentNullException("operator");
+            return new And(new List<Operator> { @operator }.Union(operators));
+        }
+
+        public static And AppendAnd(this Operator @operator, params Operator[] operators)
+        {
+            operators = operators ?? operators.Where(op => op != null).ToArray();
+            if (operators.Length > 0)
+            {
+                var andLogicalJoin = new And(new[] { @operator, operators.Single() });
+                andLogicalJoin = operators.Skip(1).Reverse().Aggregate(andLogicalJoin, (current, op) => new And(new[] { current, @op }));
+                return andLogicalJoin;
+            }
+            return null;
+        }
+
+        public static LogicalJoin Or(this Operator @operator, params Operator[] operators)
+        {
+            if (@operator == null) throw new ArgumentNullException("operator");
+            return new Or(new List<Operator> { @operator }.Union(operators));
+        }
+
+        public static LogicalJoin Or(this LogicalJoin @operator, params Operator[] operators)
+        {
+            if (@operator == null) throw new ArgumentNullException("operator");
             return @operator.CombineOr(operators);
         }
 
-        public static Operator Or(this ComparisonOperator @operator, params Operator[] operators)
+        public static LogicalJoin Or(this ComparisonOperator @operator, params Operator[] operators)
         {
-            if (@operator == null) throw new ArgumentNullException(nameof(@operator));
+            if (@operator == null) throw new ArgumentNullException("operator");
             return new Or(new List<Operator> { @operator }.Union(operators));
+        }
+
+        public static Or AppendOr(this Operator @operator, params Operator[] operators)
+        {
+            operators = operators ?? operators.Where(op => op != null).ToArray();
+            if (operators.Length > 0)
+            {
+                var andLogicalJoin = new Or(new[] { @operator, operators.Single() });
+                andLogicalJoin = operators.Skip(1).Reverse().Aggregate(andLogicalJoin, (current, op) => new Or(new[] { current, @op }));
+                return andLogicalJoin;
+            }
+            return null;
         }
 
         public static CamlOrderBy ThenBy(this CamlOrderBy orderBy, Guid fieldId, bool? ascending = null)
@@ -197,7 +283,7 @@ namespace SharePoint.Remote.Access.Caml
 
         public static JoinsCamlElement Join(this JoinsCamlElement camlJoins, params Join[] joins)
         {
-            if (@joins != null)
+            if (@joins != null && joins.Length > 0)
             {
                 var mergedJoins = new List<Join>();
                 if (camlJoins.Joins != null)
@@ -206,6 +292,15 @@ namespace SharePoint.Remote.Access.Caml
                 }
                 mergedJoins.AddRange(joins);
                 camlJoins.Joins = mergedJoins.ToArray();
+            }
+            return camlJoins;
+        }
+
+        public static JoinsCamlElement Join(this JoinsCamlElement camlJoins, JoinsCamlElement combinedCamlJoins)
+        {
+            if (combinedCamlJoins != null && combinedCamlJoins.Joins != null)
+            {
+                camlJoins = Join(camlJoins, combinedCamlJoins.Joins.ToArray());
             }
             return camlJoins;
         }
@@ -234,7 +329,7 @@ namespace SharePoint.Remote.Access.Caml
                 {
                     mergedViewFields.AddRange(camlViewFields.FieldRefs);
                 }
-                mergedViewFields.AddRange(viewFields.Select(viewField => new CamlFieldRef { Name = viewField }));
+                mergedViewFields.AddRange(viewFields.Where(@viewField => !mergedViewFields.Exists(field => field.Name == @viewField)).Select(viewField => new CamlFieldRef { Name = viewField }));
                 camlViewFields.FieldRefs = mergedViewFields.ToArray();
             }
             return camlViewFields;
@@ -264,8 +359,17 @@ namespace SharePoint.Remote.Access.Caml
             }
             mergedFields.Add(new CamlProjectedField(fieldName, listAlias, lookupField));
             camlProjectedFields.ProjectedFields = mergedFields.ToArray();
-
             return camlProjectedFields;
+        }
+
+        public static ProjectedFieldsCamlElement ShowField(this ProjectedFieldsCamlElement camlProjectedFields, ProjectedFieldsCamlElement combinedProjectedFields)
+        {
+            if (combinedProjectedFields != null && combinedProjectedFields.ProjectedFields != null)
+            {
+                camlProjectedFields = camlProjectedFields.ShowField(combinedProjectedFields.ProjectedFields.ToArray());
+            }
+            return camlProjectedFields;
+
         }
     }
 }

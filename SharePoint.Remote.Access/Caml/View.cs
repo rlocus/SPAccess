@@ -1,9 +1,9 @@
-﻿using System;
+﻿using SharePoint.Remote.Access.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
-using Microsoft.SharePoint.Client;
-using SharePoint.Remote.Access.Extensions;
+
 
 namespace SharePoint.Remote.Access.Caml
 {
@@ -96,15 +96,15 @@ namespace SharePoint.Remote.Access.Caml
             {
                 el.Add(queryElement);
             }
-            if (ViewFields?.FieldRefs != null && ViewFields.FieldRefs.Any())
+            if ((ViewFields != null ? ViewFields.FieldRefs : null) != null && ViewFields.FieldRefs.Any())
             {
                 el.Add(ViewFields.ToXElement());
             }
-            if (Joins?.Joins != null && Joins.Joins.Any())
+            if ((Joins != null ? Joins.Joins : null) != null && Joins.Joins.Any())
             {
                 el.Add(Joins.ToXElement());
             }
-            if (ProjectedFields?.ProjectedFields != null && ProjectedFields.ProjectedFields.Any())
+            if ((ProjectedFields != null ? ProjectedFields.ProjectedFields : null) != null && ProjectedFields.ProjectedFields.Any())
             {
                 el.Add(ProjectedFields.ToXElement());
             }
@@ -113,21 +113,6 @@ namespace SharePoint.Remote.Access.Caml
                 el.Add(RowLimit.ToXElement());
             }
             return el;
-        }
-
-        public CamlQuery ToCamlQuery()
-        {
-            return new CamlQuery { ViewXml = ToString(true) };
-        }
-
-        public static View GetView(CamlQuery camlQuery)
-        {
-            return camlQuery != null ? new View(camlQuery.ViewXml) : null;
-        }
-
-        public static implicit operator View(CamlQuery camlQuery)
-        {
-            return GetView(camlQuery);
         }
     }
 }

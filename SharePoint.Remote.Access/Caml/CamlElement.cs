@@ -24,7 +24,7 @@ namespace SharePoint.Remote.Access.Caml
             Parse(existingElement);
         }
 
-        public string ElementName { get; }
+        public string ElementName { get; private set; }
 
         public virtual XElement ToXElement()
         {
@@ -33,7 +33,7 @@ namespace SharePoint.Remote.Access.Caml
 
         private void Parse(XElement existingElement)
         {
-            if (existingElement == null) throw new ArgumentNullException(nameof(existingElement));
+            if (existingElement == null) throw new ArgumentNullException("existingElement");
             if (string.Equals(existingElement.Name.LocalName, ElementName, StringComparison.OrdinalIgnoreCase))
             {
                 if ((existingElement.HasAttributes || existingElement.HasElements))
@@ -43,7 +43,7 @@ namespace SharePoint.Remote.Access.Caml
             }
             else
             {
-                throw new NotSupportedException(nameof(existingElement.Name));
+                throw new NotSupportedException("existingElement.Name");
             }
         }
 
@@ -92,9 +92,9 @@ namespace SharePoint.Remote.Access.Caml
             return ToString(disableFormatting);
         }
 
-        //public static implicit operator string(CamlElement caml)
-        //{
-        //    return caml?.ToString() ?? string.Empty;
-        //}
+        public static implicit operator string(CamlElement caml)
+        {
+            return caml != null ? caml.ToString() : string.Empty;
+        }
     }
 }

@@ -1,8 +1,8 @@
-﻿using System;
+﻿using SharePoint.Remote.Access.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
-using SharePoint.Remote.Access.Extensions;
 
 namespace SharePoint.Remote.Access.Caml.Operators
 {
@@ -43,6 +43,17 @@ namespace SharePoint.Remote.Access.Caml.Operators
             InitOperators(allOperators);
         }
 
+        protected LogicalJoin(string operatorName, LogicalJoin firstLogicalJoin, LogicalJoin secondLogicalJoin, IEnumerable<Operator> operators)
+            : base(operatorName)
+        {
+            var allOperators = new List<Operator>() { firstLogicalJoin, secondLogicalJoin };
+            if (operators != null)
+            {
+                allOperators.AddRange(operators);
+            }
+            InitOperators(allOperators);
+        }
+
         protected LogicalJoin(string operatorName, IEnumerable<Operator> operators)
             : base(operatorName)
         {
@@ -66,22 +77,20 @@ namespace SharePoint.Remote.Access.Caml.Operators
         {
             if (operators != null)
             {
-                operators = operators as Operator[] ?? operators.Where(op => op != null).ToArray();
-                Operators = operators.Take(OperatorCount).ToArray();
+                Operators = operators as Operator[] ?? operators.Where(op => op != null).Take(OperatorCount).ToArray();
                 if (Operators.Length < OperatorCount)
                 {
-                    throw new NotSupportedException($"Should be at least of {OperatorCount} operators.");
+                    throw new NotSupportedException(string.Format("Should be at least of {0} operators.", OperatorCount));
                 }
-                if (Operators.OfType<LogicalJoin>().Count() == Operators.Length)
-                {
-                    throw new NotSupportedException("All operators are logical joins.");
-                }
+                //if (Operators.OfType<LogicalJoin>().Count() == Operators.Length)
+                //{
+                //    throw new NotSupportedException("All operators are logical joins.");
+                //}
                 foreach (var @operator in Operators.OfType<LogicalJoin>())
                 {
                     @operator.Parent = this;
                 }
-
-                foreach (var @operator in operators.Skip(OperatorCount))
+                foreach (var @operator in operators.Where(op => op != null).Skip(OperatorCount))
                 {
                     Combine(@operator);
                 }
@@ -98,7 +107,7 @@ namespace SharePoint.Remote.Access.Caml.Operators
 
         internal LogicalJoin CombineAnd(params Operator[] combinedOperator)
         {
-            if (combinedOperator == null) throw new ArgumentNullException(nameof(combinedOperator));
+            if (combinedOperator == null) throw new ArgumentNullException("combinedOperator");
             var childOperator = Operators.OfType<LogicalJoin>()
                 .FirstOrDefaultFromMany(op => op.Operators.OfType<LogicalJoin>(),
                     op => !op.Operators.OfType<LogicalJoin>().Any());
@@ -115,7 +124,7 @@ namespace SharePoint.Remote.Access.Caml.Operators
 
         internal LogicalJoin CombineOr(params Operator[] combinedOperator)
         {
-            if (combinedOperator == null) throw new ArgumentNullException(nameof(combinedOperator));
+            if (combinedOperator == null) throw new ArgumentNullException("combinedOperator");
 
             var childOperator = Operators.OfType<LogicalJoin>()
                 .FirstOrDefaultFromMany(op => op.Operators.OfType<LogicalJoin>(),

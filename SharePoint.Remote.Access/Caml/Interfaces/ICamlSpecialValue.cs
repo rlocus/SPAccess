@@ -1,4 +1,5 @@
-﻿using Microsoft.SharePoint.Client;
+﻿using Microsoft.SharePoint;
+using Microsoft.SharePoint.Client;
 
 namespace SharePoint.Remote.Access.Caml.Interfaces
 {

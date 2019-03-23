@@ -5,15 +5,18 @@ namespace SharePoint.Remote.Access.Caml.Clauses
 {
     public abstract class CamlClause : CamlElement
     {
-        protected CamlClause(string elementName) : base(elementName)
+        protected CamlClause(string elementName)
+            : base(elementName)
         {
         }
 
-        protected CamlClause(string elementName, string existingElement) : base(elementName, existingElement)
+        protected CamlClause(string elementName, string existingElement)
+            : base(elementName, existingElement)
         {
         }
 
-        protected CamlClause(string elementName, XElement existingElement) : base(elementName, existingElement)
+        protected CamlClause(string elementName, XElement existingElement)
+            : base(elementName, existingElement)
         {
         }
 

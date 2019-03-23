@@ -12,7 +12,7 @@ namespace SharePoint.Remote.Access.Caml.Clauses
         public CamlWhere(Operator op)
             : base(WhereTag)
         {
-            if (op == null) throw new ArgumentNullException(nameof(op));
+            if (op == null) throw new ArgumentNullException("op");
             Operator = op;
         }
 

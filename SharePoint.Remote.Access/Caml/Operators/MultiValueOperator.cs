@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
-using Microsoft.SharePoint.Client;
 using SharePoint.Remote.Access.Caml.Interfaces;
+using Microsoft.SharePoint;
+using Microsoft.SharePoint.Client;
 using SharePoint.Remote.Access.Extensions;
 
 namespace SharePoint.Remote.Access.Caml.Operators
@@ -40,7 +41,7 @@ namespace SharePoint.Remote.Access.Caml.Operators
             var el = base.ToXElement();
             if (Values != null)
             {
-                el.Add(new XElement(ValuesTag, Values.Select(val => val?.ToXElement())));
+                el.Add(new XElement(ValuesTag, Values.Where(val => val != null).Select(val => val.ToXElement())));
             }
             return el;
         }

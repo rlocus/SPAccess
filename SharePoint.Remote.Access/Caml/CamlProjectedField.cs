@@ -1,4 +1,5 @@
 ﻿using System.Xml.Linq;
+using Microsoft.SharePoint;
 using Microsoft.SharePoint.Client;
 using SharePoint.Remote.Access.Extensions;
 

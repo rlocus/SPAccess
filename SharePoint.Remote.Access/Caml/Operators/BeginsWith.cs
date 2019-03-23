@@ -1,40 +1,73 @@
 ﻿using System;
 using System.Xml.Linq;
+using Microsoft.SharePoint;
 using Microsoft.SharePoint.Client;
 
 namespace SharePoint.Remote.Access.Caml.Operators
 {
-    public sealed class BeginsWith : FieldValueOperator<string>
+    public sealed class BeginsWith : BeginsWith<string>
     {
-        internal const string BeginsWithTag = "BeginsWith";
-
         public BeginsWith(CamlFieldRef fieldRef, CamlValue<string> value)
-            : base(BeginsWithTag, fieldRef, value)
+            : base(fieldRef, value)
         {
         }
 
         public BeginsWith(CamlFieldRef fieldRef, string value)
-            : base(BeginsWithTag, fieldRef, value, FieldType.Text)
+            : base(fieldRef, value, FieldType.Text)
         {
         }
 
         public BeginsWith(Guid fieldId, string value)
-            : base(BeginsWithTag, fieldId, value, FieldType.Text)
+            : base(fieldId, value, FieldType.Text)
         {
         }
 
         public BeginsWith(string fieldName, string value)
-            : base(BeginsWithTag, fieldName, value, FieldType.Text)
+            : base(fieldName, value, FieldType.Text)
         {
         }
 
         public BeginsWith(string existingBeginsWithOperator)
-            : base(BeginsWithTag, existingBeginsWithOperator)
+            : base(existingBeginsWithOperator)
         {
         }
 
         public BeginsWith(XElement existingBeginsWithOperator)
-            : base(BeginsWithTag, existingBeginsWithOperator)
+            : base(existingBeginsWithOperator)
+        {
+        }
+    }
+
+    public class BeginsWith<T> : FieldValueOperator<T>
+    {
+        internal const string BeginsWithTag = "BeginsWith";
+        public BeginsWith(CamlFieldRef fieldRef, CamlValue<T> value)
+            : base(BeginsWithTag, fieldRef, value)
+        {
+        }
+
+        public BeginsWith(CamlFieldRef fieldRef, T value, FieldType type)
+            : base(BeginsWithTag, fieldRef, value, type)
+        {
+        }
+
+        public BeginsWith(Guid fieldId, T value, FieldType type)
+            : base(BeginsWithTag, fieldId, value, type)
+        {
+        }
+
+        public BeginsWith(string fieldName, T value, FieldType type)
+            : base(BeginsWithTag, fieldName, value, type)
+        {
+        }
+
+        public BeginsWith(string existingLtOperator)
+            : base(BeginsWithTag, existingLtOperator)
+        {
+        }
+
+        public BeginsWith(XElement existingLtOperator)
+            : base(BeginsWithTag, existingLtOperator)
         {
         }
     }

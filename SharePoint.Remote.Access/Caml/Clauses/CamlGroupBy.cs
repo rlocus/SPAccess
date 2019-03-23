@@ -21,7 +21,7 @@ namespace SharePoint.Remote.Access.Caml.Clauses
         public CamlGroupBy(IEnumerable<CamlFieldRef> fieldRefs, bool? collapse = null, int? limit = 30)
             : base(GroupByTag)
         {
-            if (fieldRefs == null) throw new ArgumentNullException(nameof(fieldRefs));
+            if (fieldRefs == null) throw new ArgumentNullException("fieldRefs");
             FieldRefs = fieldRefs;
             Collapse = collapse;
             Limit = limit;
@@ -30,7 +30,7 @@ namespace SharePoint.Remote.Access.Caml.Clauses
         public CamlGroupBy(IEnumerable<string> fieldNames, bool? collapse = null, int? limit = 30)
             : base(GroupByTag)
         {
-            if (fieldNames == null) throw new ArgumentNullException(nameof(fieldNames));
+            if (fieldNames == null) throw new ArgumentNullException("fieldNames");
             FieldRefs = fieldNames.Select(fieldName => new CamlFieldRef { Name = fieldName });
             Collapse = collapse;
             Limit = limit;
@@ -39,7 +39,7 @@ namespace SharePoint.Remote.Access.Caml.Clauses
         public CamlGroupBy(IEnumerable<Guid> fieldIds, bool? collapse = null, int? limit = 30)
             : base(GroupByTag)
         {
-            if (fieldIds == null) throw new ArgumentNullException(nameof(fieldIds));
+            if (fieldIds == null) throw new ArgumentNullException("fieldIds");
             FieldRefs = fieldIds.Select(fieldId => new CamlFieldRef { Id = fieldId });
             Collapse = collapse;
             Limit = limit;
@@ -55,9 +55,9 @@ namespace SharePoint.Remote.Access.Caml.Clauses
         {
         }
 
-        public bool? Collapse { get; private set; }
+        public bool? Collapse { get; set; }
 
-        public int? Limit { get; private set; }
+        public int? Limit { get; set; }
 
         public IEnumerable<CamlFieldRef> FieldRefs { get; private set; }
 
@@ -124,7 +124,7 @@ namespace SharePoint.Remote.Access.Caml.Clauses
             bool collapse = false;
             int? limit = null;
             var fieldRefs = new List<CamlFieldRef>();
-            if (firstGroupBy?.FieldRefs != null)
+            if (firstGroupBy != null && firstGroupBy.FieldRefs != null)
             {
                 if (firstGroupBy.Limit != null)
                 {
@@ -133,7 +133,7 @@ namespace SharePoint.Remote.Access.Caml.Clauses
                 if (firstGroupBy.Collapse != null) collapse = firstGroupBy.Collapse.Value;
                 fieldRefs.AddRange(firstGroupBy.FieldRefs);
             }
-            if (secondGroupBy?.FieldRefs != null)
+            if (secondGroupBy != null && secondGroupBy.FieldRefs != null)
             {
                 if (secondGroupBy.Limit != null)
                 {

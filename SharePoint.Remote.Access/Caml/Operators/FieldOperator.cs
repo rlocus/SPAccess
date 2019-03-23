@@ -10,7 +10,7 @@ namespace SharePoint.Remote.Access.Caml.Operators
         protected FieldOperator(string operatorName, CamlFieldRef fieldRef)
             : base(operatorName)
         {
-            if (fieldRef == null) throw new ArgumentNullException(nameof(fieldRef));
+            if (fieldRef == null) throw new ArgumentNullException("fieldRef");
             FieldRef = fieldRef;
         }
 

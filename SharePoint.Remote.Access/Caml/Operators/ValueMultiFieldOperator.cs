@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
-using Microsoft.SharePoint.Client;
 using SharePoint.Remote.Access.Caml.Interfaces;
+using Microsoft.SharePoint;
+using Microsoft.SharePoint.Client;
 using SharePoint.Remote.Access.Extensions;
 
 namespace SharePoint.Remote.Access.Caml.Operators
@@ -14,14 +15,14 @@ namespace SharePoint.Remote.Access.Caml.Operators
             FieldType type)
             : base(operatorName, value, type)
         {
-            if (fieldRefs == null) throw new ArgumentNullException(nameof(fieldRefs));
+            if (fieldRefs == null) throw new ArgumentNullException("fieldRefs");
             FieldRefs = fieldRefs;
         }
 
         protected ValueMultiFieldOperator(string operatorName, IEnumerable<string> fieldNames, T value, FieldType type)
             : base(operatorName, value, type)
         {
-            if (fieldNames == null) throw new ArgumentNullException(nameof(fieldNames));
+            if (fieldNames == null) throw new ArgumentNullException("fieldNames");
             var fieldRefs = fieldNames.Select(fieldName => new CamlFieldRef {Name = fieldName});
             FieldRefs = fieldRefs;
         }
@@ -29,7 +30,7 @@ namespace SharePoint.Remote.Access.Caml.Operators
         protected ValueMultiFieldOperator(string operatorName, IEnumerable<Guid> fieldIds, T value, FieldType type)
             : base(operatorName, value, type)
         {
-            if (fieldIds == null) throw new ArgumentNullException(nameof(fieldIds));
+            if (fieldIds == null) throw new ArgumentNullException("fieldIds");
             var fieldRefs = fieldIds.Select(fieldId => new CamlFieldRef {Id = fieldId});
             FieldRefs = fieldRefs;
         }
@@ -49,7 +50,7 @@ namespace SharePoint.Remote.Access.Caml.Operators
         public override XElement ToXElement()
         {
             var el = base.ToXElement();
-            el.AddFirst(FieldRefs.Select(fieldRef => fieldRef?.ToXElement()));
+            el.AddFirst(FieldRefs.Select(fieldRef => fieldRef != null ? fieldRef.ToXElement() : null));
             return el;
         }
 

@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using SharePoint.Remote.Access.Extensions;
+using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
-using SharePoint.Remote.Access.Extensions;
 
 namespace SharePoint.Remote.Access.Caml
 {

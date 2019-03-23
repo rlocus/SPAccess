@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Xml.Linq;
-using Microsoft.SharePoint.Client;
 using SharePoint.Remote.Access.Caml.Interfaces;
+using Microsoft.SharePoint;
+using Microsoft.SharePoint.Client;
 
 namespace SharePoint.Remote.Access.Caml.Operators
 {
@@ -10,7 +11,7 @@ namespace SharePoint.Remote.Access.Caml.Operators
         protected ValueOperator(string operatorName, CamlValue<T> value)
             : base(operatorName)
         {
-            if (value == null) throw new ArgumentNullException(nameof(value));
+            if (value == null) throw new ArgumentNullException("value");
             Value = value;
         }
 

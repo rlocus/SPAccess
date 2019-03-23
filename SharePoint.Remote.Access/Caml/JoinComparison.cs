@@ -27,7 +27,7 @@ namespace SharePoint.Remote.Access.Caml
     {
         protected JoinComparison(string elementName, IEnumerable<CamlFieldRef> fieldRefs) : base(elementName)
         {
-            if (fieldRefs == null) throw new ArgumentNullException(nameof(fieldRefs));
+            if (fieldRefs == null) throw new ArgumentNullException("fieldRefs");
             FieldRefs = fieldRefs;
         }
 
@@ -66,7 +66,7 @@ namespace SharePoint.Remote.Access.Caml
             {
                 return new EqJoinComparison(existingComparison);
             }
-            throw new NotSupportedException(nameof(tag));
+            throw new NotSupportedException("tag");
         }
     }
 }

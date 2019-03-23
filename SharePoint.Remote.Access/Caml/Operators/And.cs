@@ -29,6 +29,11 @@ namespace SharePoint.Remote.Access.Caml.Operators
         {
         }
 
+        public And(LogicalJoin firstLogicalJoin, LogicalJoin secondLogicalJoin, params Operator[] operators)
+            : base(AndTag, firstLogicalJoin, secondLogicalJoin, operators)
+        {
+        }
+
         public And(string existingAndOperator)
             : base(AndTag, existingAndOperator)
         {
@@ -41,7 +46,7 @@ namespace SharePoint.Remote.Access.Caml.Operators
 
         public override void Combine(Operator @operator)
         {
-            if (@operator == null) throw new ArgumentNullException(nameof(@operator));
+            if (@operator == null) throw new ArgumentNullException("operator");
             var @logicalJoin = Operators.OfType<LogicalJoin>().FirstOrDefault();
             if (@logicalJoin != null)
             {

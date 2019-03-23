@@ -1,6 +1,8 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Xml.Linq;
 using SharePoint.Remote.Access.Caml.Clauses;
+using Microsoft.SharePoint;
 
 namespace SharePoint.Remote.Access.Caml
 {
@@ -48,6 +50,12 @@ namespace SharePoint.Remote.Access.Caml
                 el.Add(GroupBy.ToXElement());
             }
             return el;
+        }
+
+        public static Query GetQuery(View view)
+        {
+            if (view == null) throw new ArgumentNullException("view");
+            return new Query(string.Format("<{0}>{1}</{0}>", QueryTag, view.Query));
         }
     }
 }

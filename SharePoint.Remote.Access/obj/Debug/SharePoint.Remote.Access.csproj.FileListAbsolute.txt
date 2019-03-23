@@ -16,3 +16,5 @@ D:\Projects\SPAccess\SharePoint.Remote.Access\bin\Debug\SharePoint.Remote.Access
 D:\Projects\SPAccess\SharePoint.Remote.Access\bin\Debug\SharePoint.Remote.Access.pdb
 D:\Projects\SPAccess\SharePoint.Remote.Access\obj\Debug\SharePoint.Remote.Access.dll
 D:\Projects\SPAccess\SharePoint.Remote.Access\obj\Debug\SharePoint.Remote.Access.pdb
+D:\Git\SharePoint.Remote.Access\obj\Debug\SharePoint.Remote.Access.csprojAssemblyReference.cache
+D:\Git\SharePoint.Remote.Access\obj\Debug\SharePoint.Remote.Access.csproj.CoreCompileInputs.cache

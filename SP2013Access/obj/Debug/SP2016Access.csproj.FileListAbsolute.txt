@@ -41,3 +41,16 @@ D:\Projects\SPAccess\SP2013Access\obj\Debug\SplashWindow.baml
 D:\Projects\SPAccess\SP2013Access\obj\Debug\SP2013Access.g.resources
 D:\Projects\SPAccess\SP2013Access\obj\Debug\SP2013Access.Properties.Resources.resources
 D:\Projects\SPAccess\SP2013Access\obj\Debug\SP2016Access.csproj.GenerateResource.Cache
+D:\Git\SP2013Access\obj\Debug\SP2016Access.csprojAssemblyReference.cache
+D:\Git\SP2013Access\obj\Debug\Controls\LogViewer.g.cs
+D:\Git\SP2013Access\obj\Debug\Controls\SPClientTreeView.g.cs
+D:\Git\SP2013Access\obj\Debug\Controls\SPListViewControl.g.cs
+D:\Git\SP2013Access\obj\Debug\MainWindow.g.cs
+D:\Git\SP2013Access\obj\Debug\OpenSiteWindow.g.cs
+D:\Git\SP2013Access\obj\Debug\SplashWindow.g.cs
+D:\Git\SP2013Access\obj\Debug\App.g.cs
+D:\Git\SP2013Access\obj\Debug\GeneratedInternalTypeHelper.g.cs
+D:\Git\SP2013Access\obj\Debug\SP2013Access_MarkupCompile.cache
+D:\Git\SP2013Access\obj\Debug\SP2013Access_MarkupCompile.lref
+D:\Git\SP2013Access\obj\Debug\SP2013Access.exe
+D:\Git\SP2013Access\obj\Debug\SP2013Access.pdb

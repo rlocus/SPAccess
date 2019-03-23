@@ -4,17 +4,17 @@
 winexe
 C#
 .cs
-D:\Projects\SPAccess\SP2013Access\obj\Debug\
+D:\Git\SP2013Access\obj\Debug\
 SP2013Access
 none
 false
-TRACE;DEBUG;SP2016
-D:\Projects\SPAccess\SP2013Access\App.xaml
+DEBUG;TRACE
+D:\Git\SP2013Access\App.xaml
 6-367999
 
-53-107223434
-271949424137
+54-301492720
+151028071454
 Controls\LogViewer.xaml;Controls\SPClientTreeView.xaml;Controls\SPListViewControl.xaml;MainWindow.xaml;OpenSiteWindow.xaml;SplashWindow.xaml;
 
-True
+False
 

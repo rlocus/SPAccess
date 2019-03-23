@@ -1,0 +1,125 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{409798BF-78DF-4698-88F2-19CEC475EBD9}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SharePoint.Remote.Access</RootNamespace>
+    <AssemblyName>SharePoint.Remote.Access</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;SP2016</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;SP2016</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.SharePoint.Client, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.SharePointOnline.CSOM.16.1.6621.1200\lib\net45\Microsoft.SharePoint.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SharePoint.Client.Runtime, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.SharePointOnline.CSOM.16.1.6621.1200\lib\net45\Microsoft.SharePoint.Client.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AuthType.cs" />
+    <Compile Include="Caml\CamlRowLimit.cs" />
+    <Compile Include="Caml\Clauses\CamlClause.cs" />
+    <Compile Include="Caml\CamlProjectedField.cs" />
+    <Compile Include="Caml\Join.cs" />
+    <Compile Include="Caml\Clauses\CamlGroupBy.cs" />
+    <Compile Include="Caml\Clauses\CamlOrderBy.cs" />
+    <Compile Include="Caml\Clauses\CamlWhere.cs" />
+    <Compile Include="Caml\CamlExtensions.cs" />
+    <Compile Include="Caml\CamlFieldRef.cs" />
+    <Compile Include="Caml\Interfaces\ICaml.cs" />
+    <Compile Include="Caml\Interfaces\ICamlField.cs" />
+    <Compile Include="Caml\Interfaces\ICamlMultiField.cs" />
+    <Compile Include="Caml\Interfaces\ICamlMultiValue.cs" />
+    <Compile Include="Caml\Interfaces\ICamlValue.cs" />
+    <Compile Include="Caml\Interfaces\ICamlSpecialValue.cs" />
+    <Compile Include="Caml\ProjectedFieldsCamlElement.cs" />
+    <Compile Include="Caml\JoinsCamlElement.cs" />
+    <Compile Include="Caml\Operators\And.cs" />
+    <Compile Include="Caml\Operators\BeginsWith.cs" />
+    <Compile Include="Caml\Operators\ComparisonOperator.cs" />
+    <Compile Include="Caml\Operators\Contains.cs" />
+    <Compile Include="Caml\JoinComparison.cs" />
+    <Compile Include="Caml\Operators\DateRangesOverlap.cs" />
+    <Compile Include="Caml\Operators\Membership.cs" />
+    <Compile Include="Caml\Operators\NotIncludes.cs" />
+    <Compile Include="Caml\Operators\Includes.cs" />
+    <Compile Include="Caml\Operators\Eq.cs" />
+    <Compile Include="Caml\Operators\Geq.cs" />
+    <Compile Include="Caml\Operators\Gt.cs" />
+    <Compile Include="Caml\Operators\In.cs" />
+    <Compile Include="Caml\Operators\IsNotNull.cs" />
+    <Compile Include="Caml\Operators\IsNull.cs" />
+    <Compile Include="Caml\Operators\Leq.cs" />
+    <Compile Include="Caml\Operators\Lt.cs" />
+    <Compile Include="Caml\Operators\ValueMultiFieldOperator.cs" />
+    <Compile Include="Caml\Operators\MultiValueOperator.cs" />
+    <Compile Include="Caml\Operators\Neq.cs" />
+    <Compile Include="Caml\Operators\LogicalJoin.cs" />
+    <Compile Include="Caml\Operators\Operator.cs" />
+    <Compile Include="Caml\Operators\Or.cs" />
+    <Compile Include="Caml\Operators\FieldMultiValueOperator.cs" />
+    <Compile Include="Caml\Operators\FieldOperator.cs" />
+    <Compile Include="Caml\Operators\FieldValueOperator.cs" />
+    <Compile Include="Caml\Operators\ValueOperator.cs" />
+    <Compile Include="Caml\View.cs" />
+    <Compile Include="Caml\ViewFieldsCamlElement.cs" />
+    <Compile Include="Caml\Query.cs" />
+    <Compile Include="Caml\CamlElement.cs" />
+    <Compile Include="Caml\CamlValue.cs" />
+    <Compile Include="Extensions\ClientRuntimeContextExtentions.cs" />
+    <Compile Include="Extensions\LinqExtensions.cs" />
+    <Compile Include="Extensions\XElementExtensions.cs" />
+    <Compile Include="Helpers\Deferred.cs" />
+    <Compile Include="Helpers\RecurrenceRule.cs" />
+    <Compile Include="Helpers\SPRecurrenceHelper.cs" />
+    <Compile Include="Helpers\SPClientView.cs" />
+    <Compile Include="Helpers\SPClientContext.cs" />
+    <Compile Include="Helpers\SPClientContentType.cs" />
+    <Compile Include="Helpers\SPClientField.cs" />
+    <Compile Include="Helpers\SPClientList.cs" />
+    <Compile Include="Helpers\SPClientSite.cs" />
+    <Compile Include="Helpers\SPClientWeb.cs" />
+    <Compile Include="Helpers\Utility.cs" />
+    <Compile Include="IClientObject.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ServerVersion.cs" />
+    <Compile Include="SPAccessException.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

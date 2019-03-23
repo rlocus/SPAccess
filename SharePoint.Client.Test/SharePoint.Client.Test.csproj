@@ -37,11 +37,11 @@
   <ItemGroup>
     <Reference Include="Microsoft.SharePoint.Client, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Assembly\Microsoft.SharePoint.Client.dll</HintPath>
+      <HintPath>..\packages\Microsoft.SharePointOnline.CSOM.16.1.6621.1200\lib\net45\Microsoft.SharePoint.Client.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.SharePoint.Client.Runtime, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Assembly\Microsoft.SharePoint.Client.Runtime.dll</HintPath>
+      <HintPath>..\packages\Microsoft.SharePointOnline.CSOM.16.1.6621.1200\lib\net45\Microsoft.SharePoint.Client.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.XML" />
@@ -66,9 +66,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SharePoint.Remote.Access\SharePoint.Remote.Access.csproj">
-      <Project>{cde4c77f-acf4-4d04-8c6c-0f8165aeaf21}</Project>
-      <Name>SharePoint.Remote.Access</Name>
+    <ProjectReference Include="..\SharePoint.Remote.Access\SharePoint365.Remote.Access.csproj">
+      <Project>{409798bf-78df-4698-88f2-19cec475ebd9}</Project>
+      <Name>SharePoint365.Remote.Access</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

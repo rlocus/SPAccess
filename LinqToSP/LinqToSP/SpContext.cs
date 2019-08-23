@@ -32,10 +32,22 @@ namespace SP.Client.Linq
 
     #region Methods
 
-    public SpEntityQueryable<TListItem> List<TListItem>(string listName)
+    public SpEntityQueryable<TListItem> List<TListItem>(string listTitle)
         where TListItem : IListItemEntity
     {
-      return new SpEntityQueryable<TListItem>(new SpQueryArgs(listName));
+      return new SpEntityQueryable<TListItem>(new SpQueryArgs(_context, listTitle, "", default(Guid)));
+    }
+
+    public SpEntityQueryable<TListItem> List<TListItem>(Uri listUrl)
+       where TListItem : IListItemEntity
+    {
+      return new SpEntityQueryable<TListItem>(new SpQueryArgs(_context, null, listUrl.ToString(), default(Guid)));
+    }
+
+    public SpEntityQueryable<TListItem> List<TListItem>(Guid listId)
+      where TListItem : IListItemEntity
+    {
+      return new SpEntityQueryable<TListItem>(new SpQueryArgs(_context, null, null, listId));
     }
 
     public virtual string GenerateQuery<TListItem>(IQueryable<TListItem> items, bool disableFormatting = false)
@@ -47,7 +59,7 @@ namespace SP.Client.Linq
       }
       return null;
     }
-    protected string GenerateQuery<TListItem>(SpEntityQueryable<TListItem> items, bool disableFormatting = false)
+    protected virtual string GenerateQuery<TListItem>(SpEntityQueryable<TListItem> items, bool disableFormatting = false)
         where TListItem : IListItemEntity
     {     
       return items.GetQueryInternal(disableFormatting);

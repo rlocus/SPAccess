@@ -1,17 +1,26 @@
-﻿using SP.Client.Linq.Attributes;
+﻿using Microsoft.SharePoint.Client;
+using SP.Client.Linq.Attributes;
+using System;
 using System.Collections.Generic;
 
 namespace SP.Client.Linq.Query
 {
   public class SpQueryArgs
   {
-    public string ListName { get; }
+    public ClientContext Context { get; }
+    public string ListTitle { get; }
+    public string ListUrl { get; }
+    public Guid ListId { get; private set; }
     internal Dictionary<string, FieldAttribute> ColumnMappings { get; }
     internal Caml.View SpView { get; }
+    internal bool SkipResult { get; set; }
 
-    public SpQueryArgs(string listName)
+    public SpQueryArgs(ClientContext context, string listTitle, string listUrl, Guid listId)
     {
-      ListName = listName;
+      Context = context;
+      ListTitle = listTitle;
+      ListUrl = listUrl;
+      ListId = listId;
       ColumnMappings = new Dictionary<string, FieldAttribute>();
       SpView = new Caml.View();
     }

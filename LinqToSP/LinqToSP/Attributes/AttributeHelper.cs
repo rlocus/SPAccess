@@ -7,7 +7,7 @@ namespace SP.Client.Linq.Attributes
   internal static class AttributeHelper
   {
     public static IEnumerable<KeyValuePair<string, TAttribute>> GetFieldAttributes<TEntity, TAttribute>()
-      where TAttribute: Attribute
+      where TAttribute : Attribute
     {
       foreach (var field in typeof(TEntity).GetFields())
       {
@@ -34,7 +34,7 @@ namespace SP.Client.Linq.Attributes
     }
 
     public static IEnumerable<KeyValuePair<string, TAttribute>> GetPopertyAttributes<TEntity, TAttribute>()
-  where TAttribute : Attribute
+      where TAttribute : Attribute
     {
       foreach (var property in typeof(TEntity).GetProperties())
       {
@@ -59,6 +59,5 @@ namespace SP.Client.Linq.Attributes
         }
       }
     }
-
   }
 }

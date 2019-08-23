@@ -79,12 +79,12 @@ namespace SP.Client.Linq.Query
         try
         {
           //fake
-          executor.SkipResult = true;
+          executor.SpQueryArgs.SkipResult = true;
           this.ToList();
         }
         finally
         {
-          executor.SkipResult = false;
+          executor.SpQueryArgs.SkipResult = false;
         }
         var view = executor.SpView;
         if (view != null)

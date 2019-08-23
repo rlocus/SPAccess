@@ -3,21 +3,22 @@ using SP.Client.Linq.Attributes;
 
 namespace SP.Client.Linq
 {
-    public class ListItemEntity : IListItemEntity
+  public class ListItemEntity : IListItemEntity
+  {
+    public ListItemEntity()
     {
-        public ListItemEntity()
-        {
 
-        }
-        public ListItemEntity(uint id)
-        {
-            ID = id;
-        }
-
-        //[Field(Name = "ID", Required = true, DataType = FieldType.Counter)]
-        public uint ID { get; protected set; }
-
-        [Field("Title", FieldType.Text, Required = false)]
-        public string Title { get; set; }
     }
+
+    protected ListItemEntity(int id)
+    {
+      Id = id;
+    }
+
+    //[Field(Name = "ID", Required = true, DataType = FieldType.Counter)]
+    public int Id { get; set; }
+
+    [Field("Title", FieldType.Text, Required = false)]
+    public string Title { get; set; }
+  }
 }

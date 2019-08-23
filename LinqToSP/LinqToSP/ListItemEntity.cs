@@ -16,7 +16,7 @@ namespace SP.Client.Linq
     }
 
     //[Field(Name = "ID", Required = true, DataType = FieldType.Counter)]
-    public int Id { get; set; }
+    public int Id { get; internal set; }
 
     [Field("Title", FieldType.Text, Required = false)]
     public string Title { get; set; }

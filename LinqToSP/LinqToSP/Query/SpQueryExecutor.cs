@@ -8,6 +8,7 @@ using Microsoft.SharePoint.Client;
 using View = SP.Client.Caml.View;
 using System;
 using System.Reflection;
+using SP.Client.Helpers;
 
 namespace SP.Client.Linq.Query
 {
@@ -118,6 +119,7 @@ namespace SP.Client.Linq.Query
           if (item.FieldValues.ContainsKey(column.Value.Name))
           {
             object value = item[column.Value.Name];
+            value = SpConverter.ConvertValue(value, prop.PropertyType);
             prop.SetValue(entity, value);
           }
         }
@@ -127,6 +129,7 @@ namespace SP.Client.Linq.Query
           if (item.FieldValues.ContainsKey(column.Value.Name))
           {
             object value = item[column.Value.Name];
+            value = SpConverter.ConvertValue(value, prop.PropertyType);
             field.SetValue(entity, value);
           }
         }

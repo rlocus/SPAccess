@@ -6,6 +6,6 @@ namespace SP.Client.Linq
   public interface IListItemEntity
   {
     [Field(Name = "ID", Required = true, DataType = FieldType.Counter)]
-    int Id { get; set; }
+    int Id { get; /*set;*/ }
   }
 }

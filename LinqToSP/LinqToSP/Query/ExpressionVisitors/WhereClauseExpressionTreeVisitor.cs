@@ -4,7 +4,7 @@
   {
     private readonly Caml.Query _query = new Caml.Query();
 
-    public WhereClauseExpressionTreeVisitor()
+    public WhereClauseExpressionTreeVisitor(SpQueryArgs args): base(args)
     {
     }
 

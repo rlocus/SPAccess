@@ -16,9 +16,9 @@ namespace SP.Client.Linq.Query
     {
       foreach (var att in GetFieldAttributes())
       {
-        if (!args.ColumnMappings.ContainsKey(att.Key))
+        if (!args.FieldMappings.ContainsKey(att.Key))
         {
-          args.ColumnMappings.Add(att.Key, att.Value);
+          args.FieldMappings.Add(att.Key, att.Value);
         }
       }
     }

@@ -9,6 +9,7 @@ using View = SP.Client.Caml.View;
 using System;
 using System.Reflection;
 using SP.Client.Helpers;
+using System.Diagnostics;
 
 namespace SP.Client.Linq.Query
 {
@@ -58,6 +59,8 @@ namespace SP.Client.Linq.Query
 
     public IEnumerable<TResult> ExecuteCollection<TResult>(QueryModel queryModel)
     {
+      if (_args == null) return Enumerable.Empty<TResult>();
+      _args.SpView = new View();
       var queryVisitor = new SpGeneratorQueryModelVisitor(_args);
       queryVisitor.VisitQueryModel(queryModel);
 
@@ -92,17 +95,24 @@ namespace SP.Client.Linq.Query
       if (_args != null)
       {
         var clientContext = _args.Context;
-        var list = _args.ListTitle != null ? clientContext.Web.Lists.GetByTitle(_args.ListTitle) :
-          (_args.ListUrl != null ? clientContext.Web.GetList(_args.ListUrl)
-          : clientContext.Web.Lists.GetById(_args.ListId));
+        if (clientContext != null)
+        {
+          var list = _args.ListTitle != null ? clientContext.Web.Lists.GetByTitle(_args.ListTitle) :
+            (_args.ListUrl != null ? clientContext.Web.GetList(_args.ListUrl)
+            : clientContext.Web.Lists.GetById(_args.ListId));
 
-        var items = list.GetItems(new CamlQuery() { ViewXml = view.ToString(true) });
-        clientContext.Load(items);
-        clientContext.ExecuteQuery();
+          var items = list.GetItems(new CamlQuery() { ViewXml = view.ToString(true) });
+          clientContext.Load(items);
 
-        var entities = items.Select(item => MapEntity(
-          (ListItemEntity)Activator.CreateInstance(type, new object[] {/* item.Id */}), item));
-        return entities;
+          Debug.WriteLine("# SP Query:");
+          Debug.Write(view);
+
+          clientContext.ExecuteQuery();
+
+          var entities = items.Select(item => MapEntity(
+            (ListItemEntity)Activator.CreateInstance(type, new object[] {/* item.Id */}), item));
+          return entities;
+        }
       }
       return Enumerable.Empty<ListItemEntity>();
     }
@@ -111,7 +121,7 @@ namespace SP.Client.Linq.Query
     {
       if (_args == null || entity == null || item == null) return entity;
 
-      foreach (var column in _args.ColumnMappings)
+      foreach (var column in _args.FieldMappings)
       {
         PropertyInfo prop = entity.GetType().GetProperty(column.Key, BindingFlags.Public | BindingFlags.Instance);
         if (null != prop && prop.CanWrite)

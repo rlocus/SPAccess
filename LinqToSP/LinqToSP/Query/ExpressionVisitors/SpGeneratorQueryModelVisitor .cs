@@ -35,7 +35,7 @@ namespace SP.Client.Linq.Query.ExpressionVisitors
 
     public override void VisitWhereClause(WhereClause whereClause, QueryModel queryModel, int index)
     {
-      var where = new WhereClauseExpressionTreeVisitor();
+      var where = new WhereClauseExpressionTreeVisitor(_args);
       where.Visit(whereClause.Predicate);
       if (_args.SpView.Query.Where == null)
       {

@@ -86,6 +86,9 @@ namespace SP.Client.Linq.Query.ExpressionVisitors
                 case ExpressionType.LessThanOrEqual:
                     Operator = new Caml.Operators.Leq(fieldRef, value);
                     break;
+                //case ExpressionType.Convert:
+                //    Visit(exp);
+                //    break;
                 default:
                     throw new NotSupportedException($"{exp.NodeType} operator is not supported in LinqToSP.");
             }

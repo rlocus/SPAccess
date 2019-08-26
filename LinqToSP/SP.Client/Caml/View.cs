@@ -41,7 +41,7 @@ namespace SP.Client.Caml
         }
 
         public Query Query { get; private set; }
-        internal CamlRowLimit RowLimit { get; private set; }
+        internal CamlRowLimit RowLimit { get; set; }
 
         public bool? Paged
         {
@@ -55,9 +55,9 @@ namespace SP.Client.Caml
             set { RowLimit.Limit = value; }
         }
 
-        public ViewFieldsCamlElement ViewFields { get; private set; }
-        public JoinsCamlElement Joins { get; private set; }
-        public ProjectedFieldsCamlElement ProjectedFields { get; private set; }
+        public ViewFieldsCamlElement ViewFields { get; set; }
+        public JoinsCamlElement Joins { get; set; }
+        public ProjectedFieldsCamlElement ProjectedFields { get; set; }
 
         protected override void OnParsing(XElement existingView)
         {

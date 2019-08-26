@@ -95,6 +95,8 @@
     <Compile Include="EntityState.cs" />
     <Compile Include="IListItemEntity.cs" />
     <Compile Include="ListItemEntity.cs" />
+    <Compile Include="QueryableExtensions.cs" />
+    <Compile Include="Query\Expressions\IncludeExpression.cs" />
     <Compile Include="Query\ExpressionVisitors\SpComparisonExpressionVisitor.cs" />
     <Compile Include="Query\ExpressionVisitors\SpConditionalExpressionVisitor.cs" />
     <Compile Include="Query\ExpressionVisitors\SpExpressionVisitor.cs" />

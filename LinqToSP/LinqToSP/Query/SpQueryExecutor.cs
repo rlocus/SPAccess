@@ -66,6 +66,16 @@ namespace SP.Client.Linq.Query
                 var queryVisitor = new SpGeneratorQueryModelVisitor(SpQueryArgs);
                 queryVisitor.VisitQueryModel(queryModel);
 
+                if (SpQueryArgs.SpView.ViewFields == null)
+                {
+                    SpQueryArgs.SpView.ViewFields =
+                    new Caml.ViewFieldsCamlElement(SpQueryArgs.FieldMappings.Select(fieldMapping => fieldMapping.Value.Name));
+                }
+                else if (SpQueryArgs.SpView.ViewFields.FieldRefs == null || !SpQueryArgs.SpView.ViewFields.FieldRefs.Any())
+                {
+                    SpQueryArgs.SpView.ViewFields.AddViewFields(SpQueryArgs.FieldMappings.Select(fieldMapping => fieldMapping.Value.Name));
+                }
+
                 if (SpQueryArgs.SkipResult)
                 {
                     return Enumerable.Empty<TResult>();

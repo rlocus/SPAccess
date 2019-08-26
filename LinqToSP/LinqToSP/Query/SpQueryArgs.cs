@@ -11,9 +11,7 @@ namespace SP.Client.Linq.Query
         public string ListTitle { get; }
         public string ListUrl { get; }
         public Guid ListId { get; private set; }
-
         public int BatchSize { get; set; }
-
         internal Dictionary<string, FieldAttribute> FieldMappings { get; }
         internal Caml.View SpView { get; set; }
         internal bool SkipResult { get; set; }

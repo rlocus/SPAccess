@@ -24,6 +24,8 @@ namespace SP.Client.Linq.Attributes
 
         public bool Required { get; set; }
 
+        public bool IsReadOnly { get; set; }
+
         public virtual FieldType DataType { get; set; }
 
         public override string ToString()

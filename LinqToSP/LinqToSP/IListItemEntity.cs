@@ -5,7 +5,7 @@ namespace SP.Client.Linq
 {
   public interface IListItemEntity
   {
-    [Field(Name = "ID", Required = true, DataType = FieldType.Counter)]
+    [Field(Name = "ID", Required = true, DataType = FieldType.Counter, IsReadOnly = true)]
     int Id { get; /*set;*/ }
   }
 }

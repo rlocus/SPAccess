@@ -56,7 +56,7 @@ namespace SP.Client.Linq.Query.ExpressionVisitors
       if (resultOperator is TakeResultOperator)
       {
         var take = resultOperator as TakeResultOperator;
-        _args.SpView.Limit = Convert.ToUInt32(take.Count.ToString());
+        _args.SpView.Limit = Convert.ToInt32(take.Count.ToString());
       }
       else if (resultOperator is CountResultOperator)
       {

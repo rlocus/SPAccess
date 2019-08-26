@@ -9,7 +9,7 @@ namespace SP.Client.Caml
         internal const string RowLimitTag = "RowLimit";
         internal const string PagedAttr = "Paged";
 
-        public CamlRowLimit(uint limit = 0, bool? paged = null)
+        public CamlRowLimit(int limit = 0, bool? paged = null)
             : base(RowLimitTag)
         {
             Limit = limit;
@@ -28,7 +28,7 @@ namespace SP.Client.Caml
 
         public bool? Paged { get; set; }
 
-        public uint Limit { get; set; }
+        public int Limit { get; set; }
 
         protected override void OnParsing(XElement existingRowLimit)
         {
@@ -37,7 +37,7 @@ namespace SP.Client.Caml
             {
                 Paged = Convert.ToBoolean(paged.Value);
             }
-            Limit = Convert.ToUInt32(existingRowLimit.Value);
+            Limit = Convert.ToInt32(existingRowLimit.Value);
         }
 
         public override XElement ToXElement()

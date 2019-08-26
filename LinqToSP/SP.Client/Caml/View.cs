@@ -11,19 +11,19 @@ namespace SP.Client.Caml
     {
         internal const string ViewTag = "View";
 
-        public View(uint rowLimit = 0, bool? paged = null) : this(null, null, null, rowLimit, paged)
+        public View(int rowLimit = 0, bool? paged = null) : this(null, null, null, rowLimit, paged)
         {
         }
 
-        public View(IEnumerable<string> viewFields, uint rowLimit = 0, bool? paged = null) : this(viewFields, null, null, rowLimit, paged)
+        public View(IEnumerable<string> viewFields, int rowLimit = 0, bool? paged = null) : this(viewFields, null, null, rowLimit, paged)
         {
         }
 
-        public View(IEnumerable<Join> joins, IEnumerable<CamlProjectedField> projectedFields, uint rowLimit = 0, bool? paged = null) : this(null, joins, projectedFields, rowLimit, paged)
+        public View(IEnumerable<Join> joins, IEnumerable<CamlProjectedField> projectedFields, int rowLimit = 0, bool? paged = null) : this(null, joins, projectedFields, rowLimit, paged)
         {
         }
 
-        public View(IEnumerable<string> viewFields, IEnumerable<Join> joins, IEnumerable<CamlProjectedField> projectedFields, uint rowLimit = 0, bool? paged = null) : base(ViewTag)
+        public View(IEnumerable<string> viewFields, IEnumerable<Join> joins, IEnumerable<CamlProjectedField> projectedFields, int rowLimit = 0, bool? paged = null) : base(ViewTag)
         {
             Query = new Query();
             ViewFields = new ViewFieldsCamlElement(viewFields);
@@ -49,7 +49,7 @@ namespace SP.Client.Caml
             set { RowLimit.Paged = value; }
         }
 
-        public uint Limit
+        public int Limit
         {
             get { return RowLimit.Limit; }
             set { RowLimit.Limit = value; }

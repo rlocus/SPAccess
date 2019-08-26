@@ -12,7 +12,7 @@ namespace SP.Client.Linq.Query
       where TResult : IListItemEntity
   {
     public SpEntityQueryable(SpQueryArgs args)
-        : this(QueryParser.CreateDefault(), new SpQueryExecutor(args))
+        : this(QueryParser.CreateDefault(), new SpAsyncQueryExecutor(args))
     {
       foreach (var att in GetFieldAttributes())
       {

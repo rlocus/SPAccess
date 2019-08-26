@@ -98,7 +98,10 @@
     <Compile Include="Query\ExpressionVisitors\SpComparisonExpressionVisitor.cs" />
     <Compile Include="Query\ExpressionVisitors\SpConditionalExpressionVisitor.cs" />
     <Compile Include="Query\ExpressionVisitors\SpExpressionVisitor.cs" />
+    <Compile Include="Query\IAsyncEnumerable.cs" />
+    <Compile Include="Query\IAsyncQueryProvider.cs" />
     <Compile Include="Query\IQueryCompiler.cs" />
+    <Compile Include="Query\IAsyncQueryExecutor.cs" />
     <Compile Include="Query\SpQueryArgs.cs" />
     <Compile Include="SpContext.cs" />
     <Compile Include="ISpContext.cs" />

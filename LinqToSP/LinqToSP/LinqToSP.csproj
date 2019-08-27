@@ -96,10 +96,13 @@
     <Compile Include="IListItemEntity.cs" />
     <Compile Include="ListItemEntity.cs" />
     <Compile Include="QueryableExtensions.cs" />
+    <Compile Include="Query\AsyncQueryProvider.cs" />
+    <Compile Include="Query\QueryProvider.cs" />
     <Compile Include="Query\Expressions\IncludeExpression.cs" />
     <Compile Include="Query\ExpressionVisitors\SpComparisonExpressionVisitor.cs" />
     <Compile Include="Query\ExpressionVisitors\SpConditionalExpressionVisitor.cs" />
     <Compile Include="Query\ExpressionVisitors\SpExpressionVisitor.cs" />
+    <Compile Include="Query\ExpressionVisitors\IncludeExpressionVisitor.cs" />
     <Compile Include="Query\IAsyncEnumerable.cs" />
     <Compile Include="Query\IAsyncQueryProvider.cs" />
     <Compile Include="Query\IQueryCompiler.cs" />

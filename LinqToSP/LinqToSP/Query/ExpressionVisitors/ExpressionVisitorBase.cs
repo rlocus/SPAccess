@@ -29,7 +29,6 @@ namespace SP.Client.Linq.Query.ExpressionVisitors
         protected override Expression VisitSubQuery(SubQueryExpression subQueryExpression)
         {
             subQueryExpression.QueryModel.TransformExpressions(Visit);
-
             return base.VisitSubQuery(subQueryExpression);
         }
 

@@ -3,12 +3,13 @@ using Remotion.Linq;
 using System.Linq.Expressions;
 using Remotion.Linq.Parsing.Structure;
 using SP.Client.Linq.Attributes;
-using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SP.Client.Linq.Query
 {
-  public class SpEntityQueryable<TResult> : QueryableBase<TResult>
+  public class SpEntityQueryable<TResult> : QueryableBase<TResult>, IAsyncEnumerable<TResult>
       where TResult : IListItemEntity
   {
     public SpEntityQueryable(SpQueryArgs args)
@@ -23,8 +24,8 @@ namespace SP.Client.Linq.Query
       }
     }
 
-    internal SpEntityQueryable(IQueryParser queryParser, IQueryExecutor executor)
-        : this(new DefaultQueryProvider(typeof(SpEntityQueryable<>), queryParser, executor))
+    internal SpEntityQueryable(IQueryParser queryParser, IAsyncQueryExecutor executor)
+        : this(new /*DefaultQueryProvider*/AsyncQueryProvider(typeof(SpEntityQueryable<>), queryParser, executor))
     {
 
     }
@@ -63,7 +64,7 @@ namespace SP.Client.Linq.Query
 
     internal SpQueryExecutor GetExecutor()
     {
-      var provider = (this.Provider as DefaultQueryProvider);
+      var provider = (this.Provider as QueryProviderBase);
       if (provider != null)
       {
         return (provider.Executor as SpQueryExecutor);
@@ -103,6 +104,12 @@ namespace SP.Client.Linq.Query
         return q;
       }
       return base.ToString();
+    }
+
+    public async Task<IEnumerator<TResult>> GetAsyncEnumerator(CancellationToken cancellationToken = default)
+    {
+      var result = await (Provider as AsyncQueryProvider).ExecuteAsync<IEnumerable<TResult>>(Expression, cancellationToken);
+       return result.GetEnumerator();
     }
   }
 }

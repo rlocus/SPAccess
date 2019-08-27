@@ -8,24 +8,17 @@ using System.Linq.Expressions;
 
 namespace SP.Client.Linq
 {
-    public static class QueryableExtensions
+  public static class QueryableExtensions
+  {
+    public static IQueryable<TEntity> Include<TEntity>(
+         this IQueryable<TEntity> source, params Expression<Func<TEntity, object>>[] path)
+          where TEntity : IListItemEntity
     {
-        public static IQueryable<T> Include<T>(
-           this IQueryable<T> source, params Expression<Func<T, object>>[] path)
-            where T: IListItemEntity
-        {
-            Check.NotNull(source, "source");
-            Check.NotNull(path, "path");
-            if (source is SpEntityQueryable<T>)
-            {
-                var provider = source.Provider as DefaultQueryProvider;
-                if (provider != null)
-                {
-                    return provider.CreateQuery<T>(new IncludeExpression(source.Expression, path));
-                }
-            }
-            return source;
-        }
-
+      Check.NotNull(source, "source");
+      Check.NotNull(path, "path");
+      return source.Provider is QueryProviderBase
+        ? source.Provider.CreateQuery<TEntity>(new IncludeExpression(source.Expression, path))
+      : source;
     }
+  }
 }

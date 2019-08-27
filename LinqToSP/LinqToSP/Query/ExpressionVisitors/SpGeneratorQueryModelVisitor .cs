@@ -144,22 +144,33 @@ namespace SP.Client.Linq.Query.ExpressionVisitors
 
     protected override void VisitBodyClauses(ObservableCollection<IBodyClause> bodyClauses, QueryModel queryModel)
     {
-      var orderClause = bodyClauses
-          .FirstOrDefault(x => x.GetType() == typeof(OrderByClause))
-          as OrderByClause;
+      if (_args == null) return;
 
-      if (orderClause != null)
+      _args.SpView.Query.OrderBy = new Caml.Clauses.CamlOrderBy();
+      foreach (var orderClause in bodyClauses.OfType<OrderByClause>())
       {
-        var exp = orderClause.Orderings.First().Expression;
-        if (exp is MemberExpression)
+        if (orderClause != null)
         {
-        }
-        else if (exp is MethodCallExpression)
-        {
+          foreach (var ordering in orderClause.Orderings)
+          {
+            var exp = ordering.Expression;
+            if (exp is MemberExpression)
+            {
+              string fieldName = (exp as MemberExpression).Member.Name;
+              if (_args.FieldMappings.ContainsKey(fieldName))
+              {
+                var fieldMap = _args.FieldMappings[fieldName];
+                _args.SpView.Query.OrderBy.AddField(fieldMap.Name, ordering.OrderingDirection == OrderingDirection.Asc);
+              }
+            }
+            else if (exp is MethodCallExpression)
+            {
 
+            }
+          }
         }
+        base.VisitBodyClauses(bodyClauses, queryModel);
       }
-      base.VisitBodyClauses(bodyClauses, queryModel);
     }
   }
 }

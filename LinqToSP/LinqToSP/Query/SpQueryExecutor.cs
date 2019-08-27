@@ -235,6 +235,7 @@ namespace SP.Client.Linq.Query
         SpQueryArgs.SpView = new SpView();
         var queryVisitor = new SpGeneratorQueryModelVisitor(SpQueryArgs);
         queryVisitor.VisitQueryModel(queryModel);
+        queryVisitor.VisitIncludeClauses(IncludeExpressions, queryModel);
 
         if (SpQueryArgs.SkipResult)
         {

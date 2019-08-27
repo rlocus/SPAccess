@@ -435,7 +435,7 @@ namespace SP.Client.Caml
       {
         if (IncludeTimeValue.HasValue)
         {
-          el.Add(new XAttribute(IncludeTimeValueAttr, IncludeTimeValue.Value));
+          el.Add(new XAttribute(IncludeTimeValueAttr, IncludeTimeValue.Value.ToString().ToUpper()));
         }
         if (Value is DateTime)
         {

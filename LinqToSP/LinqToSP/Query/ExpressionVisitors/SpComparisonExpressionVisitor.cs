@@ -16,39 +16,50 @@ namespace SP.Client.Linq.Query.ExpressionVisitors
         protected string FieldName { get; private set; }
         protected object FieldValue { get; private set; }
 
-        protected override Expression VisitBinary(BinaryExpression exp)
+        protected CamlFieldRef GetFieldRef(out FieldType dataType)
         {
-            LeftOperator = ToOperator(exp.Left);
-            RightOperator = ToOperator(exp.Right);
-            FieldType dataType;
-            CamlFieldRef fieldRef;
-            CamlValue value = null;
+            dataType = FieldType.Invalid;
             if (SpQueryArgs != null)
-            {
                 if (SpQueryArgs.FieldMappings.ContainsKey(FieldName))
                 {
                     var fieldMap = SpQueryArgs.FieldMappings[FieldName];
-                    fieldRef = new CamlFieldRef() { Name = fieldMap.Name };
-                    dataType = fieldMap.DataType;
+                    var fieldRef = new CamlFieldRef() { Name = fieldMap.Name };
                     if (fieldMap is LookupFieldAttribute)
                     {
                         fieldRef.LookupId = ((LookupFieldAttribute)fieldMap).IsLookupId;
                     }
-                    if (FieldValue != null)
-                    {
-                        value = new CamlValue(FieldValue, dataType);
-                        if (dataType == FieldType.DateTime)
-                        {
-                            value.IncludeTimeValue = true;
-                        }
-                    }
+                    dataType = fieldMap.DataType;
+                    return fieldRef;
                 }
                 else
                 {
                     throw new Exception($"Cannot find '{FieldName}' mapping field. Check '{typeof(FieldAttribute)}'.");
                 }
+            return null;
+        }
+
+        protected CamlValue GetValue(FieldType dataType)
+        {
+            if (FieldValue != null)
+            {
+                var value = new CamlValue(FieldValue, dataType);
+                if (dataType == FieldType.DateTime)
+                {
+                    value.IncludeTimeValue = true;
+                }
+                return value;
             }
-            else
+            return null;
+        }
+
+        protected override Expression VisitBinary(BinaryExpression exp)
+        {
+            LeftOperator = ToOperator(exp.Left);
+            RightOperator = ToOperator(exp.Right);
+            FieldType dataType;
+            CamlFieldRef fieldRef = GetFieldRef(out dataType);
+            CamlValue value = GetValue(dataType);
+            if (fieldRef == null)
             {
                 return exp;
             }

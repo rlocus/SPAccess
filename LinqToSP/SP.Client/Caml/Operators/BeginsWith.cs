@@ -6,6 +6,10 @@ namespace SP.Client.Caml.Operators
 {
     public sealed class BeginsWith : BeginsWith<string>
     {
+        public BeginsWith(CamlFieldRef fieldRef, CamlValue value)
+            : base(fieldRef, value)
+        {
+        }
         public BeginsWith(CamlFieldRef fieldRef, CamlValue<string> value)
             : base(fieldRef, value)
         {
@@ -42,6 +46,11 @@ namespace SP.Client.Caml.Operators
         internal const string BeginsWithTag = "BeginsWith";
         public BeginsWith(CamlFieldRef fieldRef, CamlValue<T> value)
             : base(BeginsWithTag, fieldRef, value)
+        {
+        }
+
+        public BeginsWith(CamlFieldRef fieldRef, CamlValue value)
+          : base(BeginsWithTag, fieldRef, (T)value.Value, value.Type)
         {
         }
 

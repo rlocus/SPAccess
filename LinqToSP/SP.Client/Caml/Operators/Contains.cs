@@ -4,10 +4,14 @@ using Microsoft.SharePoint.Client;
 
 namespace SP.Client.Caml.Operators
 {
-
     public sealed class Contains : Contains<string>
     {
         public Contains(CamlFieldRef fieldRef, CamlValue<string> value)
+            : base(fieldRef, value)
+        {
+        }
+
+        public Contains(CamlFieldRef fieldRef, CamlValue value)
             : base(fieldRef, value)
         {
         }
@@ -41,6 +45,11 @@ namespace SP.Client.Caml.Operators
     public class Contains<T> : FieldValueOperator<T>
     {
         internal const string ContainsTag = "Contains";
+
+        public Contains(CamlFieldRef fieldRef, CamlValue value)
+           : base(ContainsTag, fieldRef, (T)value.Value, value.Type)
+        {
+        }
 
         public Contains(CamlFieldRef fieldRef, CamlValue<T> value)
             : base(ContainsTag, fieldRef, value)

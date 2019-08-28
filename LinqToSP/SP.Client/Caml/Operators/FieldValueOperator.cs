@@ -8,6 +8,12 @@ namespace SP.Client.Caml.Operators
 {
     public abstract class FieldValueOperator<T> : ValueOperator<T>, ICamlField
     {
+        protected FieldValueOperator(string operatorName, CamlFieldRef fieldRef, CamlValue value)
+          : base(operatorName, value)
+        {
+            FieldRef = fieldRef;
+        }
+
         protected FieldValueOperator(string operatorName, CamlFieldRef fieldRef, CamlValue<T> value)
             : base(operatorName, value)
         {

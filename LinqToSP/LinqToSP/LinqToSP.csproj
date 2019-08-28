@@ -97,6 +97,8 @@
     <Compile Include="ListItemEntity.cs" />
     <Compile Include="QueryableExtensions.cs" />
     <Compile Include="Query\AsyncQueryProvider.cs" />
+    <Compile Include="Query\ExpressionVisitors\SpStartsWithExpressionVisitor.cs" />
+    <Compile Include="Query\ExpressionVisitors\SpContainsExpressionVisitor.cs" />
     <Compile Include="Query\QueryProvider.cs" />
     <Compile Include="Query\Expressions\IncludeExpression.cs" />
     <Compile Include="Query\ExpressionVisitors\SpComparisonExpressionVisitor.cs" />

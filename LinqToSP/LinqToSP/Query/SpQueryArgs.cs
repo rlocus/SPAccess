@@ -12,6 +12,8 @@ namespace SP.Client.Linq.Query
         public string ListUrl { get; }
         public Guid ListId { get; private set; }
         public int BatchSize { get; set; }
+        public bool IncludeItemPermissions { get; set; }
+
         internal Dictionary<string, FieldAttribute> FieldMappings { get; }
         internal Caml.View SpView { get; set; }
         internal bool SkipResult { get; set; }
@@ -26,6 +28,7 @@ namespace SP.Client.Linq.Query
             FieldMappings = new Dictionary<string, FieldAttribute>();
             BatchSize = 100;
             //SpView = new Caml.View();
+            IncludeItemPermissions = true;
         }
     }
 }

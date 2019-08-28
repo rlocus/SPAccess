@@ -22,14 +22,22 @@ namespace SP.Client.Linq
         [Field("Title", FieldType.Text, Required = false)]
         public string Title { get; set; }
 
+        ///// <summary>
+        ///// Effective Permissions Mask
+        ///// </summary>
+        //[Field("PermMask", FieldType.Computed, IsReadOnly = true)]
+        //public string EffectivePermissionsMask
+        //{
+        //    get;
+        //    internal set;
+        //}
+
         /// <summary>
-        /// Effective Permissions Mask
+        /// Effective Permissions
         /// </summary>
-        [Field("PermMask", FieldType.Computed, IsReadOnly = true)]
-        public string EffectivePermissionsMask
+        public BasePermissions EffectiveBasePermissions
         {
-            get;
-            internal set;
+            get; internal set;
         }
 
         /// <summary>

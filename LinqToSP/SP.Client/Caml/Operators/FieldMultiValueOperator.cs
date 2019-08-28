@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Xml.Linq;
 using SP.Client.Caml.Interfaces;
-using Microsoft.SharePoint;
+
 using Microsoft.SharePoint.Client;
 using SP.Client.Extensions;
 

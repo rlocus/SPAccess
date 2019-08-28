@@ -2,14 +2,12 @@
 using System.Globalization;
 using System.Xml.Linq;
 using SP.Client.Caml.Interfaces;
-using Microsoft.SharePoint;
 using Microsoft.SharePoint.Client;
-using Microsoft.SharePoint.Client.Utilities;
 using SP.Client.Extensions;
 
 namespace SP.Client.Caml
 {
-  public sealed class CamlValue : CamlValue<object>
+    public sealed class CamlValue : CamlValue<object>
   {
     public CamlValue(object value, FieldType type)
         : base(value, type)

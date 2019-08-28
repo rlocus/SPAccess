@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Xml.Linq;
 using SP.Client.Caml.Clauses;
-using Microsoft.SharePoint;
 
 namespace SP.Client.Caml
 {

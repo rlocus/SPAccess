@@ -1,5 +1,4 @@
 ﻿using System.Xml.Linq;
-using Microsoft.SharePoint;
 using Microsoft.SharePoint.Client;
 using SP.Client.Extensions;
 

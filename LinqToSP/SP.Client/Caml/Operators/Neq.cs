@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Xml.Linq;
-using Microsoft.SharePoint;
 using Microsoft.SharePoint.Client;
 
 namespace SP.Client.Caml.Operators

@@ -92,11 +92,15 @@
     <Compile Include="Attributes\AttributeHelper.cs" />
     <Compile Include="Attributes\FieldAttribute.cs" />
     <Compile Include="Attributes\LookupFieldAttribute.cs" />
+    <Compile Include="EventItemEntity.cs" />
+    <Compile Include="IEventItemEntity.cs" />
+    <Compile Include="ListItemEntityExtensions.cs" />
     <Compile Include="EntityState.cs" />
     <Compile Include="IListItemEntity.cs" />
     <Compile Include="ListItemEntity.cs" />
     <Compile Include="QueryableExtensions.cs" />
     <Compile Include="Query\AsyncQueryProvider.cs" />
+    <Compile Include="Query\ExpressionVisitors\SpDateRangesOverlapExpressionVisitor.cs" />
     <Compile Include="Query\ExpressionVisitors\SpStartsWithExpressionVisitor.cs" />
     <Compile Include="Query\ExpressionVisitors\SpContainsExpressionVisitor.cs" />
     <Compile Include="Query\QueryProvider.cs" />

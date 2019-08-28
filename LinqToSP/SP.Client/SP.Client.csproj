@@ -109,7 +109,10 @@
     <Compile Include="Caml\Query.cs" />
     <Compile Include="Caml\View.cs" />
     <Compile Include="Caml\ViewFieldsCamlElement.cs" />
+    <Compile Include="Helpers\RecurrenceRule.cs" />
     <Compile Include="Helpers\SpConverter.cs" />
+    <Compile Include="Helpers\SPRecurrenceHelper.cs" />
+    <Compile Include="Helpers\SPRecurrenceRuleParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

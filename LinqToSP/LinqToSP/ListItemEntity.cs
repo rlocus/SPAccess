@@ -19,7 +19,7 @@ namespace SP.Client.Linq
         public int Id { get; internal set; }
 
         [Field("Title", FieldType.Text, Required = false)]
-        public string Title { get; set; }
+        public virtual string Title { get; set; }
 
         ///// <summary>
         ///// Effective Permissions Mask
@@ -52,7 +52,7 @@ namespace SP.Client.Linq
         /// Content Type ID
         /// </summary>
         [Field(Name = "ContentTypeId", DataType = FieldType.ContentTypeId)]
-        public string ContentTypeId
+        public virtual string ContentTypeId
         {
             get; set;
         }

@@ -17,7 +17,14 @@ namespace SP.Client.Caml.Operators
         protected ValueOperator(string operatorName, T value, FieldType type)
             : base(operatorName)
         {
-            Value = new CamlValue<T>(value, type);
+            if (value is CamlValue<T>)
+            {
+                Value = value as CamlValue<T>;
+            }
+            else
+            {
+                Value = new CamlValue<T>(value, type);
+            }
         }
 
         protected ValueOperator(string operatorName, string existingValueOperator)

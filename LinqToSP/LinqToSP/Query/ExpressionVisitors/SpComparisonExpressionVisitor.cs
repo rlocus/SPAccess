@@ -18,11 +18,16 @@ namespace SP.Client.Linq.Query.ExpressionVisitors
 
         protected CamlFieldRef GetFieldRef(out FieldType dataType)
         {
+            return GetFieldRef(FieldName, out dataType);
+        }
+
+        protected CamlFieldRef GetFieldRef(string fieldName, out FieldType dataType)
+        {
             dataType = FieldType.Invalid;
-            if (SpQueryArgs != null)
-                if (SpQueryArgs.FieldMappings.ContainsKey(FieldName))
+            if (SpQueryArgs != null && !string.IsNullOrEmpty(fieldName))
+                if (SpQueryArgs.FieldMappings.ContainsKey(fieldName))
                 {
-                    var fieldMap = SpQueryArgs.FieldMappings[FieldName];
+                    var fieldMap = SpQueryArgs.FieldMappings[fieldName];
                     var fieldRef = new CamlFieldRef() { Name = fieldMap.Name };
                     if (fieldMap is LookupFieldAttribute)
                     {
@@ -33,7 +38,7 @@ namespace SP.Client.Linq.Query.ExpressionVisitors
                 }
                 else
                 {
-                    throw new Exception($"Cannot find '{FieldName}' mapping field. Check '{typeof(FieldAttribute)}'.");
+                    throw new Exception($"Cannot find '{fieldName}' mapping field. Check '{typeof(FieldAttribute)}'.");
                 }
             return null;
         }

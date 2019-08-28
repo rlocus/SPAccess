@@ -52,7 +52,9 @@ namespace SP.Client.Linq.Query.ExpressionVisitors
 
             switch (exp.NodeType)
             {
+                case ExpressionType.And:
                 case ExpressionType.AndAlso:
+                case ExpressionType.Or:
                 case ExpressionType.OrElse:
                     expVisitor = new SpConditionalExpressionVisitor(SpQueryArgs);
                     break;
@@ -81,6 +83,7 @@ namespace SP.Client.Linq.Query.ExpressionVisitors
             else
             {
                 Visit(exp);
+                op = this.Operator;
             }
             return op;
         }
@@ -117,6 +120,12 @@ namespace SP.Client.Linq.Query.ExpressionVisitors
             else if (node.Method.Name == "StartsWith")
             {
                 var visitor = new SpStartsWithExpressionVisitor(SpQueryArgs);
+                visitor.Visit(expression);
+                Operator = visitor.Operator;
+            }
+            else if (node.Method.Name == "DateRangesOverlap")
+            {
+                var visitor = new SpDateRangesOverlapExpressionVisitor(SpQueryArgs);
                 visitor.Visit(expression);
                 Operator = visitor.Operator;
             }

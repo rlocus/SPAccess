@@ -8,13 +8,12 @@ namespace SP.Client.Linq
     {
         public ListItemEntity()
         {
-
         }
 
-        protected ListItemEntity(int id)
-        {
-            Id = id;
-        }
+        //protected ListItemEntity(int id)
+        //{
+        //    Id = id;
+        //}
 
         //[Field(Name = "ID", Required = true, DataType = FieldType.Counter)]
         public int Id { get; internal set; }

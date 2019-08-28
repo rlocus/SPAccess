@@ -116,28 +116,31 @@ namespace SP.Client.Linq.Query
             int itemCount = 0;
             do
             {
-                if (rowLimit > 0)
+                if (SpQueryArgs.BatchSize > 0)
                 {
-                    SpQueryArgs.SpView.Limit = Math.Min(rowLimit - itemCount, SpQueryArgs.BatchSize);
-                }
-                else
-                {
-                    SpQueryArgs.SpView.Limit = SpQueryArgs.BatchSize;
-                }
-                if (SpQueryArgs.SpView.Limit > 0)
-                {
-                    var items = GetItems(SpQueryArgs, position);
-                    if (items != null)
+                    if (rowLimit > 0)
                     {
-                        items.Context.ExecuteQuery();
-                        position = items.ListItemCollectionPosition;
-                        itemCount += items.Count;
-                        entities = entities.Concat(MapEntities(items, type));
+                        SpQueryArgs.SpView.Limit = Math.Min(rowLimit - itemCount, SpQueryArgs.BatchSize);
+                    }
+                    else
+                    {
+                        SpQueryArgs.SpView.Limit = SpQueryArgs.BatchSize;
+                    }
+                    if (SpQueryArgs.SpView.Limit == 0)
+                    {
+                        break;
                     }
                 }
-                else
+                var items = GetItems(SpQueryArgs, position);
+                if (items != null)
                 {
-                    position = null;
+                    items.Context.ExecuteQuery();
+                    if (SpQueryArgs.BatchSize > 0)
+                    {
+                        position = items.ListItemCollectionPosition;
+                    }
+                    itemCount += items.Count;
+                    entities = entities.Concat(MapEntities(items, type));
                 }
             }
             while (position != null);
@@ -174,7 +177,7 @@ namespace SP.Client.Linq.Query
             var list = GetList(args);
             if (list != null)
             {
-                var items = list.GetItems(new CamlQuery() { ViewXml = args.SpView.ToString(true), ListItemCollectionPosition = position });                
+                var items = list.GetItems(new CamlQuery() { ViewXml = args.SpView.ToString(true), ListItemCollectionPosition = position });
                 items.Context.Load(items, item => item.Include(i => i.EffectiveBasePermissions));
                 items.Context.Load(items, item => item.ListItemCollectionPosition);
                 return items;
@@ -301,28 +304,32 @@ namespace SP.Client.Linq.Query
             int itemCount = 0;
             do
             {
-                if (rowLimit > 0)
+                if (SpQueryArgs.BatchSize > 0)
                 {
-                    SpQueryArgs.SpView.Limit = Math.Min(rowLimit - itemCount, SpQueryArgs.BatchSize);
-                }
-                else
-                {
-                    SpQueryArgs.SpView.Limit = SpQueryArgs.BatchSize;
-                }
-                if (SpQueryArgs.SpView.Limit > 0)
-                {
-                    var items = GetItems(SpQueryArgs, position);
-                    if (items != null)
+                    if (rowLimit > 0)
                     {
-                        await items.Context.ExecuteQueryAsync();
-                        position = items.ListItemCollectionPosition;
-                        itemCount += items.Count;
-                        entities = entities.Concat(MapEntities(items, type));
+                        SpQueryArgs.SpView.Limit = Math.Min(rowLimit - itemCount, SpQueryArgs.BatchSize);
+                    }
+                    else
+                    {
+                        SpQueryArgs.SpView.Limit = SpQueryArgs.BatchSize;
+                    }
+                    if (SpQueryArgs.SpView.Limit == 0)
+                    {
+                        break;
                     }
                 }
-                else
+
+                var items = GetItems(SpQueryArgs, position);
+                if (items != null)
                 {
-                    position = null;
+                    await items.Context.ExecuteQueryAsync();
+                    if (SpQueryArgs.BatchSize > 0)
+                    {
+                        position = items.ListItemCollectionPosition;
+                    }
+                    itemCount += items.Count;
+                    entities = entities.Concat(MapEntities(items, type));
                 }
             }
             while (position != null);

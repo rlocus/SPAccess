@@ -47,10 +47,13 @@ namespace SP.Client.Linq.Query.ExpressionVisitors
         {
             if (FieldValue != null)
             {
-                var value = new CamlValue(FieldValue, dataType);
-                if (dataType == FieldType.DateTime)
+                var value = FieldValue is CamlValue ? (CamlValue)FieldValue : new CamlValue(FieldValue, dataType);
+                if (value != null && !(FieldValue is CamlValue.DateCamlValue))
                 {
-                    value.IncludeTimeValue = true;
+                    if (dataType == FieldType.DateTime)
+                    {
+                        value.IncludeTimeValue = true;
+                    }
                 }
                 return value;
             }

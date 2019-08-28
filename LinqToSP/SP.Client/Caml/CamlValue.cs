@@ -113,6 +113,16 @@ namespace SP.Client.Caml
                 }
                 throw new NotSupportedException("tag");
             }
+
+            public static bool operator <(object c1, DateCamlValue c2) { return false; }
+            public static bool operator >(object c1, DateCamlValue c2) { return false; }
+            public static bool operator <=(object c1, DateCamlValue c2) { return false; }
+            public static bool operator >=(object c1, DateCamlValue c2) { return false; }
+            public static bool operator ==(object c1, DateCamlValue c2) { return false; }
+            public static bool operator !=(object c1, DateCamlValue c2) { return false; }
+
+
+            public static explicit operator DateCamlValue(string s) { return null; }
         }
 
         public sealed class NowDateCamlValue : DateCamlValue

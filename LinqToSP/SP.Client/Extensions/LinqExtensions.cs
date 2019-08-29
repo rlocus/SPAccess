@@ -2,10 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace SP.Client.Extensions
 {
-    internal static class LinqExtensions
+    public static class LinqExtensions
     {
         public static void ForEach<T>(this IEnumerable<T> source, Action<T> action)
         {
@@ -81,6 +82,26 @@ namespace SP.Client.Extensions
                 // hierarchy until a match is found or the hierarchy is exhausted
                 source = enumerable.SelectMany(childrenSelector);
             }
+        }
+
+        public static IEnumerable Cast(this IEnumerable source, Type elementType)
+        {
+            MethodInfo castMethod = typeof(Enumerable).GetMethod("Cast").MakeGenericMethod(new Type[] { elementType });
+            var result = castMethod.Invoke(null, new object[] { source });
+            return (IEnumerable)result;
+        }
+
+        public static Array ToArray(this IEnumerable source, Type elementType)
+        {
+            MethodInfo toArrayMethod = typeof(Enumerable).GetMethod("ToArray")
+                 .MakeGenericMethod(new Type[] { elementType });
+            return (Array)toArrayMethod.Invoke(null, new object[] { Cast(source, elementType) });
+        }
+        public static ICollection ToList(this IEnumerable source, Type elementType)
+        {
+            MethodInfo toArrayMethod = typeof(Enumerable).GetMethod("ToList")
+                 .MakeGenericMethod(new Type[] { elementType });
+            return (ICollection)toArrayMethod.Invoke(null, new object[] { Cast(source, elementType) });
         }
     }
 }

@@ -13,6 +13,8 @@ using System.Threading.Tasks;
 using System.Threading;
 using Remotion.Linq.Clauses.ResultOperators;
 using SP.Client.Linq.Query.Expressions;
+using SP.Client.Linq.Attributes;
+using SP.Client.Extensions;
 
 namespace SP.Client.Linq.Query
 {
@@ -194,25 +196,28 @@ namespace SP.Client.Linq.Query
         {
             if (SpQueryArgs == null || entity == null || item == null) return entity;
 
-            foreach (var column in SpQueryArgs.FieldMappings)
+            foreach (var fieldMap in SpQueryArgs.FieldMappings)
             {
-                PropertyInfo prop = entity.GetType().GetProperty(column.Key, BindingFlags.Public | BindingFlags.Instance);
+                PropertyInfo prop = entity.GetType().GetProperty(fieldMap.Key, BindingFlags.Public | BindingFlags.Instance);
                 if (null != prop && prop.CanWrite)
                 {
-                    if (item.FieldValues.ContainsKey(column.Value.Name))
+                    if (item.FieldValues.ContainsKey(fieldMap.Value.Name))
                     {
-                        object value = item[column.Value.Name];
+                        object value = item[fieldMap.Value.Name];
+                        value = GetFieldValue(fieldMap.Value, prop.PropertyType, value);
+
                         value = SpConverter.ConvertValue(value, prop.PropertyType);
                         prop.SetValue(entity, value);
                     }
                 }
-                FieldInfo field = entity.GetType().GetField(column.Key, BindingFlags.Public | BindingFlags.Instance);
+                FieldInfo field = entity.GetType().GetField(fieldMap.Key, BindingFlags.Public | BindingFlags.Instance);
                 if (null != field)
                 {
-                    if (item.FieldValues.ContainsKey(column.Value.Name))
+                    if (item.FieldValues.ContainsKey(fieldMap.Value.Name))
                     {
-                        object value = item[column.Value.Name];
-                        value = SpConverter.ConvertValue(value, prop.PropertyType);
+                        object value = item[fieldMap.Value.Name];
+                        value = GetFieldValue(fieldMap.Value, field.FieldType, value);
+                        value = SpConverter.ConvertValue(value, field.FieldType);
                         field.SetValue(entity, value);
                     }
                 }
@@ -225,6 +230,57 @@ namespace SP.Client.Linq.Query
                 }
             }
             return entity;
+        }
+
+        private static object GetFieldValue(FieldAttribute fieldAttr, Type valueType, object value)
+        {
+            if (value != null)
+            {
+                if (fieldAttr is LookupFieldAttribute)
+                {
+                    var lookupFieldMap = fieldAttr as LookupFieldAttribute;
+
+                    if (value is FieldLookupValue)
+                    {
+                        if (!valueType.IsAssignableFrom(typeof(FieldLookupValue)))
+                        {
+                            value = lookupFieldMap.IsLookupId
+                                ? (object)(value as FieldLookupValue).LookupId
+                                : (value as FieldLookupValue).LookupValue;
+                        }
+                    }
+                    else if (value is FieldLookupValue[])
+                    {
+                        if (!lookupFieldMap.IsMultiple)
+                        {
+                            var lookupValue = (value as FieldLookupValue[]).FirstOrDefault();
+                            if (lookupValue != null)
+                            {
+                                value = lookupFieldMap.IsLookupId
+                               ? (object)lookupValue.LookupId
+                               : lookupValue.LookupValue;
+                            }
+                            else
+                            {
+                                value = null;
+                            }
+                        }
+                        else
+                        {
+                            if (!valueType.IsAssignableFrom(typeof(FieldLookupValue[])))
+                            {
+                                var elType = (valueType.GetElementType()
+                                    ?? valueType.GenericTypeArguments.FirstOrDefault())
+                                    ?? typeof(object);
+                                value = lookupFieldMap.IsLookupId
+                                    ? (value as FieldLookupValue[]).Select(v => SpConverter.ConvertValue(v.LookupId, elType)).ToList(elType)
+                                    : (value as FieldLookupValue[]).Select(v => SpConverter.ConvertValue(v.LookupValue, elType)).ToList(elType);
+                            }
+                        }
+                    }
+                }
+            }
+            return value;
         }
     }
 

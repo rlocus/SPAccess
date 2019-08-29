@@ -2,17 +2,20 @@
 
 namespace SP.Client.Linq.Attributes
 {
-  public class LookupFieldAttribute : FieldAttribute
-  {
-    public LookupFieldAttribute()
+    public class LookupFieldAttribute : FieldAttribute
     {
-      DataType = FieldType.Lookup;
-    }
+        public LookupFieldAttribute()
+        {
+            DataType = FieldType.Lookup;
+        }
 
-    public LookupFieldAttribute(string name) : base(name, FieldType.Lookup)
-    {
-    }
+        public LookupFieldAttribute(string name) : base(name, FieldType.Lookup)
+        {
+        }
 
-    public bool IsLookupId { get; set; }
-  }
+        public bool IsLookupId { get; set; }
+
+        public bool IsMultiple { get; set; }
+
+    }
 }

@@ -1,13 +1,16 @@
 ﻿using Microsoft.SharePoint.Client;
 using SP.Client.Caml;
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace SP.Client.Linq.Query.ExpressionVisitors
 {
     public class SpIncludesExpressionVisitor : SpComparisonExpressionVisitor
     {
-        protected string[] FieldValues { get; private set; }
+        protected IEnumerable<object> FieldValues { get; private set; }
 
         public SpIncludesExpressionVisitor(SpQueryArgs args) : base(args)
         {
@@ -41,7 +44,14 @@ namespace SP.Client.Linq.Query.ExpressionVisitors
 
         protected override Expression VisitConstant(ConstantExpression exp)
         {
-            FieldValues = exp.Value as string[];
+            if (exp.Type.IsAssignableFrom(typeof(string[])))
+            {
+                FieldValues = exp.Value as string[];
+            }
+            else if (exp.Type.IsAssignableFrom(typeof(int[])))
+            {
+                FieldValues = (exp.Value as int[]).Select(v => v as object);
+            }
             return exp;
         }
     }

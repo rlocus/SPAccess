@@ -17,7 +17,7 @@ namespace SP.Client.Linq.Query.ExpressionVisitors
 
         protected override Expression VisitMethodCall(MethodCallExpression node)
         {
-            if (node.Method.Name == "DateRangesOverlap")
+            if (node.Method.Name == "DateRangesOverlap" && (node.Method.DeclaringType.IsAssignableFrom(typeof(ListItemEntityExtensions))))
             {
                 Visit(node.Object);
                 foreach (var arg in node.Arguments)

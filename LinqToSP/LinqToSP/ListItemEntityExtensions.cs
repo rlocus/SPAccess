@@ -16,6 +16,13 @@ namespace SP.Client.Linq
         {
             //fake method.
             return true;
+        }      
+
+        public static bool Includes<TEntity, Boolean>(this TEntity entity, Func<TEntity, object> prop, params string[] terms)
+         where TEntity : IListItemEntity
+        {
+            //fake method.
+            return true;
         }
     }
 }

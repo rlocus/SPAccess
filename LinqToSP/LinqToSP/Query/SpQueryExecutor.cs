@@ -247,6 +247,14 @@ namespace SP.Client.Linq.Query
                             value = lookupFieldMap.IsLookupId
                                 ? (object)(value as FieldLookupValue).LookupId
                                 : (value as FieldLookupValue).LookupValue;
+
+                            if (valueType.IsArray)
+                            {
+                                var elType = (valueType.GetElementType()
+                                 ?? valueType.GenericTypeArguments.FirstOrDefault())
+                                 ?? typeof(object);
+                                value = new[] { SpConverter.ConvertValue(value, elType) }.ToArray(elType);
+                            }
                         }
                     }
                     else if (value is FieldLookupValue[])

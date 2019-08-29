@@ -123,6 +123,16 @@ namespace SP.Client.Caml
 
 
             public static explicit operator DateCamlValue(string s) { return null; }
+
+            public override int GetHashCode()
+            {
+                return base.GetHashCode();
+            }
+
+            public override bool Equals(object obj)
+            {
+                return base.Equals(obj);
+            }
         }
 
         public sealed class NowDateCamlValue : DateCamlValue

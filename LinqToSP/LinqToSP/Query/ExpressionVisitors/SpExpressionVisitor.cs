@@ -135,6 +135,18 @@ namespace SP.Client.Linq.Query.ExpressionVisitors
                 visitor.Visit(expression);
                 Operator = visitor.Operator;
             }
+            else if ((node.Method.Name == "LookupIncludes" || node.Method.Name == "LookupIdIncludes") && (node.Method.DeclaringType.IsAssignableFrom(typeof(ListItemEntityExtensions))))
+            {
+                var visitor = new SpLookupIncludesExpressionVisitor(SpQueryArgs);
+                visitor.Visit(expression);
+                Operator = visitor.Operator;
+            }
+            else if ((node.Method.Name == "LookupNotIncludes" || node.Method.Name == "LookupIdNotIncludes") && (node.Method.DeclaringType.IsAssignableFrom(typeof(ListItemEntityExtensions))))
+            {
+                var visitor = new SpLookupNotIncludesExpressionVisitor(SpQueryArgs);
+                visitor.Visit(expression);
+                Operator = visitor.Operator;
+            }
             else
             {
                 expression = base.VisitMethodCall(node);

@@ -147,6 +147,12 @@ namespace SP.Client.Linq.Query.ExpressionVisitors
                 visitor.Visit(expression);
                 Operator = visitor.Operator;
             }
+            else if ((node.Method.Name == "IsMembership") && (node.Method.DeclaringType.IsAssignableFrom(typeof(ListItemEntityExtensions))))
+            {
+                var visitor = new SpIsMembershipExpressionVisitor(SpQueryArgs);
+                visitor.Visit(expression);
+                Operator = visitor.Operator;
+            }
             else
             {
                 expression = base.VisitMethodCall(node);

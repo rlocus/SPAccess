@@ -14,7 +14,7 @@ namespace SP.Client.Linq.Query.ExpressionVisitors
         }
 
         protected string FieldName { get; private set; }
-        protected object FieldValue { get; private set; }
+        protected object FieldValue { get; /*private*/ set; }
 
         protected CamlFieldRef GetFieldRef(out FieldType dataType)
         {

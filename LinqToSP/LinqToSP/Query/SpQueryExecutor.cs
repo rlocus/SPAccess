@@ -242,7 +242,7 @@ namespace SP.Client.Linq.Query
 
                     if (value is FieldLookupValue)
                     {
-                        if (!valueType.IsAssignableFrom(typeof(FieldLookupValue)))
+                        if (!valueType.IsAssignableFrom(typeof(FieldLookupValue)) && !valueType.IsSubclassOf(typeof(FieldLookupValue)))
                         {
                             value = lookupFieldMap.IsLookupId
                                 ? (object)(value as FieldLookupValue).LookupId
@@ -264,9 +264,14 @@ namespace SP.Client.Linq.Query
                             var lookupValue = (value as FieldLookupValue[]).FirstOrDefault();
                             if (lookupValue != null)
                             {
-                                value = lookupFieldMap.IsLookupId
-                               ? (object)lookupValue.LookupId
-                               : lookupValue.LookupValue;
+                                if (!valueType.IsAssignableFrom(typeof(FieldLookupValue)) && !valueType.IsSubclassOf(typeof(FieldLookupValue)))
+                                {
+                                    value = lookupFieldMap.IsLookupId ? (object)lookupValue.LookupId : lookupValue.LookupValue;
+                                }
+                                else
+                                {
+                                    value = lookupValue;
+                                }
                             }
                             else
                             {

@@ -1,6 +1,8 @@
 ﻿using Microsoft.SharePoint.Client;
 using System;
+using System.Linq;
 using System.Collections.Generic;
+using SP.Client.Extensions;
 
 namespace SP.Client.Helpers
 {
@@ -123,6 +125,17 @@ namespace SP.Client.Helpers
                     {
                         value = $"{ ((FieldLookupValue)value).LookupId};#{((FieldLookupValue)value).LookupValue}";
                     }
+                    if (type.IsArray)
+                    {
+                        var elType = type.GetElementType();
+                        value = new[] { value }.ToArray(elType);
+                    }
+                }
+                else if (valType == typeof(FieldLookupValue[]))
+                {
+                    value = !type.IsArray
+                        ? (object)string.Join(";#", (value as FieldLookupValue[]).Select(val => $"{val.LookupId};#{val.LookupValue}"))
+                        : (value as FieldLookupValue[]).Select(val => $"{val.LookupId};#{val.LookupValue}").ToArray();
                 }
                 else if (valType == typeof(FieldUrlValue))
                 {

@@ -26,7 +26,7 @@ namespace SP.Client.Linq
     ///                    .Where(e => e.StartTime < DateTime.Today.AddMonths(-1) &&
     ///                                e.DateRangesOverlap(x => x.StartTime, x => x.EndTime, x => x.RecurrenceId, CamlValue.Month));
     ///</summary>
-    public class SpDataContext : ISpContext
+    public class SpDataContext : ISpDataContext
     {
         #region Properties
         /// <summary>

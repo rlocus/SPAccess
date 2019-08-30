@@ -6,7 +6,7 @@ using SP.Client.Linq.Query;
 
 namespace SP.Client.Linq
 {
-  public interface ISpContext : IDisposable
+  public interface ISpDataContext : IDisposable
   {
     string SiteUrl { get; }
 

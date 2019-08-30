@@ -18,6 +18,9 @@ using SP.Client.Extensions;
 
 namespace SP.Client.Linq.Query
 {
+    /// <summary>
+    /// 
+    /// </summary>
     internal class SpQueryExecutor : IQueryExecutor
     {
         private readonly object _lock = new object();
@@ -243,11 +246,13 @@ namespace SP.Client.Linq.Query
                 {
                     var lookupFieldMap = fieldAttr as LookupFieldAttribute;
 
+                    if (lookupFieldMap.Result == LookupItemResult.None) return value;
+
                     if (value is FieldLookupValue)
                     {
                         if (!valueType.IsAssignableFrom(typeof(FieldLookupValue)) && !valueType.IsSubclassOf(typeof(FieldLookupValue)))
                         {
-                            value = lookupFieldMap.IsLookupId
+                            value = lookupFieldMap.Result == LookupItemResult.Id
                                 ? (object)(value as FieldLookupValue).LookupId
                                 : (value as FieldLookupValue).LookupValue;
 
@@ -269,7 +274,7 @@ namespace SP.Client.Linq.Query
                             {
                                 if (!valueType.IsAssignableFrom(typeof(FieldLookupValue)) && !valueType.IsSubclassOf(typeof(FieldLookupValue)))
                                 {
-                                    value = lookupFieldMap.IsLookupId ? (object)lookupValue.LookupId : lookupValue.LookupValue;
+                                    value = lookupFieldMap.Result == LookupItemResult.Id ? (object)lookupValue.LookupId : lookupValue.LookupValue;
                                 }
                                 else
                                 {
@@ -288,7 +293,7 @@ namespace SP.Client.Linq.Query
                                 ?? typeof(object);
                             if (!elType.IsAssignableFrom(typeof(FieldLookupValue)) && !elType.IsSubclassOf(typeof(FieldLookupValue)))
                             {
-                                var result = lookupFieldMap.IsLookupId
+                                var result = lookupFieldMap.Result == LookupItemResult.Id
                                 ? (value as FieldLookupValue[]).Select(v => SpConverter.ConvertValue(v.LookupId, elType))
                                 : (value as FieldLookupValue[]).Select(v => SpConverter.ConvertValue(v.LookupValue, elType));
                                 if (valueType.IsArray)

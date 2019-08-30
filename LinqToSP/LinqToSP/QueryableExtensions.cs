@@ -1,6 +1,5 @@
 ﻿using Remotion.Linq;
 using SP.Client.Extensions;
-using SP.Client.Linq.Query;
 using SP.Client.Linq.Query.Expressions;
 using System;
 using System.Linq;

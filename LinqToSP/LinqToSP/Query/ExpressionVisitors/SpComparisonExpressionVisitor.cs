@@ -31,7 +31,10 @@ namespace SP.Client.Linq.Query.ExpressionVisitors
                     var fieldRef = new CamlFieldRef() { Name = fieldMap.Name };
                     if (fieldMap is LookupFieldAttribute)
                     {
-                        fieldRef.LookupId = ((LookupFieldAttribute)fieldMap).IsLookupId;
+                        if ((fieldMap as LookupFieldAttribute).Result == LookupItemResult.Id)
+                        {
+                            fieldRef.LookupId = true;
+                        }
                     }
                     dataType = fieldMap.DataType;
                     return fieldRef;

@@ -31,6 +31,7 @@ namespace SP.Client.Linq.Query.ExpressionVisitors
 
                 FieldType dataType;
                 CamlFieldRef fieldRef = GetFieldRef(out dataType);
+                fieldRef.LookupId = true;
                 if (fieldRef == null || FieldValues == null)
                 {
                     return node;

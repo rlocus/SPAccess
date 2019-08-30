@@ -24,7 +24,10 @@ namespace SP.Client.Linq.Query.ExpressionVisitors
             }
             else if (expression is GroupByExpression)
             {
-                Clause.Limit = (expression as GroupByExpression).Limit;
+                Clause.Limit = (expression as GroupByExpression).Limit > 0 ?
+                    (expression as GroupByExpression).Limit
+                    : (int?)null;
+
                 foreach (var path in (expression as GroupByExpression).Path)
                 {
                     Visit(path);

@@ -34,7 +34,7 @@ namespace SP.Client.Linq.Query.ExpressionVisitors
                 if (node.Method.Name == "LookupIdIncludes")
                 {
                     fieldRef.LookupId = true;
-                }
+                }                
                 Operator = new Caml.Operators.Includes(fieldRef, value);
                 return node;
             }

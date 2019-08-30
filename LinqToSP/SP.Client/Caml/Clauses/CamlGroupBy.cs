@@ -12,13 +12,18 @@ namespace SP.Client.Caml.Clauses
         internal const string GroupByTag = "GroupBy";
         internal const string CollapseAttr = "Collapse";
         internal const string GroupLimitAttr = "GroupLimit";
+        public CamlGroupBy(bool? collapse = null, int? limit = null) : base(GroupByTag)
+        {
+            Collapse = collapse;
+            Limit = limit;
+        }
 
-        public CamlGroupBy(CamlFieldRef fieldRef, bool? collapse = null, int? limit = 30)
+        public CamlGroupBy(CamlFieldRef fieldRef, bool? collapse = null, int? limit = null)
             : this(new[] { fieldRef }, collapse, limit)
         {
         }
 
-        public CamlGroupBy(IEnumerable<CamlFieldRef> fieldRefs, bool? collapse = null, int? limit = 30)
+        public CamlGroupBy(IEnumerable<CamlFieldRef> fieldRefs, bool? collapse = null, int? limit = null)
             : base(GroupByTag)
         {
             if (fieldRefs == null) throw new ArgumentNullException("fieldRefs");
@@ -27,7 +32,7 @@ namespace SP.Client.Caml.Clauses
             Limit = limit;
         }
 
-        public CamlGroupBy(IEnumerable<string> fieldNames, bool? collapse = null, int? limit = 30)
+        public CamlGroupBy(IEnumerable<string> fieldNames, bool? collapse = null, int? limit = null)
             : base(GroupByTag)
         {
             if (fieldNames == null) throw new ArgumentNullException("fieldNames");
@@ -36,7 +41,7 @@ namespace SP.Client.Caml.Clauses
             Limit = limit;
         }
 
-        public CamlGroupBy(IEnumerable<Guid> fieldIds, bool? collapse = null, int? limit = 30)
+        public CamlGroupBy(IEnumerable<Guid> fieldIds, bool? collapse = null, int? limit = null)
             : base(GroupByTag)
         {
             if (fieldIds == null) throw new ArgumentNullException("fieldIds");
@@ -60,6 +65,27 @@ namespace SP.Client.Caml.Clauses
         public int? Limit { get; set; }
 
         public IEnumerable<CamlFieldRef> FieldRefs { get; private set; }
+
+        public void AddField(string fieldName)
+        {
+            var fieldRef = new CamlFieldRef() { Name = fieldName };
+            if (FieldRefs != null)
+            {
+                var field = FieldRefs.FirstOrDefault(fRef => fRef.Name == fieldName);
+                if (field == null)
+                {
+                    FieldRefs = FieldRefs.Concat(new[] { fieldRef });
+                }
+                else
+                {
+                    field.Ascending = fieldRef.Ascending;
+                }
+            }
+            else
+            {
+                FieldRefs = new[] { fieldRef }.AsEnumerable();
+            }
+        }
 
         public override XElement ToXElement()
         {

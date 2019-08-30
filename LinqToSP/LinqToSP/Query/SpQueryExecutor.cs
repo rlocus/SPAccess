@@ -22,6 +22,7 @@ namespace SP.Client.Linq.Query
     {
         private readonly object _lock = new object();
         internal List<IncludeExpression> IncludeExpressions { get; }
+        internal List<GroupByExpression> GroupByExpressions { get; }
 
         public SpView SpView
         {
@@ -39,6 +40,7 @@ namespace SP.Client.Linq.Query
             ValidateArgs(args);
             SpQueryArgs = args;
             IncludeExpressions = new List<IncludeExpression>();
+            GroupByExpressions = new List<GroupByExpression>();
         }
 
         private void ValidateArgs(SpQueryArgs args)
@@ -71,6 +73,7 @@ namespace SP.Client.Linq.Query
                 var queryVisitor = new SpGeneratorQueryModelVisitor(SpQueryArgs);
                 queryVisitor.VisitQueryModel(queryModel);
                 queryVisitor.VisitIncludeClauses(IncludeExpressions, queryModel);
+                queryVisitor.VisitGroupByClauses(GroupByExpressions, queryModel);
 
                 if (SpQueryArgs.SpView.ViewFields == null)
                 {
@@ -280,14 +283,22 @@ namespace SP.Client.Linq.Query
                         }
                         else
                         {
-                            if (!valueType.IsAssignableFrom(typeof(FieldLookupValue[])))
+                            var elType = (valueType.GetElementType()
+                                ?? valueType.GenericTypeArguments.FirstOrDefault())
+                                ?? typeof(object);
+                            if (!elType.IsAssignableFrom(typeof(FieldLookupValue)) && !elType.IsSubclassOf(typeof(FieldLookupValue)))
                             {
-                                var elType = (valueType.GetElementType()
-                                    ?? valueType.GenericTypeArguments.FirstOrDefault())
-                                    ?? typeof(object);
-                                value = lookupFieldMap.IsLookupId
-                                    ? (value as FieldLookupValue[]).Select(v => SpConverter.ConvertValue(v.LookupId, elType)).ToList(elType)
-                                    : (value as FieldLookupValue[]).Select(v => SpConverter.ConvertValue(v.LookupValue, elType)).ToList(elType);
+                                var result = lookupFieldMap.IsLookupId
+                                ? (value as FieldLookupValue[]).Select(v => SpConverter.ConvertValue(v.LookupId, elType))
+                                : (value as FieldLookupValue[]).Select(v => SpConverter.ConvertValue(v.LookupValue, elType));
+                                if (valueType.IsArray)
+                                {
+                                    value = result.ToArray(elType);
+                                }
+                                else
+                                {
+                                    value = result.ToList(elType);
+                                }
                             }
                         }
                     }
@@ -316,6 +327,7 @@ namespace SP.Client.Linq.Query
                 var queryVisitor = new SpGeneratorQueryModelVisitor(SpQueryArgs);
                 queryVisitor.VisitQueryModel(queryModel);
                 queryVisitor.VisitIncludeClauses(IncludeExpressions, queryModel);
+                queryVisitor.VisitGroupByClauses(GroupByExpressions, queryModel);
 
                 if (SpQueryArgs.SkipResult)
                 {

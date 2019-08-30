@@ -100,6 +100,8 @@
     <Compile Include="ListItemEntity.cs" />
     <Compile Include="QueryableExtensions.cs" />
     <Compile Include="Query\AsyncQueryProvider.cs" />
+    <Compile Include="Query\Expressions\GroupByExpression.cs" />
+    <Compile Include="Query\ExpressionVisitors\GroupByExpressionVisitor.cs" />
     <Compile Include="Query\ExpressionVisitors\SpIsMembershipExpressionVisitor.cs" />
     <Compile Include="Query\ExpressionVisitors\SpLookupNotIncludesExpressionVisitor.cs" />
     <Compile Include="Query\ExpressionVisitors\SpLookupIncludesExpressionVisitor.cs" />

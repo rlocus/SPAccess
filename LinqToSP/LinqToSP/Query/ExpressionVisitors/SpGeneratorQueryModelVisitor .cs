@@ -48,22 +48,40 @@ namespace SP.Client.Linq.Query.ExpressionVisitors
             }
         }
 
-        public void VisitIncludeClauses(IEnumerable<IncludeExpression> includeExpressions, QueryModel queryModel)
+        public void VisitIncludeClauses(IEnumerable<IncludeExpression> expressions, QueryModel queryModel)
         {
-            if (includeExpressions != null)
+            if (expressions != null)
             {
-                foreach (var includeExpression in includeExpressions)
+                foreach (var expression in expressions)
                 {
-                    VisitIncludeClause(includeExpression, queryModel);
+                    VisitIncludeClause(expression, queryModel);
+                }
+            }
+        }
+
+        public void VisitGroupByClauses(IEnumerable<GroupByExpression> expressions, QueryModel queryModel)
+        {
+            if (expressions != null)
+            {
+                foreach (var expression in expressions)
+                {
+                    VisitGroupByClause(expression, queryModel);
                 }
             }
         }
 
         private void VisitIncludeClause(IncludeExpression expression, QueryModel queryModel)
         {
-            var includeVisitor = new IncludeExpressionVisitor(_args);
-            includeVisitor.Visit(expression);
-            _args.SpView.ViewFields = includeVisitor.ViewFields;
+            var visitor = new IncludeExpressionVisitor(_args);
+            visitor.Visit(expression);
+            _args.SpView.ViewFields = visitor.ViewFields;
+        }
+
+        private void VisitGroupByClause(GroupByExpression expression, QueryModel queryModel)
+        {
+            var visitor = new GroupByExpressionVisitor(_args);
+            visitor.Visit(expression);
+            _args.SpView.Query.GroupBy = visitor.Clause;
         }
 
         public override void VisitWhereClause(WhereClause whereClause, QueryModel queryModel, int index)

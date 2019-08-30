@@ -94,6 +94,10 @@
     <Compile Include="Attributes\LookupFieldAttribute.cs" />
     <Compile Include="EventItemEntity.cs" />
     <Compile Include="IEventItemEntity.cs" />
+    <Compile Include="Infrastructure\SpChangeTracker.cs" />
+    <Compile Include="Infrastructure\SpEntityEntry.cs" />
+    <Compile Include="Infrastructure\SpSet.cs" />
+    <Compile Include="ISpEntryDataContext.cs" />
     <Compile Include="ListItemEntityExtensions.cs" />
     <Compile Include="EntityState.cs" />
     <Compile Include="IListItemEntity.cs" />

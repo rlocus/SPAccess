@@ -120,7 +120,7 @@
     <Compile Include="Query\IQueryCompiler.cs" />
     <Compile Include="Query\IAsyncQueryExecutor.cs" />
     <Compile Include="Query\SpQueryArgs.cs" />
-    <Compile Include="SpContext.cs" />
+    <Compile Include="SpDataContext.cs" />
     <Compile Include="ISpContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Query\SpEntityQueryable.cs" />

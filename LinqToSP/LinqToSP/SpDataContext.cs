@@ -9,7 +9,7 @@ namespace SP.Client.Linq
     /// SharePoint context
     /// IDisposable
     /// ******************************************************************************************************************
-    /// Usage: var spContext = new SpContext("https://sp-site")
+    /// Usage: var spContext = new SpDataContext("https://sp-site")
     /// spContext.Context.Credentials = new SharePointOnlineCredentials("user@domain", ConvertToSecureString("password"));
     /// ******************************************************************************************************************
     /// Examples:
@@ -26,7 +26,7 @@ namespace SP.Client.Linq
     ///                    .Where(e => e.StartTime < DateTime.Today.AddMonths(-1) &&
     ///                                e.DateRangesOverlap(x => x.StartTime, x => x.EndTime, x => x.RecurrenceId, CamlValue.Month));
     ///</summary>
-    public class SpContext : ISpContext
+    public class SpDataContext : ISpContext
     {
         #region Properties
         /// <summary>
@@ -47,7 +47,7 @@ namespace SP.Client.Linq
         /// </summary>
         /// <param name="siteUrl">Site Url: https://sp-site
         /// </param>
-        public SpContext(string siteUrl)
+        public SpDataContext(string siteUrl)
         {
             SiteUrl = siteUrl;
             Context = new ClientContext(siteUrl);
@@ -125,7 +125,7 @@ namespace SP.Client.Linq
             GC.SuppressFinalize(this);
         }
 
-        ~SpContext()
+        ~SpDataContext()
         {
             Dispose(false);
         }

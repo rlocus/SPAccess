@@ -13,8 +13,8 @@ namespace SP.Client.Linq.Query.ExpressionVisitors
 
         protected override Expression VisitMethodCall(MethodCallExpression node)
         {
-            if ((node.Method.Name == "LookupNotIncludes" || node.Method.Name == "LookupIdNotIncludes") && (node.Method.DeclaringType.IsAssignableFrom(typeof(ListItemEntityExtensions))))
-            {
+            if ((node.Method.Name == "LookupNotIncludes" || node.Method.Name == "LookupIdNotIncludes") && typeof(ListItemEntityExtensions).IsAssignableFrom(node.Method.DeclaringType))
+      {
                 Visit(node.Object);
                 foreach (var arg in node.Arguments)
                 {

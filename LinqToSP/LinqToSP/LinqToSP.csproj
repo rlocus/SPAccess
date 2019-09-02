@@ -91,6 +91,7 @@
   <ItemGroup>
     <Compile Include="Attributes\AttributeHelper.cs" />
     <Compile Include="Attributes\FieldAttribute.cs" />
+    <Compile Include="Attributes\DependentLookupFieldAttribute.cs" />
     <Compile Include="Attributes\LookupFieldAttribute.cs" />
     <Compile Include="EventItemEntity.cs" />
     <Compile Include="IEventItemEntity.cs" />

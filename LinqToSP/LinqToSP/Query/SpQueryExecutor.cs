@@ -15,420 +15,437 @@ using Remotion.Linq.Clauses.ResultOperators;
 using SP.Client.Linq.Query.Expressions;
 using SP.Client.Linq.Attributes;
 using SP.Client.Extensions;
+using SP.Client.Caml;
 
 namespace SP.Client.Linq.Query
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    internal class SpQueryExecutor : IQueryExecutor
+  /// <summary>
+  /// 
+  /// </summary>
+  internal class SpQueryExecutor : IQueryExecutor
+  {
+    private readonly object _lock = new object();
+    internal List<IncludeExpression> IncludeExpressions { get; }
+    internal List<GroupByExpression> GroupByExpressions { get; }
+
+    public SpView SpView
     {
-        private readonly object _lock = new object();
-        internal List<IncludeExpression> IncludeExpressions { get; }
-        internal List<GroupByExpression> GroupByExpressions { get; }
-
-        public SpView SpView
-        {
-            get
-            {
-                if (SpQueryArgs == null) return null;
-                return SpQueryArgs.SpView;
-            }
-        }
-
-        internal SpQueryArgs SpQueryArgs { get; }
-
-        internal SpQueryExecutor(SpQueryArgs args)
-        {
-            ValidateArgs(args);
-            SpQueryArgs = args;
-            IncludeExpressions = new List<IncludeExpression>();
-            GroupByExpressions = new List<GroupByExpression>();
-        }
-
-        private void ValidateArgs(SpQueryArgs args)
-        {
-
-        }
-
-        public TResult ExecuteScalar<TResult>(QueryModel queryModel)
-        {
-            return ExecuteSingle<TResult>(queryModel, false);
-        }
-
-        public TResult ExecuteSingle<TResult>(QueryModel queryModel, bool defaultIfEmpty)
-        {
-            var results = ExecuteCollection<TResult>(queryModel);
-            foreach (var resultOperator in queryModel.ResultOperators)
-            {
-                if (resultOperator is LastResultOperator)
-                    return results.LastOrDefault();
-            }
-            return (defaultIfEmpty) ? results.FirstOrDefault() : results.First();
-        }
-
-        public IEnumerable<TResult> ExecuteCollection<TResult>(QueryModel queryModel)
-        {
-            lock (_lock)
-            {
-                if (SpQueryArgs == null) return Enumerable.Empty<TResult>();
-                SpQueryArgs.SpView = new SpView();
-                var queryVisitor = new SpGeneratorQueryModelVisitor(SpQueryArgs);
-                queryVisitor.VisitQueryModel(queryModel);
-                queryVisitor.VisitIncludeClauses(IncludeExpressions, queryModel);
-                queryVisitor.VisitGroupByClauses(GroupByExpressions, queryModel);
-
-                if (SpQueryArgs.SpView.ViewFields == null)
-                {
-                    SpQueryArgs.SpView.ViewFields =
-                    new Caml.ViewFieldsCamlElement(SpQueryArgs.FieldMappings.Select(fieldMapping => fieldMapping.Value.Name));
-                }
-                else if (SpQueryArgs.SpView.ViewFields.FieldRefs == null || !SpQueryArgs.SpView.ViewFields.FieldRefs.Any())
-                {
-                    SpQueryArgs.SpView.ViewFields.AddViewFields(SpQueryArgs.FieldMappings.Select(fieldMapping => fieldMapping.Value.Name));
-                }
-
-                if (SpQueryArgs.SkipResult)
-                {
-                    return Enumerable.Empty<TResult>();
-                }
-
-                Debug.WriteLine("# SP Query:");
-                Debug.Write(SpQueryArgs.SpView);
-                Debug.WriteLine("");
-
-                IEnumerable<TResult> results = GetEntities(typeof(TResult)).Cast<TResult>();
-
-                foreach (var resultOperator in queryModel.ResultOperators)
-                {
-                    if (resultOperator is ReverseResultOperator)
-                        results = results.Reverse();
-                }
-                return results;
-            }
-        }
-
-        protected virtual IEnumerable<TResult> GetEntities<TResult>()
-        where TResult : ListItemEntity
-        {
-            return GetEntities(typeof(TResult)).Cast<TResult>();
-        }
-        protected virtual IEnumerable<object> GetEntities(Type type)
-        {
-            CheckEntityType(type);
-            ListItemCollectionPosition position = null;
-            IEnumerable<ListItemEntity> entities = Enumerable.Empty<ListItemEntity>();
-            if (SpQueryArgs == null) return entities;
-
-            var rowLimit = SpQueryArgs.SpView.Limit;
-            int itemCount = 0;
-            do
-            {
-                if (SpQueryArgs.BatchSize > 0)
-                {
-                    if (rowLimit > 0)
-                    {
-                        SpQueryArgs.SpView.Limit = Math.Min(rowLimit - itemCount, SpQueryArgs.BatchSize);
-                    }
-                    else
-                    {
-                        SpQueryArgs.SpView.Limit = SpQueryArgs.BatchSize;
-                    }
-                    if (SpQueryArgs.SpView.Limit == 0)
-                    {
-                        break;
-                    }
-                }
-                var items = GetItems(SpQueryArgs, position);
-                if (items != null)
-                {
-                    items.Context.ExecuteQuery();
-                    if (SpQueryArgs.BatchSize > 0)
-                    {
-                        position = items.ListItemCollectionPosition;
-                    }
-                    itemCount += items.Count;
-                    entities = entities.Concat(MapEntities(items, type));
-                }
-            }
-            while (position != null);
-
-            SpQueryArgs.SpView.Limit = rowLimit;
-            return entities;
-        }
-
-        protected static void CheckEntityType(Type type)
-        {
-            if (!type.IsAssignableFrom(typeof(ListItemEntity)) && !type.IsSubclassOf(typeof(ListItemEntity)))
-            {
-                throw new Exception($"Entity must be assignable from {typeof(ListItemEntity)}");
-            }
-        }
-
-        protected static List GetList(SpQueryArgs args)
-        {
-            if (args != null)
-            {
-                var clientContext = args.Context;
-                if (clientContext != null)
-                {
-                    return args.ListTitle != null ? clientContext.Web.Lists.GetByTitle(args.ListTitle) :
-                        (args.ListUrl != null ? clientContext.Web.GetList(args.ListUrl)
-                        : clientContext.Web.Lists.GetById(args.ListId));
-                }
-            }
-            return null;
-        }
-
-        protected static ListItemCollection GetItems(SpQueryArgs args, ListItemCollectionPosition position)
-        {
-            var list = GetList(args);
-            if (list != null)
-            {
-                var items = list.GetItems(new CamlQuery() { ViewXml = args.SpView.ToString(true), ListItemCollectionPosition = position });
-                items.Context.Load(items, item => item.Include(i => i.EffectiveBasePermissions));
-                items.Context.Load(items, item => item.ListItemCollectionPosition);
-                return items;
-            }
-            return null;
-        }
-
-        protected virtual IEnumerable<ListItemEntity> MapEntities(ListItemCollection items, Type type)
-        {
-            return items.Select(item => MapEntity((ListItemEntity)Activator.CreateInstance(type, new object[] {/* item.Id */}), item));
-        }
-
-        protected virtual ListItemEntity MapEntity(ListItemEntity entity, ListItem item)
-        {
-            if (SpQueryArgs == null || entity == null || item == null) return entity;
-
-            foreach (var fieldMap in SpQueryArgs.FieldMappings)
-            {
-                PropertyInfo prop = entity.GetType().GetProperty(fieldMap.Key, BindingFlags.Public | BindingFlags.Instance);
-                if (null != prop && prop.CanWrite)
-                {
-                    if (item.FieldValues.ContainsKey(fieldMap.Value.Name))
-                    {
-                        object value = item[fieldMap.Value.Name];
-                        value = GetFieldValue(fieldMap.Value, prop.PropertyType, value);
-
-                        value = SpConverter.ConvertValue(value, prop.PropertyType);
-                        prop.SetValue(entity, value);
-                    }
-                }
-                FieldInfo field = entity.GetType().GetField(fieldMap.Key, BindingFlags.Public | BindingFlags.Instance);
-                if (null != field)
-                {
-                    if (item.FieldValues.ContainsKey(fieldMap.Value.Name))
-                    {
-                        object value = item[fieldMap.Value.Name];
-                        value = GetFieldValue(fieldMap.Value, field.FieldType, value);
-                        value = SpConverter.ConvertValue(value, field.FieldType);
-                        field.SetValue(entity, value);
-                    }
-                }
-            }
-            if (SpQueryArgs.IncludeItemPermissions)
-            {
-                if (item.IsPropertyAvailable("EffectiveBasePermissions"))
-                {
-                    entity.EffectiveBasePermissions = item.EffectiveBasePermissions;
-                }
-            }
-            return entity;
-        }
-
-        private static object GetFieldValue(FieldAttribute fieldAttr, Type valueType, object value)
-        {
-            if (value != null)
-            {
-                if (fieldAttr is LookupFieldAttribute)
-                {
-                    var lookupFieldMap = fieldAttr as LookupFieldAttribute;
-
-                    if (lookupFieldMap.Result == LookupItemResult.None) return value;
-
-                    if (value is FieldLookupValue)
-                    {
-                        if (!valueType.IsAssignableFrom(typeof(FieldLookupValue)) && !valueType.IsSubclassOf(typeof(FieldLookupValue)))
-                        {
-                            value = lookupFieldMap.Result == LookupItemResult.Id
-                                ? (object)(value as FieldLookupValue).LookupId
-                                : (value as FieldLookupValue).LookupValue;
-
-                            if (valueType.IsArray)
-                            {
-                                var elType = (valueType.GetElementType()
-                                 ?? valueType.GenericTypeArguments.FirstOrDefault())
-                                 ?? typeof(object);
-                                value = new[] { SpConverter.ConvertValue(value, elType) }.ToArray(elType);
-                            }
-                        }
-                    }
-                    else if (value is FieldLookupValue[])
-                    {
-                        if (!lookupFieldMap.IsMultiple)
-                        {
-                            var lookupValue = (value as FieldLookupValue[]).FirstOrDefault();
-                            if (lookupValue != null)
-                            {
-                                if (!valueType.IsAssignableFrom(typeof(FieldLookupValue)) && !valueType.IsSubclassOf(typeof(FieldLookupValue)))
-                                {
-                                    value = lookupFieldMap.Result == LookupItemResult.Id ? (object)lookupValue.LookupId : lookupValue.LookupValue;
-                                }
-                                else
-                                {
-                                    value = lookupValue;
-                                }
-                            }
-                            else
-                            {
-                                value = null;
-                            }
-                        }
-                        else
-                        {
-                            var elType = (valueType.GetElementType()
-                                ?? valueType.GenericTypeArguments.FirstOrDefault())
-                                ?? typeof(object);
-                            if (!elType.IsAssignableFrom(typeof(FieldLookupValue)) && !elType.IsSubclassOf(typeof(FieldLookupValue)))
-                            {
-                                var result = lookupFieldMap.Result == LookupItemResult.Id
-                                ? (value as FieldLookupValue[]).Select(v => SpConverter.ConvertValue(v.LookupId, elType))
-                                : (value as FieldLookupValue[]).Select(v => SpConverter.ConvertValue(v.LookupValue, elType));
-                                if (valueType.IsArray)
-                                {
-                                    value = result.ToArray(elType);
-                                }
-                                else
-                                {
-                                    value = result.ToList(elType);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            return value;
-        }
+      get
+      {
+        if (SpQueryArgs == null) return null;
+        return SpQueryArgs.SpView;
+      }
     }
 
-    internal class SpAsyncQueryExecutor : SpQueryExecutor, IAsyncQueryExecutor
+    internal SpQueryArgs SpQueryArgs { get; }
+
+    internal SpQueryExecutor(SpQueryArgs args)
     {
-        private readonly SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1, 1);
-
-        internal SpAsyncQueryExecutor(SpQueryArgs args) : base(args)
-        {
-            args.IsAsync = true;
-        }
-
-        public async Task<IEnumerable<TResult>> ExecuteCollectionAsync<TResult>(QueryModel queryModel)
-        {
-            await _semaphoreSlim.WaitAsync();
-            try
-            {
-                if (SpQueryArgs == null) return Enumerable.Empty<TResult>();
-                SpQueryArgs.SpView = new SpView();
-                var queryVisitor = new SpGeneratorQueryModelVisitor(SpQueryArgs);
-                queryVisitor.VisitQueryModel(queryModel);
-                queryVisitor.VisitIncludeClauses(IncludeExpressions, queryModel);
-                queryVisitor.VisitGroupByClauses(GroupByExpressions, queryModel);
-
-                if (SpQueryArgs.SkipResult)
-                {
-                    return Enumerable.Empty<TResult>();
-                }
-
-                var results = await GetEntitiesAsync(typeof(TResult));
-
-                foreach (var resultOperator in queryModel.ResultOperators)
-                {
-                    if (resultOperator is ReverseResultOperator)
-                        results = results.Reverse();
-                }
-
-                return results.Cast<TResult>();
-            }
-            finally
-            {
-                _semaphoreSlim.Release();
-            }
-        }
-
-        public async Task<TResult> ExecuteScalarAsync<TResult>(QueryModel queryModel)
-        {
-            var result = await ExecuteSingleAsync<TResult>(queryModel, false);
-            return result;
-        }
-
-        public async Task<TResult> ExecuteSingleAsync<TResult>(QueryModel queryModel, bool defaultIfEmpty)
-        {
-            var results = await ExecuteCollectionAsync<TResult>(queryModel);
-            foreach (var resultOperator in queryModel.ResultOperators)
-            {
-                if (resultOperator is LastResultOperator)
-                    return results.LastOrDefault();
-            }
-            return (defaultIfEmpty) ? results.FirstOrDefault() : results.First();
-        }
-
-        protected virtual async Task<IEnumerable<TResult>> GetEntitiesAsync<TResult>() where TResult : ListItemEntity
-        {
-            var entities = await GetEntitiesAsync(typeof(TResult));
-            return entities.Cast<TResult>();
-        }
-
-        protected virtual async Task<IEnumerable<object>> GetEntitiesAsync(Type type)
-        {
-            CheckEntityType(type);
-
-            ListItemCollectionPosition position = null;
-            IEnumerable<ListItemEntity> entities = Enumerable.Empty<ListItemEntity>();
-            if (SpQueryArgs == null) return entities;
-
-            var rowLimit = SpQueryArgs.SpView.Limit;
-            int itemCount = 0;
-            do
-            {
-                if (SpQueryArgs.BatchSize > 0)
-                {
-                    if (rowLimit > 0)
-                    {
-                        SpQueryArgs.SpView.Limit = Math.Min(rowLimit - itemCount, SpQueryArgs.BatchSize);
-                    }
-                    else
-                    {
-                        SpQueryArgs.SpView.Limit = SpQueryArgs.BatchSize;
-                    }
-                    if (SpQueryArgs.SpView.Limit == 0)
-                    {
-                        break;
-                    }
-                }
-
-                var items = GetItems(SpQueryArgs, position);
-                if (items != null)
-                {
-                    await items.Context.ExecuteQueryAsync();
-                    if (SpQueryArgs.BatchSize > 0)
-                    {
-                        position = items.ListItemCollectionPosition;
-                    }
-                    itemCount += items.Count;
-                    entities = entities.Concat(MapEntities(items, type));
-                }
-            }
-            while (position != null);
-
-            SpQueryArgs.SpView.Limit = rowLimit;
-            return entities;
-        }
-
-        //protected override IEnumerable<object> GetEntities(Type type)
-        //{
-        //  var task = GetEntitiesAsync(type);
-        //  task.Wait();
-        //  return task.Result;
-        //}
+      ValidateArgs(args);
+      SpQueryArgs = args;
+      IncludeExpressions = new List<IncludeExpression>();
+      GroupByExpressions = new List<GroupByExpression>();
     }
+
+    private void ValidateArgs(SpQueryArgs args)
+    {
+
+    }
+
+    public TResult ExecuteScalar<TResult>(QueryModel queryModel)
+    {
+      return ExecuteSingle<TResult>(queryModel, false);
+    }
+
+    public TResult ExecuteSingle<TResult>(QueryModel queryModel, bool defaultIfEmpty)
+    {
+      var results = ExecuteCollection<TResult>(queryModel);
+      foreach (var resultOperator in queryModel.ResultOperators)
+      {
+        if (resultOperator is LastResultOperator)
+          return results.LastOrDefault();
+      }
+      return (defaultIfEmpty) ? results.FirstOrDefault() : results.First();
+    }
+
+    public IEnumerable<TResult> ExecuteCollection<TResult>(QueryModel queryModel)
+    {
+      lock (_lock)
+      {
+        if (SpQueryArgs == null) return Enumerable.Empty<TResult>();
+        var spView = new SpView();
+        SpQueryArgs.SpView = spView;
+        var queryVisitor = new SpGeneratorQueryModelVisitor(SpQueryArgs);
+        queryVisitor.VisitQueryModel(queryModel);
+        queryVisitor.VisitIncludeClauses(IncludeExpressions, queryModel);
+        queryVisitor.VisitGroupByClauses(GroupByExpressions, queryModel);
+
+        if (spView.ViewFields == null)
+        {
+          spView.ViewFields =
+          new ViewFieldsCamlElement(SpQueryArgs.FieldMappings.Select(fieldMapping => fieldMapping.Value.Name));
+        }
+        else if (spView.ViewFields.FieldRefs == null || !spView.ViewFields.FieldRefs.Any())
+        {
+          spView.ViewFields.AddViewFields(SpQueryArgs.FieldMappings.Select(fieldMapping => fieldMapping.Value.Name));
+        }
+
+        spView.Joins = new JoinsCamlElement();
+        spView.ProjectedFields = new ProjectedFieldsCamlElement();
+
+        foreach (var dependentLookupField in SpQueryArgs.FieldMappings.Values.OfType<DependentLookupFieldAttribute>())
+        {
+          if (spView.ViewFields.FieldRefs.Any(f => f.Name == dependentLookupField.Name))
+          {
+            if (spView.ProjectedFields.ProjectedFields == null || !spView.ProjectedFields.ProjectedFields.Any(f => f.Name == dependentLookupField.Name))
+            {
+              spView.Joins.Join(new InnerJoin(dependentLookupField.LookupFieldName, dependentLookupField.List));
+              spView.ProjectedFields.ShowField(new CamlProjectedField(dependentLookupField.Name, dependentLookupField.List, dependentLookupField.ShowField));
+            }
+          }
+        }
+
+        if (SpQueryArgs.SkipResult)
+        {
+          return Enumerable.Empty<TResult>();
+        }
+
+        Debug.WriteLine("# SP Query:");
+        Debug.Write(spView);
+        Debug.WriteLine("");
+
+        IEnumerable<TResult> results = GetEntities(typeof(TResult)).Cast<TResult>();
+
+        foreach (var resultOperator in queryModel.ResultOperators)
+        {
+          if (resultOperator is ReverseResultOperator)
+            results = results.Reverse();
+        }
+        return results;
+      }
+    }
+
+    protected virtual IEnumerable<TResult> GetEntities<TResult>()
+    where TResult : ListItemEntity
+    {
+      return GetEntities(typeof(TResult)).Cast<TResult>();
+    }
+    protected virtual IEnumerable<object> GetEntities(Type type)
+    {
+      CheckEntityType(type);
+      ListItemCollectionPosition position = null;
+      IEnumerable<ListItemEntity> entities = Enumerable.Empty<ListItemEntity>();
+      if (SpQueryArgs == null) return entities;
+
+      var rowLimit = SpQueryArgs.SpView.Limit;
+      int itemCount = 0;
+      do
+      {
+        if (SpQueryArgs.BatchSize > 0)
+        {
+          if (rowLimit > 0)
+          {
+            SpQueryArgs.SpView.Limit = Math.Min(rowLimit - itemCount, SpQueryArgs.BatchSize);
+          }
+          else
+          {
+            SpQueryArgs.SpView.Limit = SpQueryArgs.BatchSize;
+          }
+          if (SpQueryArgs.SpView.Limit == 0)
+          {
+            break;
+          }
+        }
+        var items = GetItems(SpQueryArgs, position);
+        if (items != null)
+        {
+          items.Context.ExecuteQuery();
+          if (SpQueryArgs.BatchSize > 0)
+          {
+            position = items.ListItemCollectionPosition;
+          }
+          itemCount += items.Count;
+          entities = entities.Concat(MapEntities(items, type));
+        }
+      }
+      while (position != null);
+
+      SpQueryArgs.SpView.Limit = rowLimit;
+      return entities;
+    }
+
+    protected static void CheckEntityType(Type type)
+    {
+      if (!typeof(ListItemEntity).IsAssignableFrom(type) && !type.IsSubclassOf(typeof(ListItemEntity)))
+      {
+        throw new Exception($"Entity must be assignable from {typeof(ListItemEntity)}");
+      }
+    }
+
+    protected static List GetList(SpQueryArgs args)
+    {
+      if (args != null)
+      {
+        var clientContext = args.Context;
+        if (clientContext != null)
+        {
+          return args.ListTitle != null ? clientContext.Web.Lists.GetByTitle(args.ListTitle) :
+              (args.ListUrl != null ? clientContext.Web.GetList(args.ListUrl)
+              : clientContext.Web.Lists.GetById(args.ListId));
+        }
+      }
+      return null;
+    }
+
+    protected static ListItemCollection GetItems(SpQueryArgs args, ListItemCollectionPosition position)
+    {
+      var list = GetList(args);
+      if (list != null)
+      {
+        var items = list.GetItems(new CamlQuery() { ViewXml = args.SpView.ToString(true), ListItemCollectionPosition = position });
+        items.Context.Load(items, item => item.Include(i => i.EffectiveBasePermissions));
+        items.Context.Load(items, item => item.ListItemCollectionPosition);
+        return items;
+      }
+      return null;
+    }
+
+    protected virtual IEnumerable<ListItemEntity> MapEntities(ListItemCollection items, Type type)
+    {
+      return items.Select(item => MapEntity((ListItemEntity)Activator.CreateInstance(type, new object[] {/* item.Id */}), item));
+    }
+
+    protected virtual ListItemEntity MapEntity(ListItemEntity entity, ListItem item)
+    {
+      if (SpQueryArgs == null || entity == null || item == null) return entity;
+
+      foreach (var fieldMap in SpQueryArgs.FieldMappings)
+      {
+        PropertyInfo prop = entity.GetType().GetProperty(fieldMap.Key, BindingFlags.Public | BindingFlags.Instance);
+        if (null != prop && prop.CanWrite)
+        {
+          if (item.FieldValues.ContainsKey(fieldMap.Value.Name))
+          {
+            object value = item[fieldMap.Value.Name];
+            value = GetFieldValue(fieldMap.Value, prop.PropertyType, value);
+
+            value = SpConverter.ConvertValue(value, prop.PropertyType);
+            prop.SetValue(entity, value);
+          }
+        }
+        FieldInfo field = entity.GetType().GetField(fieldMap.Key, BindingFlags.Public | BindingFlags.Instance);
+        if (null != field)
+        {
+          if (item.FieldValues.ContainsKey(fieldMap.Value.Name))
+          {
+            object value = item[fieldMap.Value.Name];
+            value = GetFieldValue(fieldMap.Value, field.FieldType, value);
+            value = SpConverter.ConvertValue(value, field.FieldType);
+            field.SetValue(entity, value);
+          }
+        }
+      }
+      if (SpQueryArgs.IncludeItemPermissions)
+      {
+        if (item.IsPropertyAvailable("EffectiveBasePermissions"))
+        {
+          entity.EffectiveBasePermissions = item.EffectiveBasePermissions;
+        }
+      }
+      return entity;
+    }
+
+    private static object GetFieldValue(FieldAttribute fieldAttr, Type valueType, object value)
+    {
+      if (value != null)
+      {
+        if (typeof(LookupFieldAttribute).IsAssignableFrom(fieldAttr.GetType()) || fieldAttr.GetType().IsSubclassOf(typeof (LookupFieldAttribute)))
+        {
+          var lookupFieldMap = fieldAttr as LookupFieldAttribute;
+
+          if (lookupFieldMap.Result == LookupItemResult.None) return value;
+
+          if (value is FieldLookupValue)
+          {
+            if (!typeof(FieldLookupValue).IsAssignableFrom(valueType) && !valueType.IsSubclassOf(typeof(FieldLookupValue)))
+            {
+              value = lookupFieldMap.Result == LookupItemResult.Id
+                  ? (object)(value as FieldLookupValue).LookupId
+                  : (value as FieldLookupValue).LookupValue;
+
+              if (valueType.IsArray)
+              {
+                var elType = (valueType.GetElementType()
+                 ?? valueType.GenericTypeArguments.FirstOrDefault())
+                 ?? typeof(object);
+                value = new[] { SpConverter.ConvertValue(value, elType) }.ToArray(elType);
+              }
+            }
+          }
+          else if (value is FieldLookupValue[])
+          {
+            if (!lookupFieldMap.IsMultiple)
+            {
+              var lookupValue = (value as FieldLookupValue[]).FirstOrDefault();
+              if (lookupValue != null)
+              {
+                if (!typeof(FieldLookupValue).IsAssignableFrom(valueType) && !valueType.IsSubclassOf(typeof(FieldLookupValue)))
+                {
+                  value = lookupFieldMap.Result == LookupItemResult.Id ? (object)lookupValue.LookupId : lookupValue.LookupValue;
+                }
+                else
+                {
+                  value = lookupValue;
+                }
+              }
+              else
+              {
+                value = null;
+              }
+            }
+            else
+            {
+              var elType = (valueType.GetElementType()
+                  ?? valueType.GenericTypeArguments.FirstOrDefault())
+                  ?? typeof(object);
+              if (!typeof(FieldLookupValue).IsAssignableFrom(elType) && !elType.IsSubclassOf(typeof(FieldLookupValue)))
+              {
+                var result = lookupFieldMap.Result == LookupItemResult.Id
+                ? (value as FieldLookupValue[]).Select(v => SpConverter.ConvertValue(v.LookupId, elType))
+                : (value as FieldLookupValue[]).Select(v => SpConverter.ConvertValue(v.LookupValue, elType));
+                if (valueType.IsArray)
+                {
+                  value = result.ToArray(elType);
+                }
+                else
+                {
+                  value = result.ToList(elType);
+                }
+              }
+            }
+          }
+        }
+      }
+      return value;
+    }
+  }
+
+  internal class SpAsyncQueryExecutor : SpQueryExecutor, IAsyncQueryExecutor
+  {
+    private readonly SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1, 1);
+
+    internal SpAsyncQueryExecutor(SpQueryArgs args) : base(args)
+    {
+      args.IsAsync = true;
+    }
+
+    public async Task<IEnumerable<TResult>> ExecuteCollectionAsync<TResult>(QueryModel queryModel)
+    {
+      await _semaphoreSlim.WaitAsync();
+      try
+      {
+        if (SpQueryArgs == null) return Enumerable.Empty<TResult>();
+        SpQueryArgs.SpView = new SpView();
+        var queryVisitor = new SpGeneratorQueryModelVisitor(SpQueryArgs);
+        queryVisitor.VisitQueryModel(queryModel);
+        queryVisitor.VisitIncludeClauses(IncludeExpressions, queryModel);
+        queryVisitor.VisitGroupByClauses(GroupByExpressions, queryModel);
+
+        if (SpQueryArgs.SkipResult)
+        {
+          return Enumerable.Empty<TResult>();
+        }
+
+        var results = await GetEntitiesAsync(typeof(TResult));
+
+        foreach (var resultOperator in queryModel.ResultOperators)
+        {
+          if (resultOperator is ReverseResultOperator)
+            results = results.Reverse();
+        }
+
+        return results.Cast<TResult>();
+      }
+      finally
+      {
+        _semaphoreSlim.Release();
+      }
+    }
+
+    public async Task<TResult> ExecuteScalarAsync<TResult>(QueryModel queryModel)
+    {
+      var result = await ExecuteSingleAsync<TResult>(queryModel, false);
+      return result;
+    }
+
+    public async Task<TResult> ExecuteSingleAsync<TResult>(QueryModel queryModel, bool defaultIfEmpty)
+    {
+      var results = await ExecuteCollectionAsync<TResult>(queryModel);
+      foreach (var resultOperator in queryModel.ResultOperators)
+      {
+        if (resultOperator is LastResultOperator)
+          return results.LastOrDefault();
+      }
+      return (defaultIfEmpty) ? results.FirstOrDefault() : results.First();
+    }
+
+    protected virtual async Task<IEnumerable<TResult>> GetEntitiesAsync<TResult>() where TResult : ListItemEntity
+    {
+      var entities = await GetEntitiesAsync(typeof(TResult));
+      return entities.Cast<TResult>();
+    }
+
+    protected virtual async Task<IEnumerable<object>> GetEntitiesAsync(Type type)
+    {
+      CheckEntityType(type);
+
+      ListItemCollectionPosition position = null;
+      IEnumerable<ListItemEntity> entities = Enumerable.Empty<ListItemEntity>();
+      if (SpQueryArgs == null) return entities;
+
+      var rowLimit = SpQueryArgs.SpView.Limit;
+      int itemCount = 0;
+      do
+      {
+        if (SpQueryArgs.BatchSize > 0)
+        {
+          if (rowLimit > 0)
+          {
+            SpQueryArgs.SpView.Limit = Math.Min(rowLimit - itemCount, SpQueryArgs.BatchSize);
+          }
+          else
+          {
+            SpQueryArgs.SpView.Limit = SpQueryArgs.BatchSize;
+          }
+          if (SpQueryArgs.SpView.Limit == 0)
+          {
+            break;
+          }
+        }
+
+        var items = GetItems(SpQueryArgs, position);
+        if (items != null)
+        {
+          await items.Context.ExecuteQueryAsync();
+          if (SpQueryArgs.BatchSize > 0)
+          {
+            position = items.ListItemCollectionPosition;
+          }
+          itemCount += items.Count;
+          entities = entities.Concat(MapEntities(items, type));
+        }
+      }
+      while (position != null);
+
+      SpQueryArgs.SpView.Limit = rowLimit;
+      return entities;
+    }
+
+    //protected override IEnumerable<object> GetEntities(Type type)
+    //{
+    //  var task = GetEntitiesAsync(type);
+    //  task.Wait();
+    //  return task.Result;
+    //}
+  }
 }

@@ -20,11 +20,11 @@ namespace SP.Client.Linq.Attributes
             DataType = dataType;
         }
 
-        public string Name { get; set; }
+        public virtual string Name { get; set; }
 
-        public bool Required { get; set; }
+        public virtual bool Required { get; set; }
 
-        public bool IsReadOnly { get; set; }
+        public virtual bool IsReadOnly { get; set; }
 
         public virtual FieldType DataType { get; set; }
 

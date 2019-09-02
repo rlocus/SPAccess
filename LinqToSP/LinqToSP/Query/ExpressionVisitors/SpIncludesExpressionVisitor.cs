@@ -18,8 +18,8 @@ namespace SP.Client.Linq.Query.ExpressionVisitors
 
         protected override Expression VisitMethodCall(MethodCallExpression node)
         {
-            if (node.Method.Name == "Includes" && (node.Method.DeclaringType.IsAssignableFrom(typeof(ListItemEntityExtensions))))
-            {
+            if (node.Method.Name == "Includes" && typeof(ListItemEntityExtensions).IsAssignableFrom(node.Method.DeclaringType))
+      {
                 Visit(node.Object);
                 foreach (var arg in node.Arguments)
                 {
@@ -45,11 +45,11 @@ namespace SP.Client.Linq.Query.ExpressionVisitors
 
         protected override Expression VisitConstant(ConstantExpression exp)
         {
-            if (exp.Type.IsAssignableFrom(typeof(string[])))
+            if (typeof(string[]).IsAssignableFrom(exp.Type))
             {
                 FieldValues = exp.Value as string[];
             }
-            else if (exp.Type.IsAssignableFrom(typeof(int[])))
+            else if (typeof(int[]).IsAssignableFrom(exp.Type))
             {
                 FieldValues = (exp.Value as int[]).Select(v => v as object);
             }

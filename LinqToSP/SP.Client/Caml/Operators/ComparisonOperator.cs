@@ -85,8 +85,5 @@ namespace SP.Client.Caml.Operators
             }
             throw new NotSupportedException("tag");
         }
-
-
-
     }
 }

@@ -92,7 +92,7 @@ namespace SP.Client.Caml
         {
             var el = base.ToXElement();
             var queryElement = Query.ToXElement();
-            if (queryElement != null /*&& queryElement.HasElements*/)
+            if (queryElement != null)
             {
                 el.Add(queryElement);
             }
@@ -100,7 +100,7 @@ namespace SP.Client.Caml
             {
                 el.Add(ViewFields.ToXElement());
             }
-            if ((Joins != null ? Joins.Joins : null) != null && Joins.Joins.Any())
+            if (Joins != null && Joins.Any())
             {
                 el.Add(Joins.ToXElement());
             }

@@ -33,7 +33,7 @@ namespace SP.Client.Caml.Operators
         {
         }
 
-        public IEnumerable<CamlValue<T>> Values { get; set; }
+        public IEnumerable<CamlValue<T>> Values { get; private set; }
 
         public override XElement ToXElement()
         {

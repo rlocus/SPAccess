@@ -4,6 +4,6 @@ namespace SP.Client.Caml.Interfaces
 {
     internal interface ICamlMultiValue<T> : ICaml
     {
-        IEnumerable<CamlValue<T>> Values { get; set; }
+        IEnumerable<CamlValue<T>> Values { get; }
     }
 }

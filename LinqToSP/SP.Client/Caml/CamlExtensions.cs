@@ -287,22 +287,16 @@ namespace SP.Client.Caml
         {
             if (@joins != null && joins.Length > 0)
             {
-                var mergedJoins = new List<Join>();
-                if (camlJoins.Joins != null)
-                {
-                    mergedJoins.AddRange(camlJoins.Joins);
-                }
-                mergedJoins.AddRange(joins);
-                camlJoins.Joins = mergedJoins.ToArray();
+                camlJoins.AddRange(joins);
             }
             return camlJoins;
         }
 
         public static JoinsCamlElement Join(this JoinsCamlElement camlJoins, JoinsCamlElement combinedCamlJoins)
         {
-            if (combinedCamlJoins != null && combinedCamlJoins.Joins != null)
+            if (combinedCamlJoins != null && combinedCamlJoins.Any())
             {
-                camlJoins = Join(camlJoins, combinedCamlJoins.Joins.ToArray());
+                camlJoins = Join(camlJoins, combinedCamlJoins);
             }
             return camlJoins;
         }

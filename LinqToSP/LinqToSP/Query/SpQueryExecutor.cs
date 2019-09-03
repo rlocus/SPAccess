@@ -107,7 +107,7 @@ namespace SP.Client.Linq.Query
                     {
                         if (spView.ProjectedFields == null || !spView.ProjectedFields.Any(f => f.Name == dependentLookupField.Name))
                         {
-                            spView.Joins.Join(new InnerJoin(dependentLookupField.LookupFieldName, dependentLookupField.List));
+                            spView.Joins.Join(new LeftJoin(dependentLookupField.LookupFieldName, dependentLookupField.List));
                             spView.ProjectedFields.ShowField(new CamlProjectedField(dependentLookupField.Name, dependentLookupField.List, dependentLookupField.ShowField));
                         }
                     }

@@ -19,7 +19,7 @@ namespace SP.Client.Linq.Query.ExpressionVisitors
         protected override Expression VisitMethodCall(MethodCallExpression node)
         {
             if (node.Method.Name == "Includes" && typeof(ListItemEntityExtensions).IsAssignableFrom(node.Method.DeclaringType))
-      {
+            {
                 Visit(node.Object);
                 foreach (var arg in node.Arguments)
                 {
@@ -30,8 +30,7 @@ namespace SP.Client.Linq.Query.ExpressionVisitors
                 }
 
                 FieldType dataType;
-                CamlFieldRef fieldRef = GetFieldRef(out dataType);
-                fieldRef.LookupId = true;
+                CamlFieldRef fieldRef = GetFieldRef(out dataType);              
                 if (fieldRef == null || FieldValues == null)
                 {
                     return node;

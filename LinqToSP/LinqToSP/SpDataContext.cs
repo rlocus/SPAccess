@@ -22,7 +22,7 @@ namespace SP.Client.Linq
     ///                     i.IsMembership(x => x.AssignedTo, SP.Client.Caml.Operators.MembershipType.AllUsers))
     ///        .Include(i => i.Id, i=> i.Title).GroupBy<Email>(i => i.Title).OrderBy(i => i.Id);
     /// --------------------------------------------------------------------------------------------------------       
-    /// var events = spContext.List<EventItemEntity>("Calendar")
+    /// var events = spContext.List<Event>("Calendar")
     ///                    .Where(e => e.StartTime < DateTime.Today.AddMonths(-1) &&
     ///                                e.DateRangesOverlap(x => x.StartTime, x => x.EndTime, x => x.RecurrenceId, CamlValue.Month));
     ///</summary>

@@ -99,6 +99,7 @@
     <Compile Include="Infrastructure\SpEntityEntry.cs" />
     <Compile Include="Infrastructure\SpSet.cs" />
     <Compile Include="ISpEntryDataContext.cs" />
+    <Compile Include="ISpRepository.cs" />
     <Compile Include="ListItemEntityExtensions.cs" />
     <Compile Include="EntityState.cs" />
     <Compile Include="IListItemEntity.cs" />

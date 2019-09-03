@@ -130,9 +130,17 @@ namespace SP.Client.Linq.Query
             return null;
         }
 
-        public bool Delete([NotNull] params int[] itemIds)
+        public int Delete([NotNull] params int[] itemIds)
         {
-            throw new NotImplementedException();
+            if (itemIds != null)
+            {
+                var executor = GetExecutor();
+                if (executor != null && executor.SpQueryArgs != null && executor.SpQueryArgs.FieldMappings != null)
+                {
+                    return executor.Delete(itemIds);
+                }
+            }
+            return 0;
         }
 
         public TResult Find(int itemId)
@@ -156,6 +164,20 @@ namespace SP.Client.Linq.Query
                 }
             }
             return null;
+        }
+
+        public bool Remove(TResult entity)
+        {
+            if (entity != null && entity.Id > 0)
+            {
+                return Delete(entity.Id) > 0;
+            }
+            return false;
+        }
+
+        public int RemoveRange(IEnumerable<TResult> entities)
+        {
+            return Delete(entities.Where(entity => entity != null && entity.Id > 0).Select(entity => entity.Id).ToArray());
         }
     }
 }

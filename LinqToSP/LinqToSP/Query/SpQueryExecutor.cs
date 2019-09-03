@@ -417,12 +417,37 @@ namespace SP.Client.Linq.Query
             return null;
         }
 
-        public void DeleteItem(int itemId)
+        public ListItem DeleteItem(int itemId)
         {
             List list = GetList(SpQueryArgs);
             ListItem listItem = list.GetItemById(itemId);
             listItem.DeleteObject();
-            listItem.Context.ExecuteQuery();
+            return listItem;
+        }
+
+        public int Delete(IEnumerable<int> itemIds)
+        {
+            var items = DeleteItems(itemIds).ToArray();
+            if (items.Length > 0)
+            {
+                SpQueryArgs.Context.ExecuteQuery();
+            }
+            return items.Count();
+        }
+
+        public IEnumerable<ListItem> DeleteItems(IEnumerable<int> itemIds)
+        {
+            if (itemIds != null && itemIds.Any())
+            {
+                List list = GetList(SpQueryArgs);
+                foreach (int itemId in itemIds)
+                {
+                    ListItem listItem = list.GetItemById(itemId);
+                    list.Context.Load(listItem);
+                    listItem.DeleteObject();
+                    yield return listItem;
+                }
+            }
         }
     }
 

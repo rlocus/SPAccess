@@ -21,6 +21,10 @@ namespace SP.Client.Linq
         /// Removes an entity from the respository.
         /// </summary>
         /// <returns>False if the entity does not exist in the repository, or true if successfully deleted.</returns>
-        bool Delete(params int[] itemIds);
+        int Delete(params int[] itemIds);
+
+        bool Remove(TEntity entity);
+
+        int RemoveRange(IEnumerable<TEntity> entities);
     }
 }

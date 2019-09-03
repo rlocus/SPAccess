@@ -12,7 +12,7 @@ using JetBrains.Annotations;
 namespace SP.Client.Linq.Query
 {
     public class SpEntityQueryable<TResult> : QueryableBase<TResult>, IAsyncEnumerable<TResult>, ISpRepository<TResult>
-        where TResult : IListItemEntity
+        where TResult : class, IListItemEntity
     {
         public SpEntityQueryable(SpQueryArgs args)
             : this(QueryParser.CreateDefault(), new SpAsyncQueryExecutor(args))
@@ -114,14 +114,20 @@ namespace SP.Client.Linq.Query
             return result.GetEnumerator();
         }
 
-        public void Insert([NotNull] TResult entity)
+        public TResult Add([NotNull] TResult entity)
         {
-            throw new NotImplementedException();
-        }
-
-        public void Update([NotNull] TResult entity)
-        {
-            throw new NotImplementedException();
+            if (entity != null)
+            {
+                var executor = GetExecutor();
+                if (executor != null && executor.SpQueryArgs != null && executor.SpQueryArgs.FieldMappings != null)
+                {
+                    if (entity is ListItemEntity)
+                    {
+                        return (TResult)executor.InsertOrUpdateEntity(entity as ListItemEntity);
+                    }
+                }
+            }
+            return null;
         }
 
         public bool Delete([NotNull] params int[] itemIds)
@@ -137,6 +143,19 @@ namespace SP.Client.Linq.Query
         public IQueryable<TResult> FindAll([NotNull] params int[] itemIds)
         {
             return this.Where(i => i.Includes(x => x.Id, itemIds));
+        }
+
+        public IEnumerable<TResult> AddRange(IEnumerable<TResult> entities)
+        {
+            if (entities != null)
+            {
+                var executor = GetExecutor();
+                if (executor != null && executor.SpQueryArgs != null && executor.SpQueryArgs.FieldMappings != null)
+                {
+                    return executor.InsertOrUpdateEntities(entities.Cast<ListItemEntity>()).Cast<TResult>();
+                }
+            }
+            return null;
         }
     }
 }

@@ -91,12 +91,12 @@ namespace SP.Client.Linq.Query
                 if (spView.ViewFields == null)
                 {
                     spView.ViewFields =
-                    new ViewFieldsCamlElement(SpQueryArgs.FieldMappings.Select(fieldMapping => fieldMapping.Value.Name));                   
+                    new ViewFieldsCamlElement(SpQueryArgs.FieldMappings.Select(fieldMapping => fieldMapping.Value.Name));
                 }
                 else if (!spView.ViewFields.Any())
                 {
                     spView.ViewFields.AddRange(SpQueryArgs.FieldMappings.Select(fieldMapping => fieldMapping.Value.Name));
-                }             
+                }
 
                 spView.Joins = new JoinsCamlElement();
                 spView.ProjectedFields = new ProjectedFieldsCamlElement();
@@ -220,7 +220,17 @@ namespace SP.Client.Linq.Query
 
         protected virtual IEnumerable<ListItemEntity> MapEntities(ListItemCollection items, Type type)
         {
-            return items.Select(item => MapEntity((ListItemEntity)Activator.CreateInstance(type, new object[] {/* item.Id */}), item));
+            return MapEntities(items.Cast<ListItem>(), type);
+        }
+
+        protected virtual IEnumerable<ListItemEntity> MapEntities(IEnumerable<ListItem> items, Type type)
+        {
+            return items.Select(item => MapEntity((ListItemEntity)Activator.CreateInstance(type, new object[] { }), item));
+        }
+
+        protected virtual ListItemEntity MapEntity(ListItem item, Type type)
+        {
+            return MapEntity((ListItemEntity)Activator.CreateInstance(type, new object[] { }), item);
         }
 
         protected virtual ListItemEntity MapEntity(ListItemEntity entity, ListItem item)
@@ -335,6 +345,84 @@ namespace SP.Client.Linq.Query
                 }
             }
             return value;
+        }
+
+        public IListItemEntity InsertOrUpdateEntity(ListItemEntity entity)
+        {
+            if (entity == null) return null;
+
+            ListItem listItem = InsertOrUpdateItem(entity);
+
+            if (listItem != null)
+            {
+                listItem.Context.ExecuteQuery();
+                entity = MapEntity(listItem, entity.GetType());
+            }
+            return entity;
+        }
+
+        public IEnumerable<IListItemEntity> InsertOrUpdateEntities(IEnumerable<ListItemEntity> entities)
+        {
+            if (entities == null || !entities.Any()) return null;
+
+            var items = entities.ToDictionary(entity => entity, entity => InsertOrUpdateItem(entity));
+            SpQueryArgs.Context.ExecuteQuery();
+            return items.Select(item => MapEntity(item.Value, item.Key.GetType()));
+        }
+
+        public ListItem InsertOrUpdateItem(ListItemEntity entity)
+        {
+            if (entity == null) return null;
+
+            List list = GetList(SpQueryArgs);
+            ListItem listItem = entity.Id > 0
+                ? list.GetItemById(entity.Id)
+                : list.AddItem(new ListItemCreationInformation());
+
+            var fieldMappings = SpQueryArgs.FieldMappings;
+            bool fUpdate = false;
+            foreach (var fieldMapping in fieldMappings)
+            {
+                if (fieldMapping.Value.IsReadOnly || typeof(DependentLookupFieldAttribute).IsAssignableFrom(fieldMapping.Value.GetType())) { continue; }
+
+                var prop = entity.GetType().GetProperty(fieldMapping.Key);
+                if (prop != null)
+                {
+                    var value = prop.GetValue(entity);
+                    if (entity.Id > 0 || (entity.Id <= 0 && value != prop.PropertyType.GetDefaultValue()))
+                    {
+                        listItem[fieldMapping.Value.Name] = value;
+                        fUpdate = true;
+                    }
+                }
+
+                var field = entity.GetType().GetField(fieldMapping.Key);
+                if (field != null)
+                {
+                    var value = field.GetValue(entity);
+                    if (entity.Id > 0 || (entity.Id <= 0 && value != prop.PropertyType.GetDefaultValue()))
+                    {
+                        listItem[fieldMapping.Value.Name] = value;
+                        fUpdate = true;
+                    }
+                }
+            }
+
+            if (fUpdate)
+            {
+                listItem.Update();
+                listItem.Context.Load(listItem);
+                return listItem;
+            }
+            return null;
+        }
+
+        public void DeleteItem(int itemId)
+        {
+            List list = GetList(SpQueryArgs);
+            ListItem listItem = list.GetItemById(itemId);
+            listItem.DeleteObject();
+            listItem.Context.ExecuteQuery();
         }
     }
 

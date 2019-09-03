@@ -14,7 +14,7 @@ namespace SP.Client.Linq.Query.ExpressionVisitors
         protected override Expression VisitMethodCall(MethodCallExpression node)
         {
             if ((node.Method.Name == "LookupIncludes" || node.Method.Name == "LookupIdIncludes") && typeof(ListItemEntityExtensions).IsAssignableFrom(node.Method.DeclaringType))
-      {
+            {
                 Visit(node.Object);
                 foreach (var arg in node.Arguments)
                 {
@@ -34,7 +34,7 @@ namespace SP.Client.Linq.Query.ExpressionVisitors
                 if (node.Method.Name == "LookupIdIncludes")
                 {
                     fieldRef.LookupId = true;
-                }                
+                }
                 Operator = new Caml.Operators.Includes(fieldRef, value);
                 return node;
             }

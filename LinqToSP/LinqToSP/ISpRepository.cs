@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace SP.Client.Linq
 {
@@ -12,13 +13,9 @@ namespace SP.Client.Linq
         /// <summary>
         /// Inserts a new entity into the repository.
         /// </summary>
-        void Insert(TEntity entity);
+        TEntity Add(TEntity entity);
 
-        /// <summary>
-        /// Updates an existing entity in the repository.
-        /// </summary>
-        /// <param name="entity">Entity to update.</param>
-        void Update(TEntity entity);
+        IEnumerable<TEntity> AddRange(IEnumerable<TEntity> entities);
 
         /// <summary>
         /// Removes an entity from the respository.

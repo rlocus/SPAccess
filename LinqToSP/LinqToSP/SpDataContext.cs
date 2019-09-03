@@ -63,10 +63,10 @@ namespace SP.Client.Linq
         /// <typeparam name="TListItem"></typeparam>
         /// <param name="listTitle">List title</param>
         /// <returns></returns>
-        public SpEntityQueryable<TListItem> List<TListItem>(string listTitle)
+        public SpEntityQueryable<TListItem> List<TListItem>(string listTitle, string query = null)
             where TListItem : IListItemEntity
         {
-            return new SpEntityQueryable<TListItem>(new SpQueryArgs(Context, listTitle, "", default(Guid)));
+            return new SpEntityQueryable<TListItem>(new SpQueryArgs(Context, listTitle, "", default(Guid), query));
         }
 
         /// <summary>
@@ -75,10 +75,10 @@ namespace SP.Client.Linq
         /// <typeparam name="TListItem"></typeparam>
         /// <param name="listUrl">List url</param>
         /// <returns></returns>
-        public SpEntityQueryable<TListItem> List<TListItem>(Uri listUrl)
+        public SpEntityQueryable<TListItem> List<TListItem>(Uri listUrl, string query = null)
            where TListItem : IListItemEntity
         {
-            return new SpEntityQueryable<TListItem>(new SpQueryArgs(Context, null, listUrl.ToString(), default(Guid)));
+            return new SpEntityQueryable<TListItem>(new SpQueryArgs(Context, null, listUrl.ToString(), default, query));
         }
 
         /// <summary>
@@ -87,10 +87,10 @@ namespace SP.Client.Linq
         /// <typeparam name="TListItem"></typeparam>
         /// <param name="listId">List id</param>
         /// <returns></returns>
-        public SpEntityQueryable<TListItem> List<TListItem>(Guid listId)
+        public SpEntityQueryable<TListItem> List<TListItem>(Guid listId, string query = null)
           where TListItem : IListItemEntity
         {
-            return new SpEntityQueryable<TListItem>(new SpQueryArgs(Context, null, null, listId));
+            return new SpEntityQueryable<TListItem>(new SpQueryArgs(Context, null, null, listId, query));
         }
 
         /// <summary>

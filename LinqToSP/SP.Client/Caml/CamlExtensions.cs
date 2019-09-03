@@ -37,7 +37,7 @@ namespace SP.Client.Caml
         {
             if (firstWhere == null) throw new ArgumentNullException("firstWhere");
             if (secondWhere == null) throw new ArgumentNullException("secondWhere");
-            var logicalJoin = firstWhere.Operator as LogicalJoin;
+            //var logicalJoin = firstWhere.Operator as LogicalJoin;
             //var @where = logicalJoin != null
             //    ? new CamlWhere(logicalJoin.CombineAnd(secondWhere.Operator))
             //    : new CamlWhere(firstWhere.Operator.And(secondWhere.Operator));
@@ -222,7 +222,7 @@ namespace SP.Client.Caml
             {
                 orderBy = new CamlOrderBy(fieldRef);
             }
-            var fields = new List<CamlFieldRef>(orderBy.FieldRefs) { fieldRef };
+            var fields = new List<CamlFieldRef>(orderBy) { fieldRef };
             return new CamlOrderBy(fields);
         }
 
@@ -260,7 +260,7 @@ namespace SP.Client.Caml
             {
                 limit = limit == null ? groupBy.Limit.Value : Math.Max(limit.Value, groupBy.Limit.Value);
             }
-            var fields = new List<CamlFieldRef>(groupBy.FieldRefs) { fieldRef };
+            var fields = new List<CamlFieldRef>(groupBy) { fieldRef };
             return new CamlGroupBy(fields, collapse, limit);
         }
 
@@ -279,7 +279,7 @@ namespace SP.Client.Caml
                 limit = limit == null ? groupBy.Limit.Value : Math.Max(limit.Value, groupBy.Limit.Value);
             }
             var fields = new List<CamlFieldRef> { fieldRef };
-            fields.AddRange(groupBy.FieldRefs);
+            fields.AddRange(groupBy);
             return new CamlGroupBy(fields, collapse, limit);
         }
 
@@ -307,68 +307,55 @@ namespace SP.Client.Caml
             return camlJoins;
         }
 
-        public static ViewFieldsCamlElement View(this ViewFieldsCamlElement camlViewFields, params CamlFieldRef[] viewFields)
+        public static ViewFieldsCamlElement ViewField(this ViewFieldsCamlElement camlViewFields, params CamlFieldRef[] viewFields)
         {
             if (@viewFields != null)
             {
                 var mergedViewFields = new List<CamlFieldRef>();
-                if (camlViewFields.FieldRefs != null)
+                if (camlViewFields.Any())
                 {
-                    mergedViewFields.AddRange(camlViewFields.FieldRefs);
+                    mergedViewFields.AddRange(camlViewFields);
                 }
                 mergedViewFields.AddRange(viewFields);
-                camlViewFields.FieldRefs = mergedViewFields.ToArray();
+                camlViewFields.ViewField(mergedViewFields.ToArray());
             }
             return camlViewFields;
         }
 
-        public static ViewFieldsCamlElement View(this ViewFieldsCamlElement camlViewFields, params string[] viewFields)
+        public static ViewFieldsCamlElement ViewField(this ViewFieldsCamlElement camlViewFields, params string[] viewFields)
         {
             if (@viewFields != null)
             {
                 var mergedViewFields = new List<CamlFieldRef>();
-                if (camlViewFields.FieldRefs != null)
+                if (camlViewFields.Any())
                 {
-                    mergedViewFields.AddRange(camlViewFields.FieldRefs);
+                    mergedViewFields.AddRange(camlViewFields);
                 }
                 mergedViewFields.AddRange(viewFields.Where(@viewField => !mergedViewFields.Exists(field => field.Name == @viewField)).Select(viewField => new CamlFieldRef { Name = viewField }));
-                camlViewFields.FieldRefs = mergedViewFields.ToArray();
+                camlViewFields.ViewField(mergedViewFields.ToArray());
             }
             return camlViewFields;
         }
 
         public static ProjectedFieldsCamlElement ShowField(this ProjectedFieldsCamlElement camlProjectedFields, params CamlProjectedField[] projectedFields)
         {
-            if (projectedFields != null)
-            {
-                var mergedFields = new List<CamlProjectedField>();
-                if (camlProjectedFields.ProjectedFields != null)
-                {
-                    mergedFields.AddRange(camlProjectedFields.ProjectedFields);
-                }
-                mergedFields.AddRange(projectedFields);
-                camlProjectedFields.ProjectedFields = mergedFields.ToArray();
-            }
+            if (camlProjectedFields != null)
+                camlProjectedFields.AddRange(projectedFields);
             return camlProjectedFields;
         }
 
         public static ProjectedFieldsCamlElement ShowField(this ProjectedFieldsCamlElement camlProjectedFields, string fieldName, string listAlias, string lookupField)
         {
-            var mergedFields = new List<CamlProjectedField>();
-            if (camlProjectedFields.ProjectedFields != null)
-            {
-                mergedFields.AddRange(camlProjectedFields.ProjectedFields);
-            }
-            mergedFields.Add(new CamlProjectedField(fieldName, listAlias, lookupField));
-            camlProjectedFields.ProjectedFields = mergedFields.ToArray();
+            if (camlProjectedFields != null)
+                camlProjectedFields.Add(new CamlProjectedField(fieldName, listAlias, lookupField));
             return camlProjectedFields;
         }
 
         public static ProjectedFieldsCamlElement ShowField(this ProjectedFieldsCamlElement camlProjectedFields, ProjectedFieldsCamlElement combinedProjectedFields)
         {
-            if (combinedProjectedFields != null && combinedProjectedFields.ProjectedFields != null)
+            if (camlProjectedFields != null)
             {
-                camlProjectedFields = camlProjectedFields.ShowField(combinedProjectedFields.ProjectedFields.ToArray());
+                camlProjectedFields = camlProjectedFields.ShowField(combinedProjectedFields);
             }
             return camlProjectedFields;
 

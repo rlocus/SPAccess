@@ -104,7 +104,7 @@ namespace SP.Client.Caml
             {
                 el.Add(Joins.ToXElement());
             }
-            if ((ProjectedFields != null ? ProjectedFields.ProjectedFields : null) != null && ProjectedFields.ProjectedFields.Any())
+            if (ProjectedFields != null && ProjectedFields.Any())
             {
                 el.Add(ProjectedFields.ToXElement());
             }

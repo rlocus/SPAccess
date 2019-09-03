@@ -1,8 +1,6 @@
-﻿using Microsoft.SharePoint.Client;
-
-namespace SP.Client.Linq.Attributes
+﻿namespace SP.Client.Linq.Attributes
 {
-  public class DependentLookupFieldAttribute : LookupFieldAttribute
+    public class DependentLookupFieldAttribute : LookupFieldAttribute
   {
     public DependentLookupFieldAttribute()
     {

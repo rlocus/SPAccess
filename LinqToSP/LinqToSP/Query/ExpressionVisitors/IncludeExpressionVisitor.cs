@@ -45,7 +45,7 @@ namespace SP.Client.Linq.Query.ExpressionVisitors
         if (SpQueryArgs.FieldMappings.ContainsKey(fieldName))
         {
           var fieldMap = SpQueryArgs.FieldMappings[fieldName];
-          _viewFields.AddViewField(fieldMap.Name);
+          _viewFields.Add(fieldMap.Name);
         }
       }
       return node;

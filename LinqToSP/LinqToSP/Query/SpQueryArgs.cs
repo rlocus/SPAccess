@@ -10,7 +10,8 @@ namespace SP.Client.Linq.Query
         public ClientContext Context { get; }
         public string ListTitle { get; }
         public string ListUrl { get; }
-        public Guid ListId { get; private set; }
+        public Guid ListId { get; }
+        public string Query { get; }
         public int BatchSize { get; set; }
         public bool IncludeItemPermissions { get; set; }
 
@@ -19,12 +20,13 @@ namespace SP.Client.Linq.Query
         internal bool SkipResult { get; set; }
         internal bool IsAsync { get; set; }
 
-        public SpQueryArgs(ClientContext context, string listTitle, string listUrl, Guid listId)
+        public SpQueryArgs(ClientContext context, string listTitle, string listUrl, Guid listId, string query)
         {
             Context = context;
             ListTitle = listTitle;
             ListUrl = listUrl;
             ListId = listId;
+            Query = query;
             FieldMappings = new Dictionary<string, FieldAttribute>();
             BatchSize = 100;
             //SpView = new Caml.View();

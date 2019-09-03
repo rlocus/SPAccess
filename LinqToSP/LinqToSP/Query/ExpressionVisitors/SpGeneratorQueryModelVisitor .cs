@@ -164,7 +164,10 @@ namespace SP.Client.Linq.Query.ExpressionVisitors
         {
             if (_args == null) return;
 
-            _args.SpView.Query.OrderBy = new Caml.Clauses.CamlOrderBy();
+            if (_args.SpView.Query.OrderBy == null)
+            {
+                _args.SpView.Query.OrderBy = new Caml.Clauses.CamlOrderBy();
+            }
             foreach (var orderClause in bodyClauses.OfType<OrderByClause>())
             {
                 if (orderClause != null)
@@ -178,7 +181,7 @@ namespace SP.Client.Linq.Query.ExpressionVisitors
                             if (_args.FieldMappings.ContainsKey(fieldName))
                             {
                                 var fieldMap = _args.FieldMappings[fieldName];
-                                _args.SpView.Query.OrderBy.AddField(fieldMap.Name, ordering.OrderingDirection == OrderingDirection.Asc);
+                                _args.SpView.Query.OrderBy.Add(fieldMap.Name, ordering.OrderingDirection == OrderingDirection.Asc ? (bool?)null: false);
                             }
                         }
                         else if (exp is MethodCallExpression)

@@ -33,7 +33,7 @@ namespace SP.Client.Caml
 
         private void Parse(XElement existingElement)
         {
-            if (existingElement == null) throw new ArgumentNullException("existingElement");
+            if (existingElement == null) throw new ArgumentNullException(nameof(existingElement));
             if (string.Equals(existingElement.Name.LocalName, ElementName, StringComparison.OrdinalIgnoreCase))
             {
                 if ((existingElement.HasAttributes || existingElement.HasElements))
@@ -43,7 +43,7 @@ namespace SP.Client.Caml
             }
             else
             {
-                throw new NotSupportedException("existingElement.Name");
+                throw new NotSupportedException(existingElement.Name.ToString());
             }
         }
 

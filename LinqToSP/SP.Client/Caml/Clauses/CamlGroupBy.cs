@@ -1,13 +1,15 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
+using JetBrains.Annotations;
 using SP.Client.Caml.Interfaces;
 using SP.Client.Extensions;
 
 namespace SP.Client.Caml.Clauses
 {
-    public sealed class CamlGroupBy : CamlClause, ICamlMultiField
+    public sealed class CamlGroupBy : CamlClause, ICamlMultiField, ICollection<CamlFieldRef>
     {
         internal const string GroupByTag = "GroupBy";
         internal const string CollapseAttr = "Collapse";
@@ -66,27 +68,10 @@ namespace SP.Client.Caml.Clauses
 
         public IEnumerable<CamlFieldRef> FieldRefs { get; private set; }
 
-        public void AddField(string fieldName)
-        {
-            var fieldRef = new CamlFieldRef() { Name = fieldName };
-            if (FieldRefs != null)
-            {
-                var field = FieldRefs.FirstOrDefault(fRef => fRef.Name == fieldName);
-                if (field == null)
-                {
-                    FieldRefs = FieldRefs.Concat(new[] { fieldRef });
-                }
-                else
-                {
-                    field.Ascending = fieldRef.Ascending;
-                }
-            }
-            else
-            {
-                FieldRefs = new[] { fieldRef }.AsEnumerable();
-            }
-        }
+        public int Count => (FieldRefs != null ? FieldRefs.Count() : 0);
 
+        public bool IsReadOnly => true;
+        
         public override XElement ToXElement()
         {
             var el = base.ToXElement();
@@ -178,6 +163,96 @@ namespace SP.Client.Caml.Clauses
             return groupBy;
         }
 
+        public void Add([NotNull] string fieldName)
+        {
+            if (!string.IsNullOrEmpty(fieldName))
+            {
+                Add(new CamlFieldRef { Name = fieldName });
+            }
+        }
+
+        public void Add([NotNull] CamlFieldRef item)
+        {
+            if (item != null)
+                if (FieldRefs != null)
+                {
+                    var fieldRefs = FieldRefs.ToArray();
+                    var field = fieldRefs.FirstOrDefault(fRef => fRef.Name == item.Name);
+                    if (field == null)
+                    {
+                        FieldRefs = fieldRefs.Concat(new[] { item });
+                    }                   
+                }
+                else
+                {
+                    FieldRefs = new[] { item }.AsEnumerable();
+                }
+        }
+
+        public void AddRange([NotNull] IEnumerable<string> fieldNames)
+        {
+            if (fieldNames != null)
+            {
+                foreach (var fieldName in fieldNames)
+                {
+                    Add(fieldName);
+                }
+            }
+        }
+
+        public void AddRange([NotNull] IEnumerable<CamlFieldRef> items)
+        {
+            if (items != null)
+            {
+                foreach (var item in items)
+                {
+                    Add(item);
+                }
+            }
+        }
+
+        public void Clear()
+        {
+            FieldRefs = Enumerable.Empty<CamlFieldRef>();
+        }
+
+        public bool Contains([NotNull] CamlFieldRef item)
+        {
+            if (item != null && FieldRefs != null)
+                return FieldRefs.Any(f => f.Name == item.Name);
+            return false;
+        }
+
+        public void CopyTo(CamlFieldRef[] array, int arrayIndex)
+        {
+            if (FieldRefs != null)
+                FieldRefs.ToArray().CopyTo(array, arrayIndex);
+        }
+
+        public bool Remove([NotNull] string fieldName)
+        {
+            return Remove(new CamlFieldRef() { Name = fieldName });
+        }
+
+        public bool Remove([NotNull] CamlFieldRef item)
+        {
+            if (item != null && FieldRefs != null)
+            {
+                return FieldRefs.ToList().RemoveAll(f => f.Name == item.Name) > 0;
+            }
+            return false;
+        }
+
+        IEnumerator<CamlFieldRef> IEnumerable<CamlFieldRef>.GetEnumerator()
+        {
+            return GetEnumerator() as IEnumerator<CamlFieldRef>;
+        }
+
+        public IEnumerator GetEnumerator()
+        {
+            return FieldRefs != null ? FieldRefs.GetEnumerator() : Enumerable.Empty<CamlFieldRef>().GetEnumerator();
+        }
+      
         public static CamlGroupBy operator +(CamlGroupBy firstGroupBy, CamlGroupBy secondGroupBy)
         {
             return Combine(firstGroupBy, secondGroupBy);

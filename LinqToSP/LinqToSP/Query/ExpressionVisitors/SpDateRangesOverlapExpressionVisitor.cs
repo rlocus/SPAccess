@@ -5,13 +5,14 @@ using System.Linq.Expressions;
 
 namespace SP.Client.Linq.Query.ExpressionVisitors
 {
-    public class SpDateRangesOverlapExpressionVisitor : SpComparisonExpressionVisitor
+    public class SpDateRangesOverlapExpressionVisitor<TContext> : SpComparisonExpressionVisitor<TContext>
+        where TContext : ISpDataContext
     {
         protected string StartTimeFieldName { get; private set; }
         protected string EndTimeFieldName { get; private set; }
         protected string RecurrenceDataFieldName { get; private set; }
 
-        public SpDateRangesOverlapExpressionVisitor(SpQueryArgs args) : base(args)
+        public SpDateRangesOverlapExpressionVisitor(SpQueryArgs<TContext> args) : base(args)
         {
         }
 

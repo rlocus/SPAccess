@@ -1,13 +1,13 @@
-﻿using Microsoft.SharePoint.Client;
-using SP.Client.Linq.Attributes;
+﻿using SP.Client.Linq.Attributes;
 using System;
 using System.Collections.Generic;
 
 namespace SP.Client.Linq.Query
 {
-    public class SpQueryArgs
+    public class SpQueryArgs<TContext>
+        where TContext: ISpDataContext
     {
-        public ClientContext Context { get; }
+        public TContext Context { get; }
         public string ListTitle { get; }
         public string ListUrl { get; }
         public Guid ListId { get; }
@@ -20,7 +20,7 @@ namespace SP.Client.Linq.Query
         internal bool SkipResult { get; set; }
         internal bool IsAsync { get; set; }
 
-        public SpQueryArgs(ClientContext context, string listTitle, string listUrl, Guid listId, string query)
+        public SpQueryArgs(TContext context, string listTitle, string listUrl, Guid listId, string query)
         {
             Context = context;
             ListTitle = listTitle;

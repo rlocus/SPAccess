@@ -9,28 +9,12 @@ namespace SP.Client.Linq
         public ListItemEntity()
         {
         }
-
-        //protected ListItemEntity(int id)
-        //{
-        //    Id = id;
-        //}
-
-        //[Field(Name = "ID", Required = true, DataType = FieldType.Counter)]
+      
         public int Id { get; internal set; }
 
         [Field("Title", FieldType.Text, Required = false)]
         public virtual string Title { get; set; }
-
-        ///// <summary>
-        ///// Effective Permissions Mask
-        ///// </summary>
-        //[Field("PermMask", FieldType.Computed, IsReadOnly = true)]
-        //public string EffectivePermissionsMask
-        //{
-        //    get;
-        //    internal set;
-        //}
-
+                
         /// <summary>
         /// Effective Permissions
         /// </summary>
@@ -42,7 +26,7 @@ namespace SP.Client.Linq
         /// <summary>
         /// Version
         /// </summary>
-        [Field(Name = "owshiddenversion", DataType = FieldType.Integer, IsReadOnly = true)]
+        [Field(Name = "owshiddenversion", DataType = FieldType.Integer, IsReadOnly = false)]
         public int? Version
         {
             get; internal set;

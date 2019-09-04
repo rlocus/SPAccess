@@ -3,9 +3,10 @@ using System.Linq.Expressions;
 
 namespace SP.Client.Linq.Query.ExpressionVisitors
 {
-    public class SpConditionalExpressionVisitor : SpExpressionVisitor
+    public class SpConditionalExpressionVisitor<TContext> : SpExpressionVisitor<TContext>
+        where TContext : ISpDataContext
     {
-        public SpConditionalExpressionVisitor(SpQueryArgs args) : base(args)
+        public SpConditionalExpressionVisitor(SpQueryArgs<TContext> args) : base(args)
         {
         }
 

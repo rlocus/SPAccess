@@ -8,11 +8,12 @@ using System.Linq.Expressions;
 
 namespace SP.Client.Linq.Query.ExpressionVisitors
 {
-    public class SpIncludesExpressionVisitor : SpComparisonExpressionVisitor
+    public class SpIncludesExpressionVisitor<TContext> : SpComparisonExpressionVisitor<TContext>
+        where TContext : ISpDataContext
     {
         protected IEnumerable<object> FieldValues { get; private set; }
 
-        public SpIncludesExpressionVisitor(SpQueryArgs args) : base(args)
+        public SpIncludesExpressionVisitor(SpQueryArgs<TContext> args) : base(args)
         {
         }
 

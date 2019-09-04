@@ -8,14 +8,16 @@ using System.Threading;
 using System.Threading.Tasks;
 using System;
 using JetBrains.Annotations;
+using SP.Client.Linq.Infrastructure;
 
 namespace SP.Client.Linq.Query
 {
-    public class SpEntityQueryable<TResult> : QueryableBase<TResult>, IAsyncEnumerable<TResult>, ISpRepository<TResult>
-        where TResult : class, IListItemEntity
+    public class SpEntityQueryable<TEntity> : QueryableBase<TEntity>, IAsyncEnumerable<TEntity>, ISpRepository<TEntity>, ISpChangeTracker<TEntity>
+        where TEntity : class, IListItemEntity
+
     {
-        public SpEntityQueryable(SpQueryArgs args)
-            : this(QueryParser.CreateDefault(), new SpAsyncQueryExecutor(args))
+        public SpEntityQueryable(SpQueryArgs<ISpEntryDataContext> args)
+            : this(QueryParser.CreateDefault(), new SpAsyncQueryExecutor<ISpEntryDataContext>(args))
         {
             foreach (var att in GetFieldAttributes())
             {
@@ -46,13 +48,13 @@ namespace SP.Client.Linq.Query
 
         private static IEnumerable<KeyValuePair<string, FieldAttribute>> GetFieldAttributes()
         {
-            return AttributeHelper.GetFieldAttributes<TResult, FieldAttribute>()
-              .Concat(AttributeHelper.GetPopertyAttributes<TResult, FieldAttribute>());
+            return AttributeHelper.GetFieldAttributes<TEntity, FieldAttribute>()
+              .Concat(AttributeHelper.GetPropertyAttributes<TEntity, FieldAttribute>());
         }
 
         public string GetQuery(bool disableFormatting)
         {
-            var executor = GetExecutor();
+            var executor = GetExecutor<ISpDataContext>();
             if (executor != null)
             {
                 var view = executor.SpView;
@@ -64,19 +66,20 @@ namespace SP.Client.Linq.Query
             return null;
         }
 
-        internal SpQueryExecutor GetExecutor()
+        internal SpQueryExecutor<TContext> GetExecutor<TContext>()
+            where TContext : ISpDataContext
         {
             var provider = (this.Provider as QueryProviderBase);
             if (provider != null)
             {
-                return (provider.Executor as SpQueryExecutor);
+                return (SpQueryExecutor<TContext>)provider.Executor;
             }
             return null;
         }
 
         internal string GetQueryInternal(bool disableFormatting)
         {
-            var executor = GetExecutor();
+            var executor = GetExecutor<ISpDataContext>();
             if (executor != null)
             {
                 try
@@ -108,22 +111,22 @@ namespace SP.Client.Linq.Query
             return base.ToString();
         }
 
-        public async Task<IEnumerator<TResult>> GetAsyncEnumerator(CancellationToken cancellationToken = default)
+        public async Task<IEnumerator<TEntity>> GetAsyncEnumerator(CancellationToken cancellationToken = default)
         {
-            var result = await (Provider as AsyncQueryProvider).ExecuteAsync<IEnumerable<TResult>>(Expression, cancellationToken);
+            var result = await (Provider as AsyncQueryProvider).ExecuteAsync<IEnumerable<TEntity>>(Expression, cancellationToken);
             return result.GetEnumerator();
         }
 
-        public TResult Add([NotNull] TResult entity)
+        public TEntity Add([NotNull] TEntity entity)
         {
             if (entity != null)
             {
-                var executor = GetExecutor();
+                var executor = GetExecutor<ISpDataContext>();
                 if (executor != null && executor.SpQueryArgs != null && executor.SpQueryArgs.FieldMappings != null)
                 {
                     if (entity is ListItemEntity)
                     {
-                        return (TResult)executor.InsertOrUpdateEntity(entity as ListItemEntity);
+                        return (TEntity)executor.InsertOrUpdateEntity(entity as ListItemEntity);
                     }
                 }
             }
@@ -134,7 +137,7 @@ namespace SP.Client.Linq.Query
         {
             if (itemIds != null)
             {
-                var executor = GetExecutor();
+                var executor = GetExecutor<ISpDataContext>();
                 if (executor != null && executor.SpQueryArgs != null && executor.SpQueryArgs.FieldMappings != null)
                 {
                     return executor.Delete(itemIds);
@@ -143,30 +146,30 @@ namespace SP.Client.Linq.Query
             return 0;
         }
 
-        public TResult Find(int itemId)
+        public TEntity Find(int itemId)
         {
             return this.FirstOrDefault(i => i.Id == itemId);
         }
 
-        public IQueryable<TResult> FindAll([NotNull] params int[] itemIds)
+        public IQueryable<TEntity> FindAll([NotNull] params int[] itemIds)
         {
             return this.Where(i => i.Includes(x => x.Id, itemIds));
         }
 
-        public IEnumerable<TResult> AddRange(IEnumerable<TResult> entities)
+        public IEnumerable<TEntity> AddRange(IEnumerable<TEntity> entities)
         {
             if (entities != null)
             {
-                var executor = GetExecutor();
+                var executor = GetExecutor<ISpDataContext>();
                 if (executor != null && executor.SpQueryArgs != null && executor.SpQueryArgs.FieldMappings != null)
                 {
-                    return executor.InsertOrUpdateEntities(entities.Cast<ListItemEntity>()).Cast<TResult>();
+                    return executor.InsertOrUpdateEntities(entities.Cast<ListItemEntity>()).Cast<TEntity>();
                 }
             }
             return null;
         }
 
-        public bool Remove(TResult entity)
+        public bool Remove(TEntity entity)
         {
             if (entity != null && entity.Id > 0)
             {
@@ -175,9 +178,30 @@ namespace SP.Client.Linq.Query
             return false;
         }
 
-        public int RemoveRange(IEnumerable<TResult> entities)
+        public int RemoveRange(IEnumerable<TEntity> entities)
         {
             return Delete(entities.Where(entity => entity != null && entity.Id > 0).Select(entity => entity.Id).ToArray());
+        }
+
+        public void DetectChanges()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool HasChanges()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<SpEntityEntry<TEntity, TContext>> Entries<TContext>()
+           where TContext : ISpEntryDataContext
+        {
+            var executor = GetExecutor<TContext>();
+            if (executor != null && executor.SpQueryArgs != null && executor.SpQueryArgs.FieldMappings != null)
+            {
+               return this.ToList().Select(entity => new SpEntityEntry<TEntity, TContext>(entity, executor.SpQueryArgs));
+            }
+            return Enumerable.Empty<SpEntityEntry<TEntity, TContext>>();
         }
     }
 }

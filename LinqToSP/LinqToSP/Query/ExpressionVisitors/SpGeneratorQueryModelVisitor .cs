@@ -1,4 +1,5 @@
-﻿using Remotion.Linq;
+﻿using JetBrains.Annotations;
+using Remotion.Linq;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.ResultOperators;
 using SP.Client.Linq.Query.Expressions;
@@ -11,11 +12,12 @@ using System.Linq.Expressions;
 
 namespace SP.Client.Linq.Query.ExpressionVisitors
 {
-    internal class SpGeneratorQueryModelVisitor : QueryModelVisitorBase
+    internal class SpGeneratorQueryModelVisitor<TContext> : QueryModelVisitorBase
+     where TContext : ISpDataContext
     {
-        private readonly SpQueryArgs _args;
+        private readonly SpQueryArgs<TContext> _args;
 
-        internal SpGeneratorQueryModelVisitor(SpQueryArgs args)
+        internal SpGeneratorQueryModelVisitor([NotNull] SpQueryArgs<TContext> args)
         {
             _args = args;
         }
@@ -72,21 +74,21 @@ namespace SP.Client.Linq.Query.ExpressionVisitors
 
         private void VisitIncludeClause(IncludeExpression expression, QueryModel queryModel)
         {
-            var visitor = new IncludeExpressionVisitor(_args);
+            var visitor = new IncludeExpressionVisitor<TContext>(_args);
             visitor.Visit(expression);
             _args.SpView.ViewFields = visitor.ViewFields;
         }
 
         private void VisitGroupByClause(GroupByExpression expression, QueryModel queryModel)
         {
-            var visitor = new GroupByExpressionVisitor(_args);
+            var visitor = new GroupByExpressionVisitor<TContext>(_args);
             visitor.Visit(expression);
             _args.SpView.Query.GroupBy = visitor.Clause;
         }
 
         public override void VisitWhereClause(WhereClause whereClause, QueryModel queryModel, int index)
         {
-            var where = new WhereClauseExpressionTreeVisitor(_args);
+            var where = new WhereClauseExpressionTreeVisitor<TContext>(_args);
             where.Visit(whereClause.Predicate);
             if (_args.SpView.Query.Where == null)
             {
@@ -181,7 +183,7 @@ namespace SP.Client.Linq.Query.ExpressionVisitors
                             if (_args.FieldMappings.ContainsKey(fieldName))
                             {
                                 var fieldMap = _args.FieldMappings[fieldName];
-                                _args.SpView.Query.OrderBy.Add(fieldMap.Name, ordering.OrderingDirection == OrderingDirection.Asc ? (bool?)null: false);
+                                _args.SpView.Query.OrderBy.Add(fieldMap.Name, ordering.OrderingDirection == OrderingDirection.Asc ? (bool?)null : false);
                             }
                         }
                         else if (exp is MethodCallExpression)

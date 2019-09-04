@@ -6,9 +6,10 @@ using System.Linq.Expressions;
 
 namespace SP.Client.Linq.Query.ExpressionVisitors
 {
-    public class SpIsMembershipExpressionVisitor : SpComparisonExpressionVisitor
+    public class SpIsMembershipExpressionVisitor<TContext> : SpComparisonExpressionVisitor<TContext>
+        where TContext : ISpDataContext
     {
-        public SpIsMembershipExpressionVisitor(SpQueryArgs args) : base(args)
+        public SpIsMembershipExpressionVisitor(SpQueryArgs<TContext> args) : base(args)
         {
         }
 

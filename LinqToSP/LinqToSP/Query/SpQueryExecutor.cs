@@ -22,7 +22,8 @@ namespace SP.Client.Linq.Query
     /// <summary>
     /// 
     /// </summary>
-    internal class SpQueryExecutor : IQueryExecutor
+    internal class SpQueryExecutor<TContext> : IQueryExecutor
+       where TContext : ISpDataContext
     {
         private readonly object _lock = new object();
         internal List<IncludeExpression> IncludeExpressions { get; }
@@ -37,9 +38,9 @@ namespace SP.Client.Linq.Query
             }
         }
 
-        internal SpQueryArgs SpQueryArgs { get; }
+        internal SpQueryArgs<TContext> SpQueryArgs { get; }
 
-        internal SpQueryExecutor(SpQueryArgs args)
+        internal SpQueryExecutor(SpQueryArgs<TContext> args)
         {
             ValidateArgs(args);
             SpQueryArgs = args;
@@ -47,7 +48,7 @@ namespace SP.Client.Linq.Query
             GroupByExpressions = new List<GroupByExpression>();
         }
 
-        private void ValidateArgs(SpQueryArgs args)
+        private void ValidateArgs(SpQueryArgs<TContext> args)
         {
 
         }
@@ -83,7 +84,7 @@ namespace SP.Client.Linq.Query
                 }
 
                 SpQueryArgs.SpView = spView;
-                var queryVisitor = new SpGeneratorQueryModelVisitor(SpQueryArgs);
+                var queryVisitor = new SpGeneratorQueryModelVisitor<TContext>(SpQueryArgs);
                 queryVisitor.VisitQueryModel(queryModel);
                 queryVisitor.VisitIncludeClauses(IncludeExpressions, queryModel);
                 queryVisitor.VisitGroupByClauses(GroupByExpressions, queryModel);
@@ -190,11 +191,11 @@ namespace SP.Client.Linq.Query
             }
         }
 
-        protected static List GetList(SpQueryArgs args)
+        protected static List GetList(SpQueryArgs<TContext> args)
         {
             if (args != null)
             {
-                var clientContext = args.Context;
+                var clientContext = args.Context.Context;
                 if (clientContext != null)
                 {
                     return args.ListTitle != null ? clientContext.Web.Lists.GetByTitle(args.ListTitle) :
@@ -205,7 +206,7 @@ namespace SP.Client.Linq.Query
             return null;
         }
 
-        protected static ListItemCollection GetItems(SpQueryArgs args, ListItemCollectionPosition position)
+        protected static ListItemCollection GetItems(SpQueryArgs<TContext> args, ListItemCollectionPosition position)
         {
             var list = GetList(args);
             if (list != null)
@@ -366,7 +367,7 @@ namespace SP.Client.Linq.Query
             if (entities == null || !entities.Any()) return null;
 
             var items = entities.ToDictionary(entity => entity, entity => InsertOrUpdateItem(entity));
-            SpQueryArgs.Context.ExecuteQuery();
+            SpQueryArgs.Context.Context.ExecuteQuery();
             return items.Select(item => MapEntity(item.Value, item.Key.GetType()));
         }
 
@@ -430,7 +431,7 @@ namespace SP.Client.Linq.Query
             var items = DeleteItems(itemIds).ToArray();
             if (items.Length > 0)
             {
-                SpQueryArgs.Context.ExecuteQuery();
+                SpQueryArgs.Context.Context.ExecuteQuery();
             }
             return items.Count();
         }
@@ -451,11 +452,12 @@ namespace SP.Client.Linq.Query
         }
     }
 
-    internal class SpAsyncQueryExecutor : SpQueryExecutor, IAsyncQueryExecutor
+    internal class SpAsyncQueryExecutor<TContext> : SpQueryExecutor<TContext>, IAsyncQueryExecutor
+        where TContext : ISpDataContext
     {
         private readonly SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1, 1);
 
-        internal SpAsyncQueryExecutor(SpQueryArgs args) : base(args)
+        internal SpAsyncQueryExecutor(SpQueryArgs<TContext> args) : base(args)
         {
             args.IsAsync = true;
         }
@@ -467,7 +469,7 @@ namespace SP.Client.Linq.Query
             {
                 if (SpQueryArgs == null) return Enumerable.Empty<TResult>();
                 SpQueryArgs.SpView = new SpView();
-                var queryVisitor = new SpGeneratorQueryModelVisitor(SpQueryArgs);
+                var queryVisitor = new SpGeneratorQueryModelVisitor<TContext>(SpQueryArgs);
                 queryVisitor.VisitQueryModel(queryModel);
                 queryVisitor.VisitIncludeClauses(IncludeExpressions, queryModel);
                 queryVisitor.VisitGroupByClauses(GroupByExpressions, queryModel);

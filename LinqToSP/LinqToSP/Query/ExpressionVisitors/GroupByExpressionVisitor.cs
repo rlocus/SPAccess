@@ -3,9 +3,10 @@ using System.Linq.Expressions;
 
 namespace SP.Client.Linq.Query.ExpressionVisitors
 {
-    public class GroupByExpressionVisitor : SpExpressionVisitor
+    public class GroupByExpressionVisitor<TContext> : SpExpressionVisitor<TContext>
+        where TContext : ISpDataContext
     {
-        public GroupByExpressionVisitor(SpQueryArgs args) : base(args)
+        public GroupByExpressionVisitor(SpQueryArgs<TContext> args) : base(args)
         {
             Clause = new Caml.Clauses.CamlGroupBy();
         }

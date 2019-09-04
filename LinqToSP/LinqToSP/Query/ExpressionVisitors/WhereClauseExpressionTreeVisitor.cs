@@ -1,10 +1,11 @@
 ﻿namespace SP.Client.Linq.Query.ExpressionVisitors
 {
-  public class WhereClauseExpressionTreeVisitor : SpExpressionVisitor
-  {
+  public class WhereClauseExpressionTreeVisitor<TContext> : SpExpressionVisitor<TContext>
+        where TContext : ISpDataContext
+    {
     private readonly Caml.Query _query = new Caml.Query();
 
-    public WhereClauseExpressionTreeVisitor(SpQueryArgs args): base(args)
+    public WhereClauseExpressionTreeVisitor(SpQueryArgs<TContext> args): base(args)
     {
     }
 

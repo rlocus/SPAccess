@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using Microsoft.SharePoint.Client;
-using SP.Client.Linq.Infrastructure;
-using SP.Client.Linq.Query;
+﻿using SP.Client.Linq.Infrastructure;
+using System;
 
 namespace SP.Client.Linq
 {
     public interface ISpEntryDataContext : ISpDataContext
     {
-        SpChangeTracker ChangeTracker { get; }
+        bool HasChanges { get; }
 
+        event Action<SpSaveArgs> OnSaveChanges;
         void SaveChanges();
     }
 }

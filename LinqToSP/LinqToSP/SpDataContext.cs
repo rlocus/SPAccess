@@ -1,6 +1,8 @@
 ﻿using Microsoft.SharePoint.Client;
+using SP.Client.Linq.Infrastructure;
 using SP.Client.Linq.Query;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace SP.Client.Linq
@@ -26,7 +28,7 @@ namespace SP.Client.Linq
     ///                    .Where(e => e.StartTime < DateTime.Today.AddMonths(-1) &&
     ///                                e.DateRangesOverlap(x => x.StartTime, x => x.EndTime, x => x.RecurrenceId, CamlValue.Month));
     ///</summary>
-    public class SpDataContext : ISpDataContext
+    public class SpDataContext : ISpEntryDataContext
     {
         #region Properties
         /// <summary>
@@ -38,6 +40,8 @@ namespace SP.Client.Linq
         /// CSOM context
         /// </summary>
         public ClientContext Context { get; private set; }
+
+        public bool HasChanges { get; private set; }
 
         #endregion
 
@@ -53,6 +57,8 @@ namespace SP.Client.Linq
             Context = new ClientContext(siteUrl);
         }
 
+        public event Action<SpSaveArgs> OnSaveChanges;
+
         #endregion
 
         #region Methods
@@ -66,7 +72,7 @@ namespace SP.Client.Linq
         public SpEntityQueryable<TListItem> List<TListItem>(string listTitle, string query = null)
             where TListItem : class, IListItemEntity
         {
-            return new SpEntityQueryable<TListItem>(new SpQueryArgs(Context, listTitle, "", default(Guid), query));
+            return new SpEntityQueryable<TListItem>(new SpQueryArgs<ISpEntryDataContext>(this, listTitle, "", default(Guid), query));
         }
 
         /// <summary>
@@ -78,7 +84,7 @@ namespace SP.Client.Linq
         public SpEntityQueryable<TListItem> List<TListItem>(Uri listUrl, string query = null)
            where TListItem : class, IListItemEntity
         {
-            return new SpEntityQueryable<TListItem>(new SpQueryArgs(Context, null, listUrl.ToString(), default, query));
+            return new SpEntityQueryable<TListItem>(new SpQueryArgs<ISpEntryDataContext>(this, null, listUrl.ToString(), default, query));
         }
 
         /// <summary>
@@ -90,7 +96,7 @@ namespace SP.Client.Linq
         public SpEntityQueryable<TListItem> List<TListItem>(Guid listId, string query = null)
           where TListItem : class, IListItemEntity
         {
-            return new SpEntityQueryable<TListItem>(new SpQueryArgs(Context, null, null, listId, query));
+            return new SpEntityQueryable<TListItem>(new SpQueryArgs<ISpEntryDataContext>(this, null, null, listId, query));
         }
 
         /// <summary>
@@ -114,6 +120,20 @@ namespace SP.Client.Linq
         {
             return items.GetQueryInternal(disableFormatting);
         }
+
+        public virtual void SaveChanges()
+        {
+            HasChanges = false;
+            var args = new SpSaveArgs();
+            OnSaveChanges?.Invoke(args);
+            HasChanges = args.HasChanges;
+            if (HasChanges)
+            {
+                Context.ExecuteQuery();
+            }
+            HasChanges = false;
+        }
+
 
         #endregion
 
@@ -141,7 +161,7 @@ namespace SP.Client.Linq
                 catch { }
                 Context = null;
             }
-        }
+        }       
 
         #endregion
     }

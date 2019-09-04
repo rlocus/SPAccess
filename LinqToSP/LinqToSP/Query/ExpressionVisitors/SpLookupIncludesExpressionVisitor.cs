@@ -5,9 +5,10 @@ using System.Linq.Expressions;
 
 namespace SP.Client.Linq.Query.ExpressionVisitors
 {
-    public class SpLookupIncludesExpressionVisitor : SpComparisonExpressionVisitor
+    public class SpLookupIncludesExpressionVisitor<TContext> : SpComparisonExpressionVisitor<TContext>
+        where TContext : ISpDataContext
     {
-        public SpLookupIncludesExpressionVisitor(SpQueryArgs args) : base(args)
+        public SpLookupIncludesExpressionVisitor(SpQueryArgs<TContext> args) : base(args)
         {
         }
 

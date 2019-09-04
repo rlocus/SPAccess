@@ -5,16 +5,17 @@ using System.Linq.Expressions;
 
 namespace SP.Client.Linq.Query.ExpressionVisitors
 {
-    public class SpLookupNotIncludesExpressionVisitor : SpComparisonExpressionVisitor
+    public class SpLookupNotIncludesExpressionVisitor<TContext> : SpComparisonExpressionVisitor<TContext>
+        where TContext : ISpDataContext
     {
-        public SpLookupNotIncludesExpressionVisitor(SpQueryArgs args) : base(args)
+        public SpLookupNotIncludesExpressionVisitor(SpQueryArgs<TContext> args) : base(args)
         {
         }
 
         protected override Expression VisitMethodCall(MethodCallExpression node)
         {
             if ((node.Method.Name == "LookupNotIncludes" || node.Method.Name == "LookupIdNotIncludes") && typeof(ListItemEntityExtensions).IsAssignableFrom(node.Method.DeclaringType))
-      {
+            {
                 Visit(node.Object);
                 foreach (var arg in node.Arguments)
                 {

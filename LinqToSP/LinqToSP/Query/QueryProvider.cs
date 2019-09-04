@@ -60,18 +60,18 @@ namespace SP.Client.Linq.Query
         {
             if (expression is IncludeExpression)
             {
-                if (Executor is SpQueryExecutor)
+                if (Executor is SpQueryExecutor<ISpEntryDataContext>)
                 {
-                    (Executor as SpQueryExecutor).IncludeExpressions.Add(expression as IncludeExpression);
+                    (Executor as SpQueryExecutor<ISpEntryDataContext>).IncludeExpressions.Add(expression as IncludeExpression);
                 }
                 expression = (expression as IncludeExpression).EntityExpression;
             }
 
             if (expression is GroupByExpression)
             {
-                if (Executor is SpQueryExecutor)
+                if (Executor is SpQueryExecutor<ISpEntryDataContext>)
                 {
-                    (Executor as SpQueryExecutor).GroupByExpressions.Add(expression as GroupByExpression);
+                    (Executor as SpQueryExecutor<ISpEntryDataContext>).GroupByExpressions.Add(expression as GroupByExpression);
                 }
                 expression = (expression as GroupByExpression).EntityExpression;
             }

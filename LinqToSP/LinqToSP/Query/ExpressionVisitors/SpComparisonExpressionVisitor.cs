@@ -7,9 +7,11 @@ using System.Linq.Expressions;
 
 namespace SP.Client.Linq.Query.ExpressionVisitors
 {
-    public class SpComparisonExpressionVisitor : SpExpressionVisitor
+    public class SpComparisonExpressionVisitor<TContext> : SpExpressionVisitor<TContext>
+     where TContext : ISpDataContext
+
     {
-        public SpComparisonExpressionVisitor(SpQueryArgs args) : base(args)
+        public SpComparisonExpressionVisitor(SpQueryArgs<TContext> args) : base(args)
         {
         }
 

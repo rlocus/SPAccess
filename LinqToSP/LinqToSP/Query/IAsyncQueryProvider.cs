@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace SP.Client.Linq.Query
 {
-    public interface IAsyncQueryProvider : IQueryProvider
+    public interface IAsyncQueryProvider<TEntity> : IQueryProvider
     {
-       Task<TResult> ExecuteAsync<TResult>([NotNull] Expression expression, CancellationToken cancellationToken = default);
+       Task<IQueryable<TEntity>> ExecuteAsync([NotNull] Expression expression, CancellationToken cancellationToken = default);
     }
 }

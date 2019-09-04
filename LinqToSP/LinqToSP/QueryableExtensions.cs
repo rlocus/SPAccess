@@ -49,7 +49,7 @@ namespace SP.Client.Linq
         {
             if (source != null)
             {
-                return (source as SpEntityQueryable<TEntity>).Entries<ISpEntryDataContext>();
+                return (source as SpEntityQueryable<TEntity, ISpEntryDataContext>).Entries();
             }
             return Enumerable.Empty<SpEntityEntry<TEntity, ISpEntryDataContext>>();
         }

@@ -2,6 +2,7 @@
 using SP.Client.Linq.Infrastructure;
 using SP.Client.Linq.Query;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace SP.Client.Linq
@@ -126,7 +127,7 @@ namespace SP.Client.Linq
 
         public virtual bool SaveChanges()
         {
-            var args = new SpSaveArgs() { ItemCount = 0 };
+            var args = new SpSaveArgs() { Items = new List<ListItem>() };
             OnSaveChanges?.Invoke(args);
             if (args.HasChanges)
             {

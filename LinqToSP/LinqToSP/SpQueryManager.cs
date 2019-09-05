@@ -279,5 +279,61 @@ namespace SP.Client.Linq
         {
             return MapEntity((TEntity)Activator.CreateInstance(type, new object[] { }), item);
         }
+
+        public ListItem Update(int itemId, Dictionary<string, object> properties, int version)
+        {
+            if (properties == null || _args == null) return null;
+
+            List list = GetList();
+            ListItem listItem = itemId > 0
+                ? list.GetItemById(itemId)
+                : list.AddItem(new ListItemCreationInformation());
+
+            var fieldMappings = _args.FieldMappings;
+            bool fUpdate = false;
+            foreach (var property in properties)
+            {
+                if (!fieldMappings.ContainsKey(property.Key)) continue;
+
+                var fieldMapping = fieldMappings[property.Key];
+
+                if (fieldMapping.IsReadOnly || typeof(DependentLookupFieldAttribute).IsAssignableFrom(fieldMapping.GetType())) { continue; }
+
+
+                var value = property.Value;
+                if (itemId > 0 || (itemId <= 0 && !Equals(value, default)))
+                {
+                    listItem[fieldMapping.Name] = value;
+                    fUpdate = true;
+                }
+            }
+
+            if (fUpdate)
+            {
+                if (version > 0)
+                {
+                    listItem["owshiddenversion"] = version;
+                }
+                listItem.Update();
+                listItem.Context.Load(listItem);
+                return listItem;
+            }
+            return null;
+        }
+
+        public IEnumerable<ListItem> DeleteItems(IEnumerable<int> itemIds)
+        {
+            if (itemIds != null && itemIds.Any())
+            {
+                List list = GetList();
+                foreach (int itemId in itemIds)
+                {
+                    ListItem listItem = list.GetItemById(itemId);
+                    list.Context.Load(listItem);
+                    listItem.DeleteObject();
+                    yield return listItem;
+                }
+            }
+        }
     }
 }

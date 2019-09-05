@@ -1,4 +1,5 @@
 ﻿using JetBrains.Annotations;
+using Microsoft.SharePoint.Client;
 using SP.Client.Linq.Attributes;
 using SP.Client.Linq.Query;
 using System.Collections.Generic;
@@ -8,14 +9,16 @@ namespace SP.Client.Linq.Infrastructure
 {
     public sealed class SpEntityEntry<TEntity, TContext>
         where TEntity : class, IListItemEntity
-        where TContext : ISpEntryDataContext
+        where TContext : class, ISpEntryDataContext
     {
+        private readonly SpQueryManager<TEntity, TContext> _manager;
+
         public SpEntityEntry([NotNull] TEntity entity, [NotNull] SpQueryArgs<TContext> args)
         {
             Entity = entity;
             Context = args.Context;
             SpQueryArgs = args;
-
+            _manager = new SpQueryManager<TEntity, TContext>(args);
             Context.OnSaveChanges += Context_OnSaveChanges;
 
             Init();
@@ -31,7 +34,16 @@ namespace SP.Client.Linq.Infrastructure
                 State = Entity.Id > 0 ? EntityState.Unchanged : EntityState.Detached;
                 foreach (var value in GetValues())
                 {
-                    OriginalValues[value.Key] = value.Value;
+                    if (!SpQueryArgs.FieldMappings.ContainsKey(value.Key)) continue;
+                    var fieldMapping = SpQueryArgs.FieldMappings[value.Key];
+                    if (value.Value != null && fieldMapping.Name.ToLower() == "owshiddenversion")
+                    {
+                        Version = (int)value.Value;
+                    }
+                    if (!Equals(default, value.Value))
+                    {
+                        OriginalValues[value.Key] = value.Value;
+                    }
                 }
             }
         }
@@ -40,14 +52,27 @@ namespace SP.Client.Linq.Infrastructure
         {
             if (HasChanges())
             {
-                args.ItemCount++;
-                args.HasChanges = Save();
+                var item = Save();
+                if (item != null)
+                {
+                    args.Items.Add(item);
+                    State = EntityState.Detached;
+                }
+                args.HasChanges = item != null;
             }
         }
 
-        private bool Save()
+        private ListItem Save()
         {
-            return false;
+            switch (State)
+            {
+                case EntityState.Added:
+                case EntityState.Modified:
+                    return _manager.Update(Entity.Id, Entity.Id > 0 ? CurrentValues : OriginalValues, Version);
+                case EntityState.Deleted:
+                    return _manager.DeleteItems(new[] { Entity.Id }).FirstOrDefault();
+            }
+            return null;
         }
 
         public TContext Context { get; }
@@ -57,6 +82,8 @@ namespace SP.Client.Linq.Infrastructure
         private Dictionary<string, object> CurrentValues { get; set; }
 
         private Dictionary<string, object> OriginalValues { get; set; }
+
+        public int Version { get; private set; }
 
         public EntityState State { get; private set; }
 
@@ -98,7 +125,8 @@ namespace SP.Client.Linq.Infrastructure
             CurrentValues = new Dictionary<string, object>();
             foreach (var value in GetValues())
             {
-                if (State == EntityState.Added)
+                if (!OriginalValues.ContainsKey(value.Key)) continue;
+                if (Entity.Id <= 0)
                 {
                     CurrentValues[value.Key] = value.Value;
                 }

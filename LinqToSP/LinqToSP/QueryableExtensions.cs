@@ -55,5 +55,16 @@ namespace SP.Client.Linq
             }
             return Enumerable.Empty<SpEntityEntry<TEntity, ISpEntryDataContext>>();
         }
+
+        public static SpEntityEntry<TEntity, ISpEntryDataContext> GetEntry<TEntity>(this IQueryable<TEntity> source, TEntity entity)
+         where TEntity : class, IListItemEntity
+        {
+            Check.NotNull(source, nameof(source));
+            if (source is SpEntityQueryable<TEntity, ISpEntryDataContext>)
+            {
+                return (source as SpEntityQueryable<TEntity, ISpEntryDataContext>).Entry(entity);
+            }
+            return null;
+        }
     }
 }

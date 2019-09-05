@@ -110,6 +110,7 @@ namespace SP.Client.Linq.Infrastructure
             var executor = GetExecutor();
             if (executor != null)
             {
+                bool skipResult = executor.SpQueryArgs.SkipResult;
                 try
                 {
                     //fake
@@ -118,7 +119,7 @@ namespace SP.Client.Linq.Infrastructure
                 }
                 finally
                 {
-                    executor.SpQueryArgs.SkipResult = false;
+                    executor.SpQueryArgs.SkipResult = skipResult;
                 }
                 var view = executor.SpView;
                 if (view != null)

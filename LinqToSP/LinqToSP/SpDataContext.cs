@@ -70,7 +70,7 @@ namespace SP.Client.Linq
         public SpEntityQueryable<TListItem> List<TListItem>(string listTitle, string query = null)
             where TListItem : class, IListItemEntity
         {
-            return new SpEntityQueryable<TListItem>(new SpQueryArgs<ISpEntryDataContext>(this, listTitle, "", default(Guid), query));
+            return List<TListItem>(new SpQueryArgs<ISpEntryDataContext>(this, listTitle, "", default(Guid), query));
         }
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace SP.Client.Linq
         public SpEntityQueryable<TListItem> List<TListItem>(Uri listUrl, string query = null)
            where TListItem : class, IListItemEntity
         {
-            return new SpEntityQueryable<TListItem>(new SpQueryArgs<ISpEntryDataContext>(this, null, listUrl.ToString(), default, query));
+            return List<TListItem>(new SpQueryArgs<ISpEntryDataContext>(this, null, listUrl.ToString(), default, query));
         }
 
         /// <summary>
@@ -94,7 +94,7 @@ namespace SP.Client.Linq
         public SpEntityQueryable<TListItem> List<TListItem>(Guid listId, string query = null)
           where TListItem : class, IListItemEntity
         {
-            return new SpEntityQueryable<TListItem>(new SpQueryArgs<ISpEntryDataContext>(this, null, null, listId, query));
+            return List<TListItem>(new SpQueryArgs<ISpEntryDataContext>(this, null, null, listId, query));
         }
 
         public SpEntityQueryable<TListItem> List<TListItem>(SpQueryArgs<ISpEntryDataContext> args)
@@ -110,7 +110,7 @@ namespace SP.Client.Linq
         /// <param name="items">Linq query</param>
         /// <param name="disableFormatting">Disable formatting</param>
         /// <returns></returns>
-        public virtual string GenerateQuery<TListItem>(IQueryable<TListItem> items, bool disableFormatting = false)
+        public virtual string Query<TListItem>(IQueryable<TListItem> items, bool disableFormatting = false)
                where TListItem : class, IListItemEntity
         {
             if (items is SpEntityQueryable<TListItem>)
@@ -118,7 +118,26 @@ namespace SP.Client.Linq
                 return GenerateQuery(items as SpEntityQueryable<TListItem>, disableFormatting);
             }
             return null;
+        }       
+
+        public SpEntityQueryable<TListItem> Query<TListItem>(string listTitle, string query = null)
+          where TListItem : class, IListItemEntity
+        {
+            return List<TListItem>(new SpQueryArgs<ISpEntryDataContext>(this, listTitle, "", default, query) { SkipResult = true });
         }
+
+        public SpEntityQueryable<TListItem> Query<TListItem>(Uri listUrl, string query = null)
+         where TListItem : class, IListItemEntity
+        {
+            return List<TListItem>(new SpQueryArgs<ISpEntryDataContext>(this, null, listUrl.ToString(), default, query) { SkipResult = true });
+        }
+
+        public SpEntityQueryable<TListItem> Query<TListItem>(Guid listId, string query = null)
+          where TListItem : class, IListItemEntity
+        {
+            return List<TListItem>(new SpQueryArgs<ISpEntryDataContext>(this, null, null, listId, query) { SkipResult = true });
+        }
+
         protected virtual string GenerateQuery<TListItem>(SpEntityQueryable<TListItem> items, bool disableFormatting = false)
             where TListItem : class, IListItemEntity
         {

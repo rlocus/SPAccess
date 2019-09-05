@@ -12,6 +12,5 @@ namespace SP.Client.Linq
     void SaveChanges();
 
     SpEntityQueryable<TListItem> List<TListItem>(SpQueryArgs<ISpEntryDataContext> args) where TListItem : class, IListItemEntity;
-
   }
 }

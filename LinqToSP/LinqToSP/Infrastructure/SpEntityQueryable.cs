@@ -8,9 +8,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using System;
 using JetBrains.Annotations;
-using SP.Client.Linq.Infrastructure;
+using SP.Client.Linq.Query;
 
-namespace SP.Client.Linq.Query
+namespace SP.Client.Linq.Infrastructure
 {
   public class SpEntityQueryable<TEntity> : SpEntityQueryable<TEntity, ISpEntryDataContext>
   where TEntity : class, IListItemEntity
@@ -22,7 +22,7 @@ namespace SP.Client.Linq.Query
     }
 
     internal SpEntityQueryable(IQueryParser queryParser, IAsyncQueryExecutor executor)
-        : base(new AsyncQueryProvider<TEntity>(typeof(SpEntityQueryable<>), queryParser, executor))
+        : base(new AsyncQueryProvider<TEntity, ISpEntryDataContext>(typeof(SpEntityQueryable<>), queryParser, executor))
     {
 
     }
@@ -58,7 +58,7 @@ namespace SP.Client.Linq.Query
     }
 
     internal SpEntityQueryable(IQueryParser queryParser, IAsyncQueryExecutor executor)
-        : this(new /*DefaultQueryProvider*/AsyncQueryProvider<TEntity>(typeof(SpEntityQueryable<,>), queryParser, executor))
+        : this(new /*DefaultQueryProvider*/AsyncQueryProvider<TEntity, ISpEntryDataContext>(typeof(SpEntityQueryable<,>), queryParser, executor))
     {
 
     }
@@ -141,7 +141,7 @@ namespace SP.Client.Linq.Query
 
     public async Task<IEnumerator<TEntity>> GetAsyncEnumerator(CancellationToken cancellationToken = default)
     {
-      var result = await (Provider as AsyncQueryProvider<TEntity>).ExecuteAsync(Expression, cancellationToken);
+      var result = await (Provider as AsyncQueryProvider<TEntity, TContext>).ExecuteAsync(Expression, cancellationToken);
       return result.GetEnumerator();
     }
 

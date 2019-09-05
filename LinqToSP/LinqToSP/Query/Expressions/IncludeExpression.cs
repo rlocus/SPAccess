@@ -5,28 +5,29 @@ using System.Linq;
 
 namespace SP.Client.Linq.Query.Expressions
 {
-  public class IncludeExpression : Expression
+  public class IncludeExpression<TContext> : Expression
+       where TContext: ISpDataContext
   {
-    public IncludeExpression(Expression entityExpression, IEnumerable<Expression> path)
+    public IncludeExpression(Expression entityExpression, IEnumerable<Expression> predicates)
     {
-      EntityExpression = entityExpression;
-      Type = EntityExpression.Type;
-      Path = path;
+      Expression = entityExpression;
+      Type = Expression.Type;
+      Predicates = predicates;
     }
 
-    public virtual Expression EntityExpression { get; set; }
+    public virtual Expression Expression { get; set; }
 
     public sealed override ExpressionType NodeType => ExpressionType.Extension;
     public override Type Type { get; }
-    public IEnumerable<Expression> Path { get; }
+    public IEnumerable<Expression> Predicates { get; }
 
     public override bool CanReduce => false;
      
     protected override Expression VisitChildren(ExpressionVisitor visitor)
     {
-      var result = visitor.Visit(EntityExpression);
-      if (result != EntityExpression)
-        return new IncludeExpression(result, Path);
+      var result = visitor.Visit(Expression);
+      if (result != Expression)
+        return new IncludeExpression<TContext>(result, Predicates);
       return this;
     }
 
@@ -37,9 +38,9 @@ namespace SP.Client.Linq.Query.Expressions
 
     public override string ToString()
     {
-      if (Path != null)
+      if (Predicates != null)
       {
-        return $"Include({string.Join(", ", Path.Select(p => p.ToString()).ToArray())})";
+        return $"Include({string.Join(", ", Predicates.Select(p => p.ToString()).ToArray())})";
       }
       return base.ToString();
     }

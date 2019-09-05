@@ -100,9 +100,9 @@
     <Compile Include="Infrastructure\ISpSet.cs" />
     <Compile Include="Infrastructure\SpSaveArgs.cs" />
     <Compile Include="ISpEntryDataContext.cs" />
-    <Compile Include="ISpRepository.cs" />
+    <Compile Include="Infrastructure\ISpRepository.cs" />
     <Compile Include="ListItemEntityExtensions.cs" />
-    <Compile Include="EntityState.cs" />
+    <Compile Include="Infrastructure\EntityState.cs" />
     <Compile Include="IListItemEntity.cs" />
     <Compile Include="ListItemEntity.cs" />
     <Compile Include="QueryableExtensions.cs" />
@@ -130,7 +130,7 @@
     <Compile Include="SpDataContext.cs" />
     <Compile Include="ISpDataContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Query\SpEntityQueryable.cs" />
+    <Compile Include="Infrastructure\SpEntityQueryable.cs" />
     <Compile Include="Query\SpQueryExecutor.cs" />
     <Compile Include="Query\Expressions\ExpressionEqualityComparer.cs" />
     <Compile Include="Query\Expressions\NullConditionalExpression.cs" />

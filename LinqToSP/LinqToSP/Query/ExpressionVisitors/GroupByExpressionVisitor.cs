@@ -15,21 +15,21 @@ namespace SP.Client.Linq.Query.ExpressionVisitors
 
         public override Expression Visit(Expression expression)
         {
-            if (expression is IncludeExpression)
+            if (expression is IncludeExpression<TContext>)
             {
-                foreach (var path in (expression as IncludeExpression).Path)
+                foreach (var path in (expression as IncludeExpression<TContext>).Predicates)
                 {
                     Visit(path);
                 }
                 return expression;
             }
-            else if (expression is GroupByExpression)
+            else if (expression is GroupByExpression<TContext>)
             {
-                Clause.Limit = (expression as GroupByExpression).Limit > 0 ?
-                    (expression as GroupByExpression).Limit
+                Clause.Limit = (expression as GroupByExpression<TContext>).Limit > 0 ?
+                    (expression as GroupByExpression<TContext>).Limit
                     : (int?)null;
 
-                foreach (var path in (expression as GroupByExpression).Path)
+                foreach (var path in (expression as GroupByExpression<TContext>).Predicates)
                 {
                     Visit(path);
                 }

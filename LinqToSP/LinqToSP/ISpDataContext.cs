@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Linq;
-using System.Linq.Expressions;
 using Microsoft.SharePoint.Client;
-using SP.Client.Linq.Query;
+using SP.Client.Linq.Infrastructure;
 
 namespace SP.Client.Linq
 {
-  public interface ISpDataContext : IDisposable
+    public interface ISpDataContext : IDisposable
   {
     string SiteUrl { get; }
 

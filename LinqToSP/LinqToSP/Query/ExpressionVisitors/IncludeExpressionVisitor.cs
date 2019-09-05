@@ -16,9 +16,9 @@ namespace SP.Client.Linq.Query.ExpressionVisitors
 
         public override Expression Visit(Expression expression)
         {
-            if (expression is IncludeExpression)
+            if (expression is IncludeExpression<TContext>)
             {
-                foreach (var path in (expression as IncludeExpression).Path)
+                foreach (var path in (expression as IncludeExpression<TContext>).Predicates)
                 {
                     Visit(path);
                 }

@@ -1,4 +1,4 @@
-﻿namespace SP.Client.Linq
+﻿namespace SP.Client.Linq.Infrastructure
 {
     /// <summary>
     ///     The state in which an entity is being tracked by a context.

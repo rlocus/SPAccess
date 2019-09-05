@@ -5,13 +5,14 @@ using System.Linq;
 
 namespace SP.Client.Linq.Query.Expressions
 {
-    public class GroupByExpression : Expression
+    public class GroupByExpression<TContext> : Expression
+               where TContext : ISpDataContext
     {
-        public GroupByExpression(Expression entityExpression, IEnumerable<Expression> path, int limit)
+        public GroupByExpression(Expression entityExpression, IEnumerable<Expression> predicates, int limit)
         {
             EntityExpression = entityExpression;
             Type = EntityExpression.Type;
-            Path = path;
+            Predicates = predicates;
             Limit = limit;
         }
 
@@ -19,7 +20,7 @@ namespace SP.Client.Linq.Query.Expressions
 
         public sealed override ExpressionType NodeType => ExpressionType.Extension;
         public override Type Type { get; }
-        public IEnumerable<Expression> Path { get; }
+        public IEnumerable<Expression> Predicates { get; }
         public int Limit { get; }
 
         public override bool CanReduce => false;
@@ -28,7 +29,7 @@ namespace SP.Client.Linq.Query.Expressions
         {
             var result = visitor.Visit(EntityExpression);
             if (result != EntityExpression)
-                return new GroupByExpression(result, Path, Limit);
+                return new GroupByExpression<TContext>(result, Predicates, Limit);
             return this;
         }
 
@@ -39,9 +40,9 @@ namespace SP.Client.Linq.Query.Expressions
 
         public override string ToString()
         {
-            if (Path != null)
+            if (Predicates != null)
             {
-                return $"GroupBy({string.Join(", ", Path.Select(p => p.ToString()).ToArray())})";
+                return $"GroupBy({string.Join(", ", Predicates.Select(p => p.ToString()).ToArray())})";
             }
             return base.ToString();
         }

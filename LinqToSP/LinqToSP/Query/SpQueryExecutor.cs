@@ -27,9 +27,6 @@ namespace SP.Client.Linq.Query
     where TEntity : class, IListItemEntity
   {
     private readonly object _lock = new object();
-    internal List<IncludeExpression> IncludeExpressions { get; }
-    internal List<GroupByExpression> GroupByExpressions { get; }
-
     public SpView SpView
     {
       get; protected set;
@@ -41,8 +38,6 @@ namespace SP.Client.Linq.Query
     {
       ValidateArgs(args);
       SpQueryArgs = args;
-      IncludeExpressions = new List<IncludeExpression>();
-      GroupByExpressions = new List<GroupByExpression>();
     }
 
     private void ValidateArgs(SpQueryArgs<TContext> args)
@@ -83,8 +78,6 @@ namespace SP.Client.Linq.Query
         SpView = spView;
         var queryVisitor = new SpGeneratorQueryModelVisitor<TContext>(SpQueryArgs, spView);
         queryVisitor.VisitQueryModel(queryModel);
-        queryVisitor.VisitIncludeClauses(IncludeExpressions, queryModel);
-        queryVisitor.VisitGroupByClauses(GroupByExpressions, queryModel);
 
         if (spView.ViewFields == null)
         {
@@ -469,8 +462,6 @@ namespace SP.Client.Linq.Query
         SpView = new SpView();
         var queryVisitor = new SpGeneratorQueryModelVisitor<TContext>(SpQueryArgs, SpView);
         queryVisitor.VisitQueryModel(queryModel);
-        queryVisitor.VisitIncludeClauses(IncludeExpressions, queryModel);
-        queryVisitor.VisitGroupByClauses(GroupByExpressions, queryModel);
 
         if (SpQueryArgs.SkipResult)
         {

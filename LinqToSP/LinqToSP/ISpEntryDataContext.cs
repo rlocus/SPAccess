@@ -6,10 +6,8 @@ namespace SP.Client.Linq
 {
   public interface ISpEntryDataContext : ISpDataContext
   {
-    bool HasChanges { get; }
-
     event Action<SpSaveArgs> OnSaveChanges;
-    void SaveChanges();
+    bool SaveChanges();
 
     SpEntityQueryable<TListItem> List<TListItem>(SpQueryArgs<ISpEntryDataContext> args) where TListItem : class, IListItemEntity;
   }

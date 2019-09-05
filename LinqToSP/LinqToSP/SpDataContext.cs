@@ -40,8 +40,6 @@ namespace SP.Client.Linq
         /// </summary>
         public ClientContext Context { get; private set; }
 
-        public bool HasChanges { get; private set; }
-
         #endregion
 
         #region Constructor
@@ -126,19 +124,16 @@ namespace SP.Client.Linq
             return items.GetQueryInternal(disableFormatting);
         }
 
-        public virtual void SaveChanges()
+        public virtual bool SaveChanges()
         {
-            HasChanges = false;
-            var args = new SpSaveArgs();
+            var args = new SpSaveArgs() { ItemCount = 0 };
             OnSaveChanges?.Invoke(args);
-            HasChanges = args.HasChanges;
-            if (HasChanges)
+            if (args.HasChanges)
             {
                 Context.ExecuteQuery();
             }
-            HasChanges = false;
+            return args.HasChanges;
         }
-
 
         #endregion
 

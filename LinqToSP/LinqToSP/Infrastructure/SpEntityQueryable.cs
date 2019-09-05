@@ -41,7 +41,7 @@ namespace SP.Client.Linq.Infrastructure
   }
 
 
-  public class SpEntityQueryable<TEntity, TContext> : QueryableBase<TEntity>, IAsyncEnumerable<TEntity>, ISpRepository<TEntity>, ISpChangeTracker<TEntity, TContext>
+  public class SpEntityQueryable<TEntity, TContext> : QueryableBase<TEntity>, IAsyncEnumerable<TEntity>, ISpRepository<TEntity>, ISpChangeTrackable<TEntity, TContext>
     where TEntity : class, IListItemEntity
     where TContext : class, ISpEntryDataContext
   {
@@ -154,7 +154,7 @@ namespace SP.Client.Linq.Infrastructure
         {
           if (entity is ListItemEntity)
           {
-            return (TEntity)executor.InsertOrUpdateEntity(entity as ListItemEntity);
+            return executor.InsertOrUpdateEntity(entity);
           }
         }
       }
@@ -191,7 +191,7 @@ namespace SP.Client.Linq.Infrastructure
         var executor = GetExecutor();
         if (executor != null && executor.SpQueryArgs != null && executor.SpQueryArgs.FieldMappings != null)
         {
-          return executor.InsertOrUpdateEntities(entities.Cast<ListItemEntity>()).Cast<TEntity>();
+          return executor.InsertOrUpdateEntities(entities).Cast<TEntity>();
         }
       }
       return null;

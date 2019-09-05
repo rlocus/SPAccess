@@ -2,6 +2,7 @@
 {
     public class SpSaveArgs
     {
-       public bool HasChanges { get; set; }
+        public int ItemCount { get; set; }
+        public bool HasChanges { get; set; }
     }
 }

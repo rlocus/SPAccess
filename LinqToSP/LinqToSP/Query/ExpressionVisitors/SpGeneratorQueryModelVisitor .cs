@@ -56,7 +56,7 @@ namespace SP.Client.Linq.Query.ExpressionVisitors
             {
                 base.VisitMainFromClause(fromClause, queryModel);
             }
-        }      
+        }
 
         public virtual void VisitIncludeClause(IncludeExpression<TContext> expression, QueryModel queryModel)
         {
@@ -144,7 +144,10 @@ namespace SP.Client.Linq.Query.ExpressionVisitors
             else if (resultOperator is ConcatResultOperator)
             {
                 var source = (resultOperator as ConcatResultOperator).Source2 as SubQueryExpression;
-                this.VisitQueryModel(source.QueryModel);
+                if (source != null)
+                    this.VisitQueryModel(source.QueryModel);
+                else
+                    throw new NotSupportedException("Method Concat() is not supported in LinqToSp.");
             }
             base.VisitResultOperator(resultOperator, queryModel, index);
         }

@@ -2,7 +2,7 @@
 
 namespace SP.Client.Linq.Infrastructure
 {
-  public interface ISpChangeTracker<TEntity, TContext>
+  public interface ISpChangeTrackable<TEntity, TContext>
   where TEntity : class, IListItemEntity
    where TContext : ISpEntryDataContext
   {

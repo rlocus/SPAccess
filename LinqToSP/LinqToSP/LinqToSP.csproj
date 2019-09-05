@@ -95,7 +95,7 @@
     <Compile Include="Attributes\LookupFieldAttribute.cs" />
     <Compile Include="EventItemEntity.cs" />
     <Compile Include="IEventItemEntity.cs" />
-    <Compile Include="Infrastructure\ISpChangeTracker.cs" />
+    <Compile Include="Infrastructure\ISpChangeTrackable.cs" />
     <Compile Include="Infrastructure\SpEntityEntry.cs" />
     <Compile Include="Infrastructure\ISpSet.cs" />
     <Compile Include="Infrastructure\SpSaveArgs.cs" />
@@ -138,6 +138,7 @@
     <Compile Include="Query\ExpressionVisitors\ExpressionVisitorBase.cs" />
     <Compile Include="Query\ExpressionVisitors\WhereClauseExpressionTreeVisitor.cs" />
     <Compile Include="Query\ExpressionVisitors\SpGeneratorQueryModelVisitor .cs" />
+    <Compile Include="SpQueryManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -7,6 +7,7 @@ namespace SP.Client.Linq
     {
         SpQueryArgs<ISpEntryDataContext> SpQueryArgs { get; }
         int EntityId { get; set; }
+        bool DoesEntryExist();
     }
 
     public interface ISpEntityLookup<TEntity> : ISpEntityLookup

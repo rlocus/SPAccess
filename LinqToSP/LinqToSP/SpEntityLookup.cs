@@ -66,7 +66,7 @@ namespace SP.Client.Linq
         {
             if (EntityId > 0 && SpQueryArgs != null)
             {
-                if(SpQueryArgs.Context == null)
+                if (SpQueryArgs.Context == null)
                 {
                     throw new ArgumentNullException(nameof(SpQueryArgs.Context));
                 }
@@ -87,6 +87,11 @@ namespace SP.Client.Linq
                 return SpQueryArgs.Context.List<TEntity>(SpQueryArgs).GetEntry(GetEntity());
             }
             return null;
+        }
+
+        public bool DoesEntryExist()
+        {
+            return GetEntry() != null;
         }
     }
 }

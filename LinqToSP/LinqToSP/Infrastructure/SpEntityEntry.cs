@@ -2,6 +2,7 @@
 using Microsoft.SharePoint.Client;
 using SP.Client.Linq.Attributes;
 using SP.Client.Linq.Query;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -127,7 +128,14 @@ namespace SP.Client.Linq.Infrastructure
                 {
                     if (!OriginalValues.ContainsKey(value.Key) || !Equals(OriginalValues[value.Key], (value.Value as ISpEntityLookup).EntityId))
                     {
-                        CurrentValues[value.Key] = (value.Value as ISpEntityLookup).EntityId;
+                        if ((value.Value as ISpEntityLookup).DoesEntryExist())
+                        {
+                            CurrentValues[value.Key] = (value.Value as ISpEntityLookup).EntityId;
+                        }
+                        else
+                        {
+                            throw new Exception($"Entity with Id={(value.Value as ISpEntityLookup).EntityId} does not exist in '{(value.Value as ISpEntityLookup).SpQueryArgs}'.");
+                        }
                     }
                 }
                 else if (!OriginalValues.ContainsKey(value.Key) || !Equals(OriginalValues[value.Key], value.Value))

@@ -240,6 +240,22 @@ namespace SP.Client.Linq
                     }
                 }
             }
+            else if (itemValue != null && itemValue is FieldLookupValue[])
+            {
+                if ((value is ISpEntityLookupCollection && typeof(ISpEntityLookupCollection).IsAssignableFrom(type)) && itemValue != null)
+                {
+                    var entitySets = (ISpEntityLookupCollection)value;
+                    if (entitySets != null)
+                    {
+                        entitySets.EntityIds = ((FieldLookupValue[])itemValue).Select(lv => lv.LookupId).ToArray();
+                        if (entitySets.SpQueryArgs != null)
+                        {
+                            entitySets.SpQueryArgs.Context = _args.Context;
+                        }
+                        return true;
+                    }
+                }
+            }
             return false;
         }
 

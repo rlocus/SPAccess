@@ -4,7 +4,7 @@ using System;
 
 namespace SP.Client.Linq
 {
-    public class SpEntityLookup<TEntity> : ISpEntityLookup<TEntity>
+    public sealed class SpEntityLookup<TEntity> : ISpEntityLookup<TEntity>
          where TEntity : class, IListItemEntity
     {
         public SpQueryArgs<ISpEntryDataContext> SpQueryArgs { get; }
@@ -64,8 +64,12 @@ namespace SP.Client.Linq
 
         public TEntity GetEntity()
         {
-            if (EntityId > 0 && SpQueryArgs != null && SpQueryArgs.Context != null)
+            if (EntityId > 0 && SpQueryArgs != null)
             {
+                if(SpQueryArgs.Context == null)
+                {
+                    throw new ArgumentNullException(nameof(SpQueryArgs.Context));
+                }
                 return SpQueryArgs.Context.List<TEntity>(SpQueryArgs).Find(EntityId);
             }
 
@@ -74,8 +78,12 @@ namespace SP.Client.Linq
 
         public SpEntityEntry<TEntity, ISpEntryDataContext> GetEntry()
         {
-            if (EntityId > 0 && SpQueryArgs != null && SpQueryArgs.Context != null)
+            if (EntityId > 0 && SpQueryArgs != null)
             {
+                if (SpQueryArgs.Context == null)
+                {
+                    throw new ArgumentNullException(nameof(SpQueryArgs.Context));
+                }
                 return SpQueryArgs.Context.List<TEntity>(SpQueryArgs).GetEntry(GetEntity());
             }
             return null;

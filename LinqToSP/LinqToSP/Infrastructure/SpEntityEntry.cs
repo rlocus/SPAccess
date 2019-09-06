@@ -11,8 +11,11 @@ namespace SP.Client.Linq.Infrastructure
         where TEntity : class, IListItemEntity
         where TContext : class, ISpEntryDataContext
     {
+        #region Fields
         private readonly SpQueryManager<TEntity, TContext> _manager;
+        #endregion
 
+        #region Constructors
         public SpEntityEntry([NotNull] TEntity entity, [NotNull] SpQueryArgs<TContext> args)
         {
             Entity = entity;
@@ -23,8 +26,26 @@ namespace SP.Client.Linq.Infrastructure
             Init();
         }
 
+        #endregion
+
+        #region Properties
+        public TContext Context { get { return SpQueryArgs.Context; } }
+        public SpQueryArgs<TContext> SpQueryArgs { get; }
+        public TEntity Entity { get; private set; }
+
+        private Dictionary<string, object> CurrentValues { get; set; }
+
+        private Dictionary<string, object> OriginalValues { get; set; }
+
+        public int Version { get; private set; }
+
+        public EntityState State { get; private set; }
+
         public bool HasChanges => State == EntityState.Added || State == EntityState.Modified || State == EntityState.Deleted;
 
+        #endregion
+
+        #region Methods
         private void Init()
         {
             CurrentValues = new Dictionary<string, object>();
@@ -59,18 +80,8 @@ namespace SP.Client.Linq.Infrastructure
                     args.Items.Add(item);
 
                     CurrentValues = new Dictionary<string, object>();
+                    //requires to reload it after saving item.
                     State = EntityState.Detached;
-                    //switch (State)
-                    //{
-                    //    case EntityState.Modified:
-                    //        State = EntityState.Unchanged;
-                    //        break;
-                    //    case EntityState.Added:
-                    //    case EntityState.Deleted:
-                    //        State = EntityState.Detached;
-                    //        break;
-                    //}
-
                     args.HasChanges = true;
                 }
             }
@@ -89,17 +100,33 @@ namespace SP.Client.Linq.Infrastructure
             return null;
         }
 
-        public TContext Context { get { return SpQueryArgs.Context; } }
-        public SpQueryArgs<TContext> SpQueryArgs { get; }
-        public TEntity Entity { get; private set; }
+        private IEnumerable<KeyValuePair<string, object>> GetValues()
+        {
+            return AttributeHelper.GetFieldValues<TEntity, FieldAttribute>(Entity)
+              .Concat(AttributeHelper.GetPropertyValues<TEntity, FieldAttribute>(Entity));
+        }
 
-        private Dictionary<string, object> CurrentValues { get; set; }
+        private bool DetectChanges()
+        {
+            if (State == EntityState.Deleted) return false;
+            if (State == EntityState.Added) return true;
+            if (State == EntityState.Detached && Entity.Id > 0) return false;
 
-        private Dictionary<string, object> OriginalValues { get; set; }
-
-        public int Version { get; private set; }
-
-        public EntityState State { get; private set; }
+            CurrentValues = new Dictionary<string, object>();
+            foreach (var value in GetValues())
+            {
+                if (!OriginalValues.ContainsKey(value.Key)) continue;
+                if (Entity.Id <= 0)
+                {
+                    CurrentValues[value.Key] = value.Value;
+                }
+                else if (!Equals(OriginalValues[value.Key], value.Value))
+                {
+                    CurrentValues[value.Key] = value.Value;
+                }
+            }
+            return CurrentValues.Count > 0;
+        }
 
         public bool IsValueChanged(string propertyName)
         {
@@ -134,32 +161,6 @@ namespace SP.Client.Linq.Infrastructure
             State = Entity.Id > 0 ? EntityState.Deleted : EntityState.Detached;
         }
 
-        public bool DetectChanges()
-        {
-            if (State == EntityState.Deleted) return false;
-            if (State == EntityState.Added) return true;
-            if (State == EntityState.Detached && Entity.Id > 0) return false;
-
-            CurrentValues = new Dictionary<string, object>();
-            foreach (var value in GetValues())
-            {
-                if (!OriginalValues.ContainsKey(value.Key)) continue;
-                if (Entity.Id <= 0)
-                {
-                    CurrentValues[value.Key] = value.Value;
-                }
-                else if (!Equals(OriginalValues[value.Key], value.Value))
-                {
-                    CurrentValues[value.Key] = value.Value;
-                }
-            }
-            return CurrentValues.Count > 0;
-        }
-
-        private IEnumerable<KeyValuePair<string, object>> GetValues()
-        {
-            return AttributeHelper.GetFieldValues<TEntity, FieldAttribute>(Entity)
-              .Concat(AttributeHelper.GetPropertyValues<TEntity, FieldAttribute>(Entity));
-        }
+        #endregion
     }
 }

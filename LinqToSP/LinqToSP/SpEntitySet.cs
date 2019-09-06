@@ -4,7 +4,7 @@ using System;
 
 namespace SP.Client.Linq
 {
-    public class SpEntitySet<TEntity> : SpEntityQueryable<TEntity>, ISpEntitySet<TEntity>
+    public sealed class SpEntitySet<TEntity> : SpEntityQueryable<TEntity>, ISpEntitySet<TEntity>
        where TEntity : class, IListItemEntity
     {
         public SpQueryArgs<ISpEntryDataContext> SpQueryArgs { get; }

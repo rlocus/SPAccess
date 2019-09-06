@@ -146,7 +146,7 @@ namespace SP.Client.Linq.Infrastructure
             return result.GetEnumerator();
         }
 
-        public TEntity Add([NotNull] TEntity entity)
+        public virtual TEntity Add([NotNull] TEntity entity)
         {
             if (entity != null)
             {
@@ -162,7 +162,7 @@ namespace SP.Client.Linq.Infrastructure
             return null;
         }
 
-        public int Delete([NotNull] params int[] itemIds)
+        public virtual int Delete([NotNull] params int[] itemIds)
         {
             if (itemIds != null)
             {
@@ -175,17 +175,17 @@ namespace SP.Client.Linq.Infrastructure
             return 0;
         }
 
-        public TEntity Find(int itemId)
+        public virtual TEntity Find(int itemId)
         {
             return this.FirstOrDefault(i => i.Id == itemId);
         }
 
-        public IQueryable<TEntity> FindAll([NotNull] params int[] itemIds)
+        public virtual IQueryable<TEntity> FindAll([NotNull] params int[] itemIds)
         {
             return this.Where(i => i.Includes(x => x.Id, itemIds));
         }
 
-        public IEnumerable<TEntity> AddRange(IEnumerable<TEntity> entities)
+        public virtual IEnumerable<TEntity> AddRange(IEnumerable<TEntity> entities)
         {
             if (entities != null)
             {
@@ -198,7 +198,7 @@ namespace SP.Client.Linq.Infrastructure
             return null;
         }
 
-        public bool Remove(TEntity entity)
+        public virtual bool Remove(TEntity entity)
         {
             if (entity != null && entity.Id > 0)
             {
@@ -207,7 +207,7 @@ namespace SP.Client.Linq.Infrastructure
             return false;
         }
 
-        public int RemoveRange(IEnumerable<TEntity> entities)
+        public virtual int RemoveRange(IEnumerable<TEntity> entities)
         {
             return Delete(entities.Where(entity => entity != null && entity.Id > 0).Select(entity => entity.Id).ToArray());
         }        

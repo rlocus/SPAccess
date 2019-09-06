@@ -1,6 +1,9 @@
-﻿using SP.Client.Linq.Infrastructure;
+﻿using JetBrains.Annotations;
+using SP.Client.Linq.Infrastructure;
 using SP.Client.Linq.Query;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SP.Client.Linq
 {
@@ -43,6 +46,63 @@ namespace SP.Client.Linq
              : base(args)
         {
             SpQueryArgs = args;
+        }
+
+        public override TEntity Add([NotNull] TEntity entity)
+        {
+            if (entity.Id > 0)
+            {
+                return base.Add(entity);
+            }
+            var entry = Entry(entity, false);
+            if (entry != null)
+            {
+                entry.Update();
+                return entry.Entity;
+            }
+            return entity;
+        }
+
+        public TEntity Add([NotNull] TEntity entity, Action<SpEntityEntry<TEntity, ISpEntryDataContext>> action)
+        {
+            if (action == null)
+            {
+                return base.Add(entity);
+            }
+            var entry = Entry(entity, false);
+            if (entry != null)
+            {
+                action(entry);
+                entry.Update();
+                return entry.Entity;
+            }
+            return entity;
+        }
+
+        public IEnumerable<TEntity> AddRange([NotNull] IEnumerable<TEntity> entities, Action<SpEntityEntry<TEntity, ISpEntryDataContext>> action)
+        {
+            if (action == null)
+            {
+                return base.AddRange(entities);
+            }
+            return entities.Select(entity => Add(entity, action));
+        }
+
+        public override bool Remove(TEntity entity)
+        {
+            //return base.Remove(entity);
+            var entry = Entry(entity, false);
+            if (entry != null)
+            {
+                entry.Delete();
+                return entry.Entity != null;
+            }
+            return false;
+        }
+
+        public override int RemoveRange(IEnumerable<TEntity> entities)
+        {
+            return entities.Select(entity => Remove(entity)).Count(removed => removed == true);
         }
     }
 }

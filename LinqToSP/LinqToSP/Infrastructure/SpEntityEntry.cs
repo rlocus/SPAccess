@@ -62,7 +62,11 @@ namespace SP.Client.Linq.Infrastructure
                     {
                         Version = (int)value.Value;
                     }
-                    if (!Equals(default, value.Value))
+                    if (value.Value is ISpEntityLookup)
+                    {
+                        OriginalValues[value.Key] = (value.Value as ISpEntityLookup).EntityId;
+                    }
+                    else if (!Equals(default, value.Value))
                     {
                         OriginalValues[value.Key] = value.Value;
                     }
@@ -115,12 +119,18 @@ namespace SP.Client.Linq.Infrastructure
             CurrentValues = new Dictionary<string, object>();
             foreach (var value in GetValues())
             {
-                if (!OriginalValues.ContainsKey(value.Key)) continue;
                 if (Entity.Id <= 0)
                 {
                     CurrentValues[value.Key] = value.Value;
                 }
-                else if (!Equals(OriginalValues[value.Key], value.Value))
+                else if (value.Value is ISpEntityLookup)
+                {
+                    if (!OriginalValues.ContainsKey(value.Key) || !Equals(OriginalValues[value.Key], (value.Value as ISpEntityLookup).EntityId))
+                    {
+                        CurrentValues[value.Key] = (value.Value as ISpEntityLookup).EntityId;
+                    }
+                }
+                else if (!OriginalValues.ContainsKey(value.Key) || !Equals(OriginalValues[value.Key], value.Value))
                 {
                     CurrentValues[value.Key] = value.Value;
                 }

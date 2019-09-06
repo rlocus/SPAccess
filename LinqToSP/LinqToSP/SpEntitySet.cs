@@ -52,7 +52,8 @@ namespace SP.Client.Linq
         {
             if (entity.Id > 0)
             {
-                return base.Add(entity);
+                //return base.Add(entity);
+                return entity;
             }
             var entry = Entry(entity, false);
             if (entry != null)

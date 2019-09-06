@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 
 namespace SP.Client.Linq.Query.ExpressionVisitors
 {
-    public abstract class ExpressionVisitorBase : /*RelinqExpressionVisitor*/ ThrowingExpressionVisitor
+    internal abstract class ExpressionVisitorBase : /*RelinqExpressionVisitor*/ ThrowingExpressionVisitor
     {
         /// <summary>
         ///     Visits the children of the extension expression.

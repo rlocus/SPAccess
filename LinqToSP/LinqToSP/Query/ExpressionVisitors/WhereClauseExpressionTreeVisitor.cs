@@ -1,6 +1,6 @@
 ﻿namespace SP.Client.Linq.Query.ExpressionVisitors
 {
-  public class WhereClauseExpressionTreeVisitor<TContext> : SpExpressionVisitor<TContext>
+    internal class WhereClauseExpressionTreeVisitor<TContext> : SpExpressionVisitor<TContext>
         where TContext : ISpDataContext
     {
     private readonly Caml.Query _query = new Caml.Query();

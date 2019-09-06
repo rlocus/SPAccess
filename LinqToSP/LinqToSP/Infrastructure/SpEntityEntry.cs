@@ -16,13 +16,14 @@ namespace SP.Client.Linq.Infrastructure
         public SpEntityEntry([NotNull] TEntity entity, [NotNull] SpQueryArgs<TContext> args)
         {
             Entity = entity;
-            Context = args.Context;
             SpQueryArgs = args;
             _manager = new SpQueryManager<TEntity, TContext>(args);
             Context.OnSaveChanges += Context_OnSaveChanges;
 
             Init();
         }
+
+        public bool HasChanges => State == EntityState.Added || State == EntityState.Modified || State == EntityState.Deleted;
 
         private void Init()
         {
@@ -50,15 +51,27 @@ namespace SP.Client.Linq.Infrastructure
 
         private void Context_OnSaveChanges(SpSaveArgs args)
         {
-            if (HasChanges())
+            if (HasChanges)
             {
                 var item = Save();
                 if (item != null)
                 {
                     args.Items.Add(item);
-                    State = EntityState.Detached;
+
+                    CurrentValues = new Dictionary<string, object>();
+                    switch (State)
+                    {
+                        case EntityState.Modified:
+                            State = EntityState.Unchanged;
+                            break;
+                        case EntityState.Added:
+                        case EntityState.Deleted:
+                            State = EntityState.Detached;
+                            break;
+                    }
+
+                    args.HasChanges = true;
                 }
-                args.HasChanges = item != null;
             }
         }
 
@@ -75,7 +88,7 @@ namespace SP.Client.Linq.Infrastructure
             return null;
         }
 
-        public TContext Context { get; }
+        public TContext Context { get { return SpQueryArgs.Context; } }
         public SpQueryArgs<TContext> SpQueryArgs { get; }
         public TEntity Entity { get; private set; }
 
@@ -122,11 +135,14 @@ namespace SP.Client.Linq.Infrastructure
 
         public bool DetectChanges()
         {
+            if (State == EntityState.Deleted) return false;
+            if (State == EntityState.Added) return true;
+
             CurrentValues = new Dictionary<string, object>();
             foreach (var value in GetValues())
             {
                 if (!OriginalValues.ContainsKey(value.Key)) continue;
-                if (Entity.Id <= 0)
+                if (State == EntityState.Detached || Entity.Id <= 0)
                 {
                     CurrentValues[value.Key] = value.Value;
                 }
@@ -136,11 +152,6 @@ namespace SP.Client.Linq.Infrastructure
                 }
             }
             return CurrentValues.Count > 0;
-        }
-
-        public bool HasChanges()
-        {
-            return this.State == EntityState.Added || this.State == EntityState.Modified || this.State == EntityState.Deleted;
         }
 
         private IEnumerable<KeyValuePair<string, object>> GetValues()

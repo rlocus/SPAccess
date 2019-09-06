@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 
 namespace SP.Client.Linq.Query.ExpressionVisitors
 {
-    public abstract class SpExpressionVisitor<TContext> : ExpressionVisitorBase /*ThrowingExpressionVisitor*/
+    internal abstract class SpExpressionVisitor<TContext> : ExpressionVisitorBase /*ThrowingExpressionVisitor*/
           where TContext : ISpDataContext
     {
         protected SpQueryArgs<TContext> SpQueryArgs { get; }

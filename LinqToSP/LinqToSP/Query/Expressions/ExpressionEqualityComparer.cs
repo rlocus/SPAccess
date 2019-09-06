@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace SP.Client.Linq.Query.Expressions
 {
-    public class ExpressionEqualityComparer : IEqualityComparer<Expression>
+    internal class ExpressionEqualityComparer : IEqualityComparer<Expression>
     {
         /// <summary>
         ///     Creates a new <see cref="ExpressionEqualityComparer" />.

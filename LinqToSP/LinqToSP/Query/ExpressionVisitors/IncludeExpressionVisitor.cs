@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 
 namespace SP.Client.Linq.Query.ExpressionVisitors
 {
-    public class IncludeExpressionVisitor<TContext> : SpExpressionVisitor<TContext>
+    internal class IncludeExpressionVisitor<TContext> : SpExpressionVisitor<TContext>
         where TContext : ISpDataContext
     {
         public IncludeExpressionVisitor(SpQueryArgs<TContext> args) : base(args)

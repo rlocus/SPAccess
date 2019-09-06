@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 
 namespace SP.Client.Linq.Query.ExpressionVisitors
 {
-    public class SpStartsWithExpressionVisitor<TContext> : SpComparisonExpressionVisitor<TContext>
+    internal class SpStartsWithExpressionVisitor<TContext> : SpComparisonExpressionVisitor<TContext>
         where TContext : ISpDataContext
     {
         public SpStartsWithExpressionVisitor(SpQueryArgs<TContext> args) : base(args)

@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 
 namespace SP.Client.Linq.Query.ExpressionVisitors
 {
-    public class SpConditionalExpressionVisitor<TContext> : SpExpressionVisitor<TContext>
+    internal class SpConditionalExpressionVisitor<TContext> : SpExpressionVisitor<TContext>
         where TContext : ISpDataContext
     {
         public SpConditionalExpressionVisitor(SpQueryArgs<TContext> args) : base(args)

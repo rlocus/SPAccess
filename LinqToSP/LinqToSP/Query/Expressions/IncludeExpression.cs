@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace SP.Client.Linq.Query.Expressions
 {
-  public class IncludeExpression<TContext> : Expression
+  internal class IncludeExpression<TContext> : Expression
        where TContext: ISpDataContext
   {
     public IncludeExpression(Expression entityExpression, IEnumerable<Expression> predicates)

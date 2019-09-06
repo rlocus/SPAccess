@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 
 namespace SP.Client.Linq.Query.ExpressionVisitors
 {
-    public class SpLookupNotIncludesExpressionVisitor<TContext> : SpComparisonExpressionVisitor<TContext>
+    internal class SpLookupNotIncludesExpressionVisitor<TContext> : SpComparisonExpressionVisitor<TContext>
         where TContext : ISpDataContext
     {
         public SpLookupNotIncludesExpressionVisitor(SpQueryArgs<TContext> args) : base(args)

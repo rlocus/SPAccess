@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 
 namespace SP.Client.Linq.Query.ExpressionVisitors
 {
-    public class SpDateRangesOverlapExpressionVisitor<TContext> : SpComparisonExpressionVisitor<TContext>
+    internal class SpDateRangesOverlapExpressionVisitor<TContext> : SpComparisonExpressionVisitor<TContext>
         where TContext : ISpDataContext
     {
         protected string StartTimeFieldName { get; private set; }

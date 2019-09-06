@@ -8,7 +8,7 @@ using System.Linq.Expressions;
 
 namespace SP.Client.Linq.Query.ExpressionVisitors
 {
-    public class SpIncludesExpressionVisitor<TContext> : SpComparisonExpressionVisitor<TContext>
+    internal class SpIncludesExpressionVisitor<TContext> : SpComparisonExpressionVisitor<TContext>
         where TContext : ISpDataContext
     {
         protected IEnumerable<object> FieldValues { get; private set; }

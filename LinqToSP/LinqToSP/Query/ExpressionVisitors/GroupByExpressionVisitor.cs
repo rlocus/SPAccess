@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 
 namespace SP.Client.Linq.Query.ExpressionVisitors
 {
-    public class GroupByExpressionVisitor<TContext> : SpExpressionVisitor<TContext>
+    internal class GroupByExpressionVisitor<TContext> : SpExpressionVisitor<TContext>
         where TContext : ISpDataContext
     {
         public GroupByExpressionVisitor(SpQueryArgs<TContext> args) : base(args)

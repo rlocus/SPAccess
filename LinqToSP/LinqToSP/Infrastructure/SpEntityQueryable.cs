@@ -210,17 +210,7 @@ namespace SP.Client.Linq.Infrastructure
         public int RemoveRange(IEnumerable<TEntity> entities)
         {
             return Delete(entities.Where(entity => entity != null && entity.Id > 0).Select(entity => entity.Id).ToArray());
-        }
-
-        public void DetectChanges()
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool HasChanges()
-        {
-            throw new NotImplementedException();
-        }
+        }        
 
         public IEnumerable<SpEntityEntry<TEntity, TContext>> Entries()
         {
@@ -232,13 +222,13 @@ namespace SP.Client.Linq.Infrastructure
             return Enumerable.Empty<SpEntityEntry<TEntity, TContext>>();
         }
 
-        public SpEntityEntry<TEntity, TContext> Entry(TEntity entity)
+        public SpEntityEntry<TEntity, TContext> Entry(TEntity entity, bool reload)
         {
             var executor = GetExecutor();
             if (executor != null && executor.SpQueryArgs != null)
             {
                 var entry = new SpEntityEntry<TEntity, TContext>(entity, executor.SpQueryArgs);
-                entry.Reload();
+                if (reload) entry.Reload();
                 return entry;
             }
             return null;

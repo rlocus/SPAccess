@@ -56,13 +56,13 @@ namespace SP.Client.Linq
             return Enumerable.Empty<SpEntityEntry<TEntity, ISpEntryDataContext>>();
         }
 
-        public static SpEntityEntry<TEntity, ISpEntryDataContext> GetEntry<TEntity>(this IQueryable<TEntity> source, TEntity entity)
+        public static SpEntityEntry<TEntity, ISpEntryDataContext> GetEntry<TEntity>(this IQueryable<TEntity> source, TEntity entity, bool reload = false)
          where TEntity : class, IListItemEntity
         {
             Check.NotNull(source, nameof(source));
             if (source is SpEntityQueryable<TEntity, ISpEntryDataContext>)
             {
-                return (source as SpEntityQueryable<TEntity, ISpEntryDataContext>).Entry(entity);
+                return (source as SpEntityQueryable<TEntity, ISpEntryDataContext>).Entry(entity, reload);
             }
             return null;
         }

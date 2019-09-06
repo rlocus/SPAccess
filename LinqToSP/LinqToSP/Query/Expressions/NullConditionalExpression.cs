@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 
 namespace SP.Client.Linq.Query.Expressions
 {
-    public class NullConditionalExpression : Expression
+    internal class NullConditionalExpression : Expression
     {
         private readonly Type _type;
 

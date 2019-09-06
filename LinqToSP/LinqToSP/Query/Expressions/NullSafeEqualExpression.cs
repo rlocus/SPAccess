@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 
 namespace SP.Client.Linq.Query.Expressions
 {
-    public class NullSafeEqualExpression : Expression
+    internal class NullSafeEqualExpression : Expression
     {
         /// <summary>
         ///     This API supports the Entity Framework Core infrastructure and is not intended to be used

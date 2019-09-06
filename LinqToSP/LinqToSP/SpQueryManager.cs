@@ -15,40 +15,19 @@ namespace SP.Client.Linq
         where TEntity : class, IListItemEntity
         where TContext : class, ISpEntryDataContext
     {
+        #region Fields
         private readonly SpQueryArgs<TContext> _args;
+        #endregion
 
+        #region Constructors
         public SpQueryManager(SpQueryArgs<TContext> args)
         {
             _args = args;
         }
 
-        public List GetList()
-        {
-            if (_args != null && _args.Context != null)
-            {
-                var clientContext = _args.Context.Context;
-                if (clientContext != null)
-                {
-                    return _args.ListTitle != null ? clientContext.Web.Lists.GetByTitle(_args.ListTitle) :
-                        (_args.ListUrl != null ? clientContext.Web.GetList(_args.ListUrl)
-                        : clientContext.Web.Lists.GetById(_args.ListId));
-                }
-            }
-            return null;
-        }
+        #endregion
 
-        public ListItemCollection GetItems(Caml.View spView, ListItemCollectionPosition position)
-        {
-            var list = GetList();
-            if (list != null)
-            {
-                var items = list.GetItems(new CamlQuery() { ViewXml = spView.ToString(true), ListItemCollectionPosition = position });
-                items.Context.Load(items, item => item.Include(i => i.EffectiveBasePermissions));
-                items.Context.Load(items, item => item.ListItemCollectionPosition);
-                return items;
-            }
-            return null;
-        }
+        #region Methods
 
         private static void CheckEntityType(Type type)
         {
@@ -130,6 +109,72 @@ namespace SP.Client.Linq
                 }
             }
             return value;
+        }
+
+        private bool SetEntityLookup(Type type, object value, object itemValue)
+        {
+            if (itemValue != null && itemValue is FieldLookupValue)
+            {
+                if ((value is ISpEntityLookup && typeof(ISpEntityLookup).IsAssignableFrom(type)) && itemValue != null)
+                {
+                    var entitySet = (ISpEntityLookup)value;
+                    if (entitySet != null)
+                    {
+                        int entityId = ((FieldLookupValue)itemValue).LookupId;
+                        entitySet.EntityId = entityId;
+                        if (entitySet.SpQueryArgs != null)
+                        {
+                            entitySet.SpQueryArgs.Context = _args.Context;
+                        }
+                        return true;
+                    }
+                }
+            }
+            else if (itemValue != null && itemValue is FieldLookupValue[])
+            {
+                if ((value is ISpEntityLookupCollection && typeof(ISpEntityLookupCollection).IsAssignableFrom(type)) && itemValue != null)
+                {
+                    var entitySets = (ISpEntityLookupCollection)value;
+                    if (entitySets != null)
+                    {
+                        entitySets.EntityIds = ((FieldLookupValue[])itemValue).Select(lv => lv.LookupId).ToArray();
+                        if (entitySets.SpQueryArgs != null)
+                        {
+                            entitySets.SpQueryArgs.Context = _args.Context;
+                        }
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        public List GetList()
+        {
+            if (_args != null && _args.Context != null)
+            {
+                var clientContext = _args.Context.Context;
+                if (clientContext != null)
+                {
+                    return _args.ListTitle != null ? clientContext.Web.Lists.GetByTitle(_args.ListTitle) :
+                        (_args.ListUrl != null ? clientContext.Web.GetList(_args.ListUrl)
+                        : clientContext.Web.Lists.GetById(_args.ListId));
+                }
+            }
+            return null;
+        }
+
+        public ListItemCollection GetItems(Caml.View spView, ListItemCollectionPosition position)
+        {
+            var list = GetList();
+            if (list != null)
+            {
+                var items = list.GetItems(new CamlQuery() { ViewXml = spView.ToString(true), ListItemCollectionPosition = position });
+                items.Context.Load(items, item => item.Include(i => i.EffectiveBasePermissions));
+                items.Context.Load(items, item => item.ListItemCollectionPosition);
+                return items;
+            }
+            return null;
         }
 
         public IEnumerable<TEntity> GetEntities(Type type, Caml.View spView)
@@ -219,44 +264,6 @@ namespace SP.Client.Linq
 
             spView.Limit = rowLimit;
             return entities;
-        }
-
-        private bool SetEntityLookup(Type type, object value, object itemValue)
-        {
-            if (itemValue != null && itemValue is FieldLookupValue)
-            {
-                if ((value is ISpEntityLookup && typeof(ISpEntityLookup).IsAssignableFrom(type)) && itemValue != null)
-                {
-                    var entitySet = (ISpEntityLookup)value;
-                    if (entitySet != null)
-                    {
-                        int entityId = ((FieldLookupValue)itemValue).LookupId;
-                        entitySet.EntityId = entityId;
-                        if (entitySet.SpQueryArgs != null)
-                        {
-                            entitySet.SpQueryArgs.Context = _args.Context;
-                        }
-                        return true;
-                    }
-                }
-            }
-            else if (itemValue != null && itemValue is FieldLookupValue[])
-            {
-                if ((value is ISpEntityLookupCollection && typeof(ISpEntityLookupCollection).IsAssignableFrom(type)) && itemValue != null)
-                {
-                    var entitySets = (ISpEntityLookupCollection)value;
-                    if (entitySets != null)
-                    {
-                        entitySets.EntityIds = ((FieldLookupValue[])itemValue).Select(lv => lv.LookupId).ToArray();
-                        if (entitySets.SpQueryArgs != null)
-                        {
-                            entitySets.SpQueryArgs.Context = _args.Context;
-                        }
-                        return true;
-                    }
-                }
-            }
-            return false;
         }
 
         public TEntity MapEntity(TEntity entity, ListItem item)
@@ -403,5 +410,7 @@ namespace SP.Client.Linq
                 }
             }
         }
+
+        #endregion
     }
 }

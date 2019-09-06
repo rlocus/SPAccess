@@ -21,13 +21,15 @@ namespace SP.Client.Linq.Query
     /// </summary>
     internal class SpQueryExecutor<TEntity, TContext> : IQueryExecutor
       where TEntity : class, IListItemEntity
-        where TContext : class, ISpEntryDataContext
+      where TContext : class, ISpEntryDataContext
 
     {
+        #region Fields
         private readonly object _lock = new object();
-
         protected readonly SpQueryManager<TEntity, TContext> _manager;
+        #endregion
 
+        #region Properties
         public SpView SpView
         {
             get; protected set;
@@ -35,6 +37,9 @@ namespace SP.Client.Linq.Query
 
         internal SpQueryArgs<TContext> SpQueryArgs { get; }
 
+        #endregion
+
+        #region Constructors
 
         internal SpQueryExecutor(SpQueryArgs<TContext> args)
         {
@@ -43,6 +48,9 @@ namespace SP.Client.Linq.Query
             _manager = new SpQueryManager<TEntity, TContext>(args);
         }
 
+        #endregion
+
+        #region Methods
         private void ValidateArgs(SpQueryArgs<TContext> args)
         {
 
@@ -230,6 +238,8 @@ namespace SP.Client.Linq.Query
                 }
             }
         }
+
+        #endregion
     }
 
     internal class SpAsyncQueryExecutor<TEntity, TContext> : SpQueryExecutor<TEntity, TContext>, IAsyncQueryExecutor

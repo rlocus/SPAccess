@@ -27,7 +27,7 @@ namespace SP.Client.Linq
 
         public int[] EntityIds { get; set; }
 
-        public SpEntityLookupCollection(SpQueryArgs<ISpEntryDataContext> args)
+        internal SpEntityLookupCollection(SpQueryArgs<ISpEntryDataContext> args)
         {
             SpQueryArgs = args;
         }

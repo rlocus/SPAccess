@@ -26,6 +26,7 @@ namespace SP.Client.Linq
             //fake method.
             return false;
         }
+
         public static bool Includes<TEntity>(this TEntity entity, Func<TEntity, object> prop, params int[] fieldIds)
         where TEntity : IListItemEntity
         {
@@ -40,6 +41,7 @@ namespace SP.Client.Linq
             //fake method.
             return false;
         }
+
         public static bool LookupIdIncludes<TEntity, TCollection>(this TEntity entity, Func<TEntity, TCollection> prop, int lookupFieldId)
         where TEntity : IListItemEntity
         where TCollection : ICollection
@@ -55,6 +57,7 @@ namespace SP.Client.Linq
             //fake method.
             return false;
         }
+
         public static bool LookupIdNotIncludes<TEntity, TCollection>(this TEntity entity, Func<TEntity, TCollection> prop, int lookupFieldId)
         where TEntity : IListItemEntity
         where TCollection : ICollection

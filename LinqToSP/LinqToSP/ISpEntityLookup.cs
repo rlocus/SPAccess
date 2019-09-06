@@ -6,7 +6,6 @@ namespace SP.Client.Linq
     public interface ISpEntityLookup
     {
         SpQueryArgs<ISpEntryDataContext> SpQueryArgs { get; }
-
         int EntityId { get; set; }
     }
 
@@ -14,7 +13,6 @@ namespace SP.Client.Linq
      where TEntity : class, IListItemEntity
     {
         TEntity GetEntity();
-
         SpEntityEntry<TEntity, ISpEntryDataContext> GetEntry();
     }
 }

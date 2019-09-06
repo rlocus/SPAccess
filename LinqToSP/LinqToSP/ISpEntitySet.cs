@@ -12,14 +12,11 @@ namespace SP.Client.Linq
     public interface ISpEntitySet<TEntity> : ISpEntitySet<TEntity, ISpEntryDataContext>
          where TEntity : class, IListItemEntity
     {
-
     }
 
     public interface ISpEntitySet<TEntity, TContext> : IQueryable<TEntity>, ISpRepository<TEntity>, ISpEntitySet
          where TEntity : class, IListItemEntity
          where TContext : class, ISpEntryDataContext
-
     {
-
     }
 }

@@ -27,7 +27,7 @@ namespace SP.Client.Linq.Infrastructure
 
         }
 
-        public SpEntityQueryable(IQueryProvider provider, Expression expression)
+        internal SpEntityQueryable(IQueryProvider provider, Expression expression)
             : base(provider, expression)
         {
 
@@ -224,12 +224,15 @@ namespace SP.Client.Linq.Infrastructure
 
         public SpEntityEntry<TEntity, TContext> Entry(TEntity entity, bool reload)
         {
-            var executor = GetExecutor();
-            if (executor != null && executor.SpQueryArgs != null)
+            if (entity != null)
             {
-                var entry = new SpEntityEntry<TEntity, TContext>(entity, executor.SpQueryArgs);
-                if (reload) entry.Reload();
-                return entry;
+                var executor = GetExecutor();
+                if (executor != null && executor.SpQueryArgs != null)
+                {
+                    var entry = new SpEntityEntry<TEntity, TContext>(entity, executor.SpQueryArgs);
+                    if (reload) entry.Reload();
+                    return entry;
+                }
             }
             return null;
         }

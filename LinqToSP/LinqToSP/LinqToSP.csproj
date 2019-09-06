@@ -96,8 +96,11 @@
     <Compile Include="EventItemEntity.cs" />
     <Compile Include="IEventItemEntity.cs" />
     <Compile Include="Infrastructure\ISpChangeTrackable.cs" />
+    <Compile Include="SpEntityLookup.cs" />
+    <Compile Include="ISpEntityLookup.cs" />
+    <Compile Include="SpEntitySet.cs" />
     <Compile Include="Infrastructure\SpEntityEntry.cs" />
-    <Compile Include="Infrastructure\ISpSet.cs" />
+    <Compile Include="ISpEntitySet.cs" />
     <Compile Include="Infrastructure\SpSaveArgs.cs" />
     <Compile Include="ISpEntryDataContext.cs" />
     <Compile Include="Infrastructure\ISpRepository.cs" />

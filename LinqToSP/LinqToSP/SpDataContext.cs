@@ -82,7 +82,7 @@ namespace SP.Client.Linq
         public SpEntityQueryable<TListItem> List<TListItem>(Uri listUrl, string query = null)
            where TListItem : class, IListItemEntity
         {
-            return List<TListItem>(new SpQueryArgs<ISpEntryDataContext>(this, null, listUrl.ToString(), default, query));
+            return List<TListItem>(new SpQueryArgs<ISpEntryDataContext>(this, null, Convert.ToString(listUrl), default, query));
         }
 
         /// <summary>

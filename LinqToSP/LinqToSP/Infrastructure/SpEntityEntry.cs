@@ -59,16 +59,17 @@ namespace SP.Client.Linq.Infrastructure
                     args.Items.Add(item);
 
                     CurrentValues = new Dictionary<string, object>();
-                    switch (State)
-                    {
-                        case EntityState.Modified:
-                            State = EntityState.Unchanged;
-                            break;
-                        case EntityState.Added:
-                        case EntityState.Deleted:
-                            State = EntityState.Detached;
-                            break;
-                    }
+                    State = EntityState.Detached;
+                    //switch (State)
+                    //{
+                    //    case EntityState.Modified:
+                    //        State = EntityState.Unchanged;
+                    //        break;
+                    //    case EntityState.Added:
+                    //    case EntityState.Deleted:
+                    //        State = EntityState.Detached;
+                    //        break;
+                    //}
 
                     args.HasChanges = true;
                 }
@@ -124,7 +125,7 @@ namespace SP.Client.Linq.Infrastructure
         {
             if (DetectChanges())
             {
-                State = Entity.Id > 0 ? EntityState.Added : EntityState.Modified;
+                State = Entity.Id > 0 ? EntityState.Modified : EntityState.Added;
             }
         }
 
@@ -137,12 +138,13 @@ namespace SP.Client.Linq.Infrastructure
         {
             if (State == EntityState.Deleted) return false;
             if (State == EntityState.Added) return true;
+            if (State == EntityState.Detached && Entity.Id > 0) return false;
 
             CurrentValues = new Dictionary<string, object>();
             foreach (var value in GetValues())
             {
                 if (!OriginalValues.ContainsKey(value.Key)) continue;
-                if (State == EntityState.Detached || Entity.Id <= 0)
+                if (Entity.Id <= 0)
                 {
                     CurrentValues[value.Key] = value.Value;
                 }

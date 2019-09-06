@@ -1,5 +1,4 @@
 ﻿using Microsoft.SharePoint.Client;
-using SP.Client.Caml;
 using SP.Client.Extensions;
 using SP.Client.Helpers;
 using SP.Client.Linq.Attributes;
@@ -13,8 +12,8 @@ using System.Threading.Tasks;
 namespace SP.Client.Linq
 {
     internal sealed class SpQueryManager<TEntity, TContext>
-        where TEntity : IListItemEntity
-        where TContext : class, ISpDataContext
+        where TEntity : class, IListItemEntity
+        where TContext : class, ISpEntryDataContext
     {
         private readonly SpQueryArgs<TContext> _args;
 
@@ -25,7 +24,7 @@ namespace SP.Client.Linq
 
         public List GetList()
         {
-            if (_args != null)
+            if (_args != null && _args.Context != null)
             {
                 var clientContext = _args.Context.Context;
                 if (clientContext != null)
@@ -222,6 +221,28 @@ namespace SP.Client.Linq
             return entities;
         }
 
+        private bool SetEntityLookup(Type type, object value, object itemValue)
+        {
+            if (itemValue != null && itemValue is FieldLookupValue)
+            {
+                if ((value is ISpEntityLookup && typeof(ISpEntityLookup).IsAssignableFrom(type)) && itemValue != null)
+                {
+                    var entitySet = (ISpEntityLookup)value;
+                    if (entitySet != null)
+                    {
+                        int entityId = ((FieldLookupValue)itemValue).LookupId;
+                        entitySet.EntityId = entityId;
+                        if (entitySet.SpQueryArgs != null)
+                        {
+                            entitySet.SpQueryArgs.Context = _args.Context;
+                        }
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
         public TEntity MapEntity(TEntity entity, ListItem item)
         {
             if (_args == null || entity == null || item == null) return entity;
@@ -234,10 +255,23 @@ namespace SP.Client.Linq
                     if (item.FieldValues.ContainsKey(fieldMap.Value.Name))
                     {
                         object value = item[fieldMap.Value.Name];
-                        value = GetFieldValue(fieldMap.Value, prop.PropertyType, value);
+                        if (!SetEntityLookup(prop.PropertyType, prop.GetValue(entity), value))
+                        {
+                            value = GetFieldValue(fieldMap.Value, prop.PropertyType, value);
 
-                        value = SpConverter.ConvertValue(value, prop.PropertyType);
-                        prop.SetValue(entity, value);
+                            //if (typeof(ISpEntityLookup).IsAssignableFrom(prop.PropertyType) && value != null)
+                            //{
+                            //    var entitySet = (ISpEntityLookup)prop.GetValue(entity);
+                            //    if (entitySet != null)
+                            //    {
+                            //        int entityId = ((FieldLookupValue)GetFieldValue(fieldMap.Value, typeof(FieldLookupValue), value)).LookupId;
+                            //        entitySet.EntityId = entityId;
+                            //    }
+                            //}
+
+                            value = SpConverter.ConvertValue(value, prop.PropertyType);
+                            prop.SetValue(entity, value);
+                        }
                     }
                 }
                 FieldInfo field = entity.GetType().GetField(fieldMap.Key, BindingFlags.Public | BindingFlags.Instance);
@@ -265,6 +299,13 @@ namespace SP.Client.Linq
             return entity;
         }
 
+        public IEnumerable<ISpEntitySet> GetEntitySets(TEntity entity)
+        {
+            return AttributeHelper.GetFieldValuesOfType<TEntity, ISpEntitySet>(entity)
+                .Concat(AttributeHelper.GetPropertyValuesOfType<TEntity, ISpEntitySet>(entity))
+                .Distinct().Select(val => val.Value).Cast<ISpEntitySet>();
+        }
+
         public IEnumerable<TEntity> MapEntities(ListItemCollection items, Type type)
         {
             return MapEntities(items.Cast<ListItem>(), type);
@@ -277,7 +318,18 @@ namespace SP.Client.Linq
 
         public TEntity MapEntity(ListItem item, Type type)
         {
-            return MapEntity((TEntity)Activator.CreateInstance(type, new object[] { }), item);
+            var entity = MapEntity((TEntity)Activator.CreateInstance(type, new object[] { }), item);
+            if (_args != null)
+            {
+                foreach (var entitySet in GetEntitySets(entity))
+                {
+                    if (entitySet != null && entitySet.SpQueryArgs != null)
+                    {
+                        entitySet.SpQueryArgs.Context = _args.Context;
+                    }
+                }
+            }
+            return entity;
         }
 
         public ListItem Update(int itemId, Dictionary<string, object> properties, int version)

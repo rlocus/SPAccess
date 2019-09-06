@@ -21,7 +21,7 @@ namespace SP.Client.Linq.Query
     /// </summary>
     internal class SpQueryExecutor<TEntity, TContext> : IQueryExecutor
       where TEntity : class, IListItemEntity
-        where TContext : class, ISpDataContext
+        where TContext : class, ISpEntryDataContext
 
     {
         private readonly object _lock = new object();
@@ -111,7 +111,8 @@ namespace SP.Client.Linq.Query
                 {
                     return Enumerable.Empty<TResult>();
                 }
-
+                Debug.WriteLine($"# Entity: {typeof(TEntity)}");
+                Debug.WriteLine($"# List: {this.SpQueryArgs}");
                 Debug.WriteLine("# SP Query:");
                 Debug.Write(spView);
                 Debug.WriteLine("");
@@ -233,7 +234,7 @@ namespace SP.Client.Linq.Query
 
     internal class SpAsyncQueryExecutor<TEntity, TContext> : SpQueryExecutor<TEntity, TContext>, IAsyncQueryExecutor
         where TEntity : class, IListItemEntity
-        where TContext : class, ISpDataContext
+        where TContext : class, ISpEntryDataContext
     {
         private readonly SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1, 1);
 

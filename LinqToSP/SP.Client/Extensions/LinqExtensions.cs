@@ -86,7 +86,9 @@ namespace SP.Client.Extensions
 
         public static IEnumerable Cast(this IEnumerable source, Type elementType)
         {
-            MethodInfo castMethod = typeof(Enumerable).GetMethod("Cast").MakeGenericMethod(new Type[] { elementType });
+            MethodInfo castMethod = elementType.IsGenericType
+                ? typeof(Enumerable).GetMethod("Cast").MakeGenericMethod(elementType.GenericTypeArguments)
+                : typeof(Enumerable).GetMethod("Cast").MakeGenericMethod(new Type[] { elementType });
             var result = castMethod.Invoke(null, new object[] { source });
             return (IEnumerable)result;
         }

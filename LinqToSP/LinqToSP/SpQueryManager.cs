@@ -113,39 +113,34 @@ namespace SP.Client.Linq
 
         private bool SetEntityLookup(Type type, object value, object itemValue)
         {
-            if (itemValue != null && itemValue is FieldLookupValue)
+            if (value is ISpEntityLookup || typeof(ISpEntityLookup).IsAssignableFrom(type))
             {
-                if ((value is ISpEntityLookup && typeof(ISpEntityLookup).IsAssignableFrom(type)) && itemValue != null)
+                var entitySet = (ISpEntityLookup)value;
+                if (entitySet != null && itemValue != null && itemValue is FieldLookupValue)
                 {
-                    var entitySet = (ISpEntityLookup)value;
-                    if (entitySet != null)
+                    int entityId = ((FieldLookupValue)itemValue).LookupId;
+                    entitySet.EntityId = entityId;
+                    if (entitySet.SpQueryArgs != null)
                     {
-                        int entityId = ((FieldLookupValue)itemValue).LookupId;
-                        entitySet.EntityId = entityId;
-                        if (entitySet.SpQueryArgs != null)
-                        {
-                            entitySet.SpQueryArgs.Context = _args.Context;
-                        }
-                        return true;
+                        entitySet.SpQueryArgs.Context = _args.Context;
                     }
                 }
+                return true;
             }
-            else if (itemValue != null && itemValue is FieldLookupValue[])
+            else if (value is ISpEntityLookupCollection || typeof(ISpEntityLookupCollection).IsAssignableFrom(type))
             {
-                if ((value is ISpEntityLookupCollection && typeof(ISpEntityLookupCollection).IsAssignableFrom(type)) && itemValue != null)
+                var entitySets = (ISpEntityLookupCollection)value;
+                if (entitySets != null && itemValue != null && itemValue is FieldLookupValue[])
                 {
-                    var entitySets = (ISpEntityLookupCollection)value;
-                    if (entitySets != null)
+                    entitySets.EntityIds = ((FieldLookupValue[])itemValue).Select(lv => lv.LookupId).ToArray();
+                    if (entitySets.SpQueryArgs != null)
                     {
-                        entitySets.EntityIds = ((FieldLookupValue[])itemValue).Select(lv => lv.LookupId).ToArray();
-                        if (entitySets.SpQueryArgs != null)
-                        {
-                            entitySets.SpQueryArgs.Context = _args.Context;
-                        }
-                        return true;
+                        entitySets.SpQueryArgs.Context = _args.Context;
                     }
                 }
+                return true;
             }
+
             return false;
         }
 

@@ -2,7 +2,6 @@
 using Microsoft.SharePoint.Client;
 using SP.Client.Linq.Attributes;
 using SP.Client.Linq.Query;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -14,17 +13,19 @@ namespace SP.Client.Linq.Infrastructure
     {
         #region Fields
         private readonly SpQueryManager<TEntity, TContext> _manager;
+        private ListItem _item;
         #endregion
 
         #region Constructors
         public SpEntityEntry([NotNull] TEntity entity, [NotNull] SpQueryArgs<TContext> args)
         {
+            EntityId = entity != null ? entity.Id : 0;
             Entity = entity;
             SpQueryArgs = args;
             _manager = new SpQueryManager<TEntity, TContext>(args);
-            Context.OnSaveChanges += Context_OnSaveChanges;
-
-            Init();
+            Context.OnBeforeSaveChanges += Context_OnOnBeforeSaveChanges;
+            Context.OnAfterSaveChanges += Context_OnAfterSaveChanges;
+            Attach();
         }
 
         #endregion
@@ -33,6 +34,7 @@ namespace SP.Client.Linq.Infrastructure
         public TContext Context { get { return SpQueryArgs.Context; } }
         public SpQueryArgs<TContext> SpQueryArgs { get; }
         public TEntity Entity { get; private set; }
+        public int EntityId { get; private set; }
 
         private Dictionary<string, object> CurrentValues { get; set; }
 
@@ -47,100 +49,137 @@ namespace SP.Client.Linq.Infrastructure
         #endregion
 
         #region Methods
-        private void Init()
+        public void Attach()
         {
             CurrentValues = new Dictionary<string, object>();
             OriginalValues = new Dictionary<string, object>();
+            State = EntityState.Unchanged;
 
-            if (Entity != null)
+            foreach (var value in GetValues(Entity))
             {
-                State = Entity.Id > 0 ? EntityState.Unchanged : EntityState.Detached;
-                foreach (var value in GetValues())
+                if (!SpQueryArgs.FieldMappings.ContainsKey(value.Key)) continue;
+                var fieldMapping = SpQueryArgs.FieldMappings[value.Key];
+                if (fieldMapping.IsReadOnly) continue;
+
+                if (value.Value != null && fieldMapping.Name.ToLower() == "owshiddenversion")
                 {
-                    if (!SpQueryArgs.FieldMappings.ContainsKey(value.Key)) continue;
-                    var fieldMapping = SpQueryArgs.FieldMappings[value.Key];
-                    if (value.Value != null && fieldMapping.Name.ToLower() == "owshiddenversion")
-                    {
-                        Version = (int)value.Value;
-                    }
-                    if (value.Value is ISpEntityLookup)
-                    {
-                        OriginalValues[value.Key] = (value.Value as ISpEntityLookup).EntityId;
-                    }
-                    else if (!Equals(default, value.Value))
-                    {
-                        OriginalValues[value.Key] = value.Value;
-                    }
+                    Version = (int)value.Value;
+                }
+                if (value.Value is ISpEntityLookup)
+                {
+                    OriginalValues[value.Key] = (value.Value as ISpEntityLookup).EntityId;
+                }
+                if (value.Value is ISpEntityLookupCollection)
+                {
+                    OriginalValues[value.Key] = (value.Value as ISpEntityLookupCollection).EntityIds;
+                }
+                else if (!Equals(default, value.Value))
+                {
+                    OriginalValues[value.Key] = value.Value;
                 }
             }
         }
 
-        private void Context_OnSaveChanges(SpSaveArgs args)
+        public void Detach()
+        {
+            CurrentValues = new Dictionary<string, object>();
+            //requires to reload it after saving item.
+            State = EntityState.Detached;
+        }
+
+        private void Context_OnOnBeforeSaveChanges(SpSaveArgs args)
         {
             if (HasChanges)
             {
-                var item = Save();
-                if (item != null)
+                _item = Save();
+                if (_item != null)
                 {
-                    args.Items.Add(item);
-
-                    CurrentValues = new Dictionary<string, object>();
+                    args.Items.Add(_item);
                     //requires to reload it after saving item.
-                    State = EntityState.Detached;
+                    Detach();
                     args.HasChanges = true;
                 }
             }
         }
-
+        private void Context_OnAfterSaveChanges(SpSaveArgs args)
+        {
+            if (_item != null)
+            {
+                EntityId = _item.Id;
+            }
+        }
         private ListItem Save()
         {
             switch (State)
             {
                 case EntityState.Added:
                 case EntityState.Modified:
-                    return _manager.Update(Entity.Id, Entity.Id > 0 ? CurrentValues : OriginalValues, Version);
+                    return _manager.Update(Entity.Id, CurrentValues, Version);
                 case EntityState.Deleted:
                     return _manager.DeleteItems(new[] { Entity.Id }).FirstOrDefault();
             }
             return null;
         }
 
-        private IEnumerable<KeyValuePair<string, object>> GetValues()
+        private static IEnumerable<KeyValuePair<string, object>> GetValues(TEntity entity)
         {
-            return AttributeHelper.GetFieldValues<TEntity, FieldAttribute>(Entity)
-              .Concat(AttributeHelper.GetPropertyValues<TEntity, FieldAttribute>(Entity));
+            return AttributeHelper.GetFieldValues<TEntity, FieldAttribute>(entity)
+              .Concat(AttributeHelper.GetPropertyValues<TEntity, FieldAttribute>(entity));
         }
 
-        private bool DetectChanges()
+        public bool DetectChanges()
         {
             if (State == EntityState.Deleted) return false;
-            if (State == EntityState.Added) return true;
-            if (State == EntityState.Detached && Entity.Id > 0) return false;
+            if (State == EntityState.Detached) return false;
 
             CurrentValues = new Dictionary<string, object>();
-            foreach (var value in GetValues())
+            foreach (var value in GetValues(Entity))
             {
-                if (Entity.Id <= 0)
+                if (!SpQueryArgs.FieldMappings.ContainsKey(value.Key)) continue;
+                var fieldMapping = SpQueryArgs.FieldMappings[value.Key];
+                if (fieldMapping.IsReadOnly) continue;
+
+                if (value.Value is ISpEntityLookup)
                 {
-                    CurrentValues[value.Key] = value.Value;
-                }
-                else if (value.Value is ISpEntityLookup)
-                {
-                    if (!OriginalValues.ContainsKey(value.Key) || !Equals(OriginalValues[value.Key], (value.Value as ISpEntityLookup).EntityId))
+                    if (EntityId <= 0 || (!OriginalValues.ContainsKey(value.Key) || !Equals(OriginalValues[value.Key], (value.Value as ISpEntityLookup).EntityId)))
                     {
-                        if ((value.Value as ISpEntityLookup).DoesEntryExist())
+                        if (EntityId > 0)
                         {
+                            if (!OriginalValues.ContainsKey(value.Key) && Equals(default, value.Value)) continue;
                             CurrentValues[value.Key] = (value.Value as ISpEntityLookup).EntityId;
                         }
                         else
                         {
-                            throw new Exception($"Entity with Id={(value.Value as ISpEntityLookup).EntityId} does not exist in '{(value.Value as ISpEntityLookup).SpQueryArgs}'.");
+                            CurrentValues[value.Key] = (value.Value as ISpEntityLookup).EntityId;
                         }
                     }
                 }
-                else if (!OriginalValues.ContainsKey(value.Key) || !Equals(OriginalValues[value.Key], value.Value))
+                else if (value.Value is ISpEntityLookupCollection)
                 {
-                    CurrentValues[value.Key] = value.Value;
+                    if (EntityId <= 0 || (!OriginalValues.ContainsKey(value.Key) || !Equals(OriginalValues[value.Key], (value.Value as ISpEntityLookupCollection).EntityIds)))
+                    {
+                        if (EntityId > 0)
+                        {
+                            if (!OriginalValues.ContainsKey(value.Key) && Equals(default, value.Value)) continue;
+                            CurrentValues[value.Key] = (value.Value as ISpEntityLookupCollection).EntityIds;
+                        }
+                        else
+                        {
+                            CurrentValues[value.Key] = (value.Value as ISpEntityLookupCollection).EntityIds;
+                        }
+                    }
+                }
+                else if (EntityId <= 0 || (!OriginalValues.ContainsKey(value.Key) || !Equals(OriginalValues[value.Key], value.Value)))
+                {
+                    if (EntityId > 0)
+                    {
+                        if (!OriginalValues.ContainsKey(value.Key) && Equals(default, value.Value)) continue;
+                        CurrentValues[value.Key] = value.Value;
+                    }
+                    else if (!Equals(default, value.Value))
+                    {
+                        CurrentValues[value.Key] = value.Value;
+                    }
                 }
             }
             return CurrentValues.Count > 0;
@@ -155,15 +194,23 @@ namespace SP.Client.Linq.Infrastructure
             return false;
         }
 
-        public bool Reload()
+        public TEntity Reload(bool setOriginalValuesOnly = false)
         {
-            if (Entity != null && Entity.Id > 0 && Context != null && SpQueryArgs != null)
+            if (EntityId > 0 && Context != null && SpQueryArgs != null)
             {
-                Entity = Context.List<TEntity>(SpQueryArgs as SpQueryArgs<ISpEntryDataContext>).Find(Entity.Id);
-                Init();
-                return Entity != null;
+                var originalEntity = Entity;
+                Detach();
+                var entity = Context.List<TEntity>(SpQueryArgs as SpQueryArgs<ISpEntryDataContext>).Find(EntityId);
+                Entity = entity;
+                Attach();
+
+                if (setOriginalValuesOnly)
+                {
+                    Entity = originalEntity;
+                }
+                return entity;
             }
-            return false;
+            return Entity;
         }
 
         public void Update()

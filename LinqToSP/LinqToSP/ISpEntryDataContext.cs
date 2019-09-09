@@ -4,10 +4,13 @@ using System;
 
 namespace SP.Client.Linq
 {
-  public interface ISpEntryDataContext : ISpDataContext
-  {
-    event Action<SpSaveArgs> OnSaveChanges;
-    bool SaveChanges();
-    SpEntityQueryable<TListItem> List<TListItem>(SpQueryArgs<ISpEntryDataContext> args) where TListItem : class, IListItemEntity;
-  }
+    public interface ISpEntryDataContext : ISpDataContext
+    {
+        event Action<SpSaveArgs> OnBeforeSaveChanges;
+
+        event Action<SpSaveArgs> OnAfterSaveChanges;
+
+        bool SaveChanges();
+        SpEntityQueryable<TListItem> List<TListItem>(SpQueryArgs<ISpEntryDataContext> args) where TListItem : class, IListItemEntity;
+    }
 }

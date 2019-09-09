@@ -50,14 +50,28 @@ namespace SP.Client.Linq
 
         public override TEntity Add([NotNull] TEntity entity)
         {
-            if (entity.Id > 0)
-            {
-                //return base.Add(entity);
-                return entity;
-            }
             var entry = Entry(entity, false);
             if (entry != null)
             {
+                if (entity.Id > 0)
+                {
+                    entry.Reload(true);
+                }
+                entry.Update();
+                return entry.Entity;
+            }
+            return entity;
+        }
+
+        public TEntity Add([NotNull] TEntity entity, out SpEntityEntry<TEntity, ISpEntryDataContext> entry)
+        {
+            entry = Entry(entity, false);
+            if (entry != null)
+            {
+                if (entity.Id > 0)
+                {
+                    entry.Reload(true);
+                }
                 entry.Update();
                 return entry.Entity;
             }
@@ -68,7 +82,7 @@ namespace SP.Client.Linq
         {
             if (action == null)
             {
-                return base.Add(entity);
+                return Add(entity);
             }
             var entry = Entry(entity, false);
             if (entry != null)
@@ -79,19 +93,38 @@ namespace SP.Client.Linq
             }
             return entity;
         }
+        public override IEnumerable<TEntity> AddRange([NotNull] IEnumerable<TEntity> entities)
+        {
+            return entities.Select(entity => Add(entity));
+        }
+
+        public IEnumerable<TEntity> AddRange([NotNull] IEnumerable<TEntity> entities, out IEnumerable<SpEntityEntry<TEntity, ISpEntryDataContext>> entries)
+        {
+            IEnumerable<TEntity> outEntities = Enumerable.Empty<TEntity>();
+            entries = Enumerable.Empty<SpEntityEntry<TEntity, ISpEntryDataContext>>();
+            foreach (var entity in entities)
+            {
+                SpEntityEntry<TEntity, ISpEntryDataContext> entry;
+                var outEntity = Add(entity, out entry);
+                if (outEntity != null)
+                {
+                    outEntities = outEntities.Concat(new[] { outEntity });
+                }
+                if (entry != null)
+                {
+                    entries = entries.Concat(new[] { entry });
+                }
+            }
+            return outEntities;
+        }
 
         public IEnumerable<TEntity> AddRange([NotNull] IEnumerable<TEntity> entities, Action<SpEntityEntry<TEntity, ISpEntryDataContext>> action)
         {
-            if (action == null)
-            {
-                return base.AddRange(entities);
-            }
             return entities.Select(entity => Add(entity, action));
         }
 
         public override bool Remove(TEntity entity)
         {
-            //return base.Remove(entity);
             var entry = Entry(entity, false);
             if (entry != null)
             {

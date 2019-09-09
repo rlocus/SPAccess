@@ -76,6 +76,14 @@ namespace SP.Client.Linq
             return null;
         }
 
+        public void SetEntity(TEntity entity)
+        {
+            if (entity != null)
+            {
+                EntityId = entity.Id;
+            }
+        }
+
         public SpEntityEntry<TEntity, ISpEntryDataContext> GetEntry()
         {
             if (EntityId > 0 && SpQueryArgs != null)
@@ -87,11 +95,6 @@ namespace SP.Client.Linq
                 return SpQueryArgs.Context.List<TEntity>(SpQueryArgs).GetEntry(GetEntity());
             }
             return null;
-        }
-
-        public bool DoesEntryExist()
-        {
-            return GetEntry() != null;
         }
     }
 }

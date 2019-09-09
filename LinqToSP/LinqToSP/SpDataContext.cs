@@ -55,7 +55,8 @@ namespace SP.Client.Linq
             Context = new ClientContext(siteUrl);
         }
 
-        public event Action<SpSaveArgs> OnSaveChanges;
+        public event Action<SpSaveArgs> OnBeforeSaveChanges;
+        public event Action<SpSaveArgs> OnAfterSaveChanges;
 
         #endregion
 
@@ -147,10 +148,11 @@ namespace SP.Client.Linq
         public virtual bool SaveChanges()
         {
             var args = new SpSaveArgs() { Items = new List<ListItem>() };
-            OnSaveChanges?.Invoke(args);
+            OnBeforeSaveChanges?.Invoke(args);
             if (args.HasChanges)
             {
                 Context.ExecuteQuery();
+                OnAfterSaveChanges?.Invoke(args);
             }
             return args.HasChanges;
         }

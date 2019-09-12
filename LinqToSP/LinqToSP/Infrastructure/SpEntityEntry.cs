@@ -111,6 +111,8 @@ namespace SP.Client.Linq.Infrastructure
             if (_item != null)
             {
                 EntityId = _item.Id;
+                Entity = _manager.MapEntity(Entity, _item);
+                Attach();
                 OnAfterSaveChanges?.Invoke(_item);
             }
         }

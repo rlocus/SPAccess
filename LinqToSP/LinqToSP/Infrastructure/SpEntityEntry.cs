@@ -2,6 +2,7 @@
 using Microsoft.SharePoint.Client;
 using SP.Client.Linq.Attributes;
 using SP.Client.Linq.Query;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -14,6 +15,9 @@ namespace SP.Client.Linq.Infrastructure
         #region Fields
         private readonly SpQueryManager<TEntity, TContext> _manager;
         private ListItem _item;
+        public event Action<ListItem> OnBeforeSaveChanges;
+        public event Action<ListItem> OnAfterSaveChanges;
+
         #endregion
 
         #region Constructors
@@ -98,6 +102,7 @@ namespace SP.Client.Linq.Infrastructure
                     //requires to reload it after saving item.
                     Detach();
                     args.HasChanges = true;
+                    OnBeforeSaveChanges?.Invoke(_item);
                 }
             }
         }
@@ -106,8 +111,10 @@ namespace SP.Client.Linq.Infrastructure
             if (_item != null)
             {
                 EntityId = _item.Id;
+                OnAfterSaveChanges?.Invoke(_item);
             }
         }
+
         private ListItem Save()
         {
             switch (State)

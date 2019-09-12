@@ -1,4 +1,7 @@
-﻿using Microsoft.SharePoint.Client;
+﻿using JetBrains.Annotations;
+using Microsoft.SharePoint.Client;
+using SP.Client.Extensions;
+using SP.Client.Linq.Attributes;
 using SP.Client.Linq.Infrastructure;
 using SP.Client.Linq.Query;
 using System;
@@ -49,8 +52,9 @@ namespace SP.Client.Linq
         /// </summary>
         /// <param name="siteUrl">Site Url: https://sp-site
         /// </param>
-        public SpDataContext(string siteUrl)
+        public SpDataContext([NotNull]string siteUrl)
         {
+            Check.NotNull(siteUrl, nameof(siteUrl));
             SiteUrl = siteUrl;
             Context = new ClientContext(siteUrl);
         }
@@ -62,13 +66,31 @@ namespace SP.Client.Linq
 
         #region Methods
 
+        public IQueryable<TListItem> List<TListItem>(string query = null)
+        where TListItem : class, IListItemEntity
+        {
+            var listAtt = AttributeHelper.GetCustomAttribute<TListItem, ListAttribute>();
+            if (listAtt != null)
+            {
+                if (!string.IsNullOrEmpty(listAtt.Title))
+                {
+                    return List<TListItem>(new SpQueryArgs<ISpEntryDataContext>(this, listAtt.Title, "", default, query));
+                }
+                if (!string.IsNullOrEmpty(listAtt.Url))
+                {
+                    return List<TListItem>(new SpQueryArgs<ISpEntryDataContext>(this, null, listAtt.Url, default, query));
+                }
+            }
+            return Enumerable.Empty<TListItem>().AsQueryable();
+        }
+
         /// <summary>
         /// SP List
         /// </summary>
         /// <typeparam name="TListItem"></typeparam>
         /// <param name="listTitle">List title</param>
         /// <returns></returns>
-        public SpEntityQueryable<TListItem> List<TListItem>(string listTitle, string query = null)
+        public IQueryable<TListItem> List<TListItem>(string listTitle, string query = null)
             where TListItem : class, IListItemEntity
         {
             return List<TListItem>(new SpQueryArgs<ISpEntryDataContext>(this, listTitle, "", default(Guid), query));
@@ -80,7 +102,7 @@ namespace SP.Client.Linq
         /// <typeparam name="TListItem"></typeparam>
         /// <param name="listUrl">List url</param>
         /// <returns></returns>
-        public SpEntityQueryable<TListItem> List<TListItem>(Uri listUrl, string query = null)
+        public IQueryable<TListItem> List<TListItem>(Uri listUrl, string query = null)
            where TListItem : class, IListItemEntity
         {
             return List<TListItem>(new SpQueryArgs<ISpEntryDataContext>(this, null, Convert.ToString(listUrl), default, query));
@@ -92,13 +114,13 @@ namespace SP.Client.Linq
         /// <typeparam name="TListItem"></typeparam>
         /// <param name="listId">List id</param>
         /// <returns></returns>
-        public SpEntityQueryable<TListItem> List<TListItem>(Guid listId, string query = null)
+        public IQueryable<TListItem> List<TListItem>(Guid listId, string query = null)
           where TListItem : class, IListItemEntity
         {
             return List<TListItem>(new SpQueryArgs<ISpEntryDataContext>(this, null, null, listId, query));
         }
 
-        public SpEntityQueryable<TListItem> List<TListItem>(SpQueryArgs<ISpEntryDataContext> args)
+        public IQueryable<TListItem> List<TListItem>(SpQueryArgs<ISpEntryDataContext> args)
           where TListItem : class, IListItemEntity
         {
             return new SpEntityQueryable<TListItem>(args);
@@ -119,21 +141,21 @@ namespace SP.Client.Linq
                 return GenerateQuery(items as SpEntityQueryable<TListItem>, disableFormatting);
             }
             return null;
-        }       
+        }
 
-        public SpEntityQueryable<TListItem> Query<TListItem>(string listTitle, string query = null)
+        public IQueryable<TListItem> Query<TListItem>(string listTitle, string query = null)
           where TListItem : class, IListItemEntity
         {
             return List<TListItem>(new SpQueryArgs<ISpEntryDataContext>(this, listTitle, "", default, query) { SkipResult = true });
         }
 
-        public SpEntityQueryable<TListItem> Query<TListItem>(Uri listUrl, string query = null)
+        public IQueryable<TListItem> Query<TListItem>(Uri listUrl, string query = null)
          where TListItem : class, IListItemEntity
         {
             return List<TListItem>(new SpQueryArgs<ISpEntryDataContext>(this, null, listUrl.ToString(), default, query) { SkipResult = true });
         }
 
-        public SpEntityQueryable<TListItem> Query<TListItem>(Guid listId, string query = null)
+        public IQueryable<TListItem> Query<TListItem>(Guid listId, string query = null)
           where TListItem : class, IListItemEntity
         {
             return List<TListItem>(new SpQueryArgs<ISpEntryDataContext>(this, null, null, listId, query) { SkipResult = true });

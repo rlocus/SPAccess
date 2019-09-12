@@ -200,7 +200,7 @@ namespace SP.Client.Linq.Infrastructure
             {
                 var originalEntity = Entity;
                 Detach();
-                var entity = Context.List<TEntity>(SpQueryArgs as SpQueryArgs<ISpEntryDataContext>).Find(EntityId);
+                var entity = (Context.List<TEntity>(SpQueryArgs as SpQueryArgs<ISpEntryDataContext>) as ISpRepository<TEntity>).Find(EntityId);
                 Entity = entity;
                 Attach();
 

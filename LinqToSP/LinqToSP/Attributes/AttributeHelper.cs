@@ -6,8 +6,17 @@ namespace SP.Client.Linq.Attributes
 {
     internal static class AttributeHelper
     {
+        public static TAttribute GetCustomAttribute<TEntity, TAttribute>()
+          where TAttribute : Attribute
+            where TEntity : class, IListItemEntity
+        {
+            return (TAttribute)(typeof(TEntity)).GetCustomAttributes(typeof(TAttribute), true).FirstOrDefault();
+        }
+
         public static IEnumerable<KeyValuePair<string, TAttribute>> GetFieldAttributes<TEntity, TAttribute>()
           where TAttribute : Attribute
+          where TEntity : class, IListItemEntity
+
         {
             foreach (var field in typeof(TEntity).GetFields())
             {
@@ -35,6 +44,7 @@ namespace SP.Client.Linq.Attributes
 
         public static IEnumerable<KeyValuePair<string, TAttribute>> GetPropertyAttributes<TEntity, TAttribute>()
           where TAttribute : Attribute
+          where TEntity : class, IListItemEntity
         {
             foreach (var property in typeof(TEntity).GetProperties())
             {
@@ -62,6 +72,7 @@ namespace SP.Client.Linq.Attributes
 
         public static IEnumerable<KeyValuePair<string, object>> GetPropertyValues<TEntity, TAttribute>(TEntity entity)
             where TAttribute : Attribute
+            where TEntity : class, IListItemEntity
         {
             if (entity != null)
                 foreach (var property in typeof(TEntity).GetProperties())
@@ -90,6 +101,7 @@ namespace SP.Client.Linq.Attributes
 
         public static IEnumerable<KeyValuePair<string, object>> GetFieldValues<TEntity, TAttribute>(TEntity entity)
             where TAttribute : Attribute
+            where TEntity : class, IListItemEntity
         {
             if (entity != null)
                 foreach (var field in typeof(TEntity).GetFields())
@@ -117,6 +129,7 @@ namespace SP.Client.Linq.Attributes
         }
 
         public static IEnumerable<KeyValuePair<string, object>> GetPropertyValuesOfType<TEntity, TValueType>(TEntity entity)
+         where TEntity : class, IListItemEntity
         {
             if (entity != null)
                 foreach (var property in typeof(TEntity).GetProperties())
@@ -130,6 +143,8 @@ namespace SP.Client.Linq.Attributes
         }
 
         public static IEnumerable<KeyValuePair<string, object>> GetFieldValuesOfType<TEntity, TValueType>(TEntity entity)
+          where TEntity : class, IListItemEntity
+
         {
             if (entity != null)
                 foreach (var field in typeof(TEntity).GetFields())

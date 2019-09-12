@@ -1,6 +1,7 @@
 ﻿using SP.Client.Linq.Infrastructure;
 using SP.Client.Linq.Query;
 using System;
+using System.Linq;
 
 namespace SP.Client.Linq
 {
@@ -11,6 +12,6 @@ namespace SP.Client.Linq
         event Action<SpSaveArgs> OnAfterSaveChanges;
 
         bool SaveChanges();
-        SpEntityQueryable<TListItem> List<TListItem>(SpQueryArgs<ISpEntryDataContext> args) where TListItem : class, IListItemEntity;
+        IQueryable<TListItem> List<TListItem>(SpQueryArgs<ISpEntryDataContext> args) where TListItem : class, IListItemEntity;
     }
 }

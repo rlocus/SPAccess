@@ -152,7 +152,7 @@ namespace SP.Client.Linq
                 if (clientContext != null)
                 {
                     return _args.ListTitle != null ? clientContext.Web.Lists.GetByTitle(_args.ListTitle) :
-                        (_args.ListUrl != null ? clientContext.Web.GetList(_args.ListUrl)
+                        (_args.ListUrl != null ? clientContext.Web.GetList($"{_args.Context.SiteUrl.TrimEnd('/')}/{_args.ListUrl.TrimStart('/')}")
                         : clientContext.Web.Lists.GetById(_args.ListId));
                 }
             }

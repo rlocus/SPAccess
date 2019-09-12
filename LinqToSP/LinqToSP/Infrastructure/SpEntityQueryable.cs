@@ -210,7 +210,7 @@ namespace SP.Client.Linq.Infrastructure
         public virtual int RemoveRange(IEnumerable<TEntity> entities)
         {
             return Delete(entities.Where(entity => entity != null && entity.Id > 0).Select(entity => entity.Id).ToArray());
-        }        
+        }
 
         public IEnumerable<SpEntityEntry<TEntity, TContext>> Entries()
         {
@@ -222,7 +222,7 @@ namespace SP.Client.Linq.Infrastructure
             return Enumerable.Empty<SpEntityEntry<TEntity, TContext>>();
         }
 
-        public SpEntityEntry<TEntity, TContext> Entry(TEntity entity, bool reload)
+        internal SpEntityEntry<TEntity, TContext> Entry(TEntity entity, bool reload)
         {
             if (entity != null)
             {

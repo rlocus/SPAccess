@@ -70,7 +70,7 @@ namespace SP.Client.Linq
                 {
                     throw new ArgumentNullException(nameof(SpQueryArgs.Context));
                 }
-                return SpQueryArgs.Context.List<TEntity>(SpQueryArgs).Find(EntityId);
+                return (SpQueryArgs.Context.List<TEntity>(SpQueryArgs) as ISpRepository<TEntity>).Find(EntityId);
             }
 
             return null;

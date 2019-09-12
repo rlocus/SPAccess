@@ -90,6 +90,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Attributes\AttributeHelper.cs" />
+    <Compile Include="Attributes\ListAttribute.cs" />
     <Compile Include="Attributes\FieldAttribute.cs" />
     <Compile Include="Attributes\DependentLookupFieldAttribute.cs" />
     <Compile Include="Attributes\LookupFieldAttribute.cs" />

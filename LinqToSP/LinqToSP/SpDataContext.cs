@@ -66,8 +66,8 @@ namespace SP.Client.Linq
 
         #region Methods
 
-        public IQueryable<TListItem> List<TListItem>(string query = null)
-        where TListItem : class, IListItemEntity
+        public IQueryable<TListItem> View<TListItem>(string query)
+            where TListItem : class, IListItemEntity
         {
             var listAtt = AttributeHelper.GetCustomAttribute<TListItem, ListAttribute>();
             if (listAtt != null)
@@ -84,16 +84,40 @@ namespace SP.Client.Linq
             return Enumerable.Empty<TListItem>().AsQueryable();
         }
 
+        public IQueryable<TListItem> View<TListItem>(string listTitle, string query)
+          where TListItem : class, IListItemEntity
+        {
+            return List<TListItem>(new SpQueryArgs<ISpEntryDataContext>(this, listTitle, "", default, query));
+        }
+
+        public IQueryable<TListItem> View<TListItem>(Uri listUrl, string query)
+            where TListItem : class, IListItemEntity
+        {
+            return List<TListItem>(new SpQueryArgs<ISpEntryDataContext>(this, null, Convert.ToString(listUrl), default, query));
+        }
+
+        public IQueryable<TListItem> View<TListItem>(Guid listId, string query)
+          where TListItem : class, IListItemEntity
+        {
+            return List<TListItem>(new SpQueryArgs<ISpEntryDataContext>(this, null, null, listId, query));
+        }
+
+        public IQueryable<TListItem> List<TListItem>()
+            where TListItem : class, IListItemEntity
+        {
+            return View<TListItem>(null);
+        }
+
         /// <summary>
         /// SP List
         /// </summary>
         /// <typeparam name="TListItem"></typeparam>
         /// <param name="listTitle">List title</param>
         /// <returns></returns>
-        public IQueryable<TListItem> List<TListItem>(string listTitle, string query = null)
+        public IQueryable<TListItem> List<TListItem>(string listTitle)
             where TListItem : class, IListItemEntity
         {
-            return List<TListItem>(new SpQueryArgs<ISpEntryDataContext>(this, listTitle, "", default(Guid), query));
+            return View<TListItem>(listTitle, null);
         }
 
         /// <summary>
@@ -102,10 +126,10 @@ namespace SP.Client.Linq
         /// <typeparam name="TListItem"></typeparam>
         /// <param name="listUrl">List url</param>
         /// <returns></returns>
-        public IQueryable<TListItem> List<TListItem>(Uri listUrl, string query = null)
+        public IQueryable<TListItem> List<TListItem>(Uri listUrl)
            where TListItem : class, IListItemEntity
         {
-            return List<TListItem>(new SpQueryArgs<ISpEntryDataContext>(this, null, Convert.ToString(listUrl), default, query));
+            return View<TListItem>(listUrl, null);
         }
 
         /// <summary>
@@ -114,17 +138,17 @@ namespace SP.Client.Linq
         /// <typeparam name="TListItem"></typeparam>
         /// <param name="listId">List id</param>
         /// <returns></returns>
-        public IQueryable<TListItem> List<TListItem>(Guid listId, string query = null)
+        public IQueryable<TListItem> List<TListItem>(Guid listId)
           where TListItem : class, IListItemEntity
         {
-            return List<TListItem>(new SpQueryArgs<ISpEntryDataContext>(this, null, null, listId, query));
+            return View<TListItem>(listId, null);
         }
 
         public IQueryable<TListItem> List<TListItem>(SpQueryArgs<ISpEntryDataContext> args)
           where TListItem : class, IListItemEntity
         {
             return new SpEntityQueryable<TListItem>(args);
-        }
+        }     
 
         /// <summary>
         /// SP Query (Caml)
@@ -141,6 +165,24 @@ namespace SP.Client.Linq
                 return GenerateQuery(items as SpEntityQueryable<TListItem>, disableFormatting);
             }
             return null;
+        }
+
+        public IQueryable<TListItem> Query<TListItem>()
+        where TListItem : class, IListItemEntity
+        {
+            var listAtt = AttributeHelper.GetCustomAttribute<TListItem, ListAttribute>();
+            if (listAtt != null)
+            {
+                if (!string.IsNullOrEmpty(listAtt.Title))
+                {
+                    return List<TListItem>(new SpQueryArgs<ISpEntryDataContext>(this, listAtt.Title, "", default, null) { SkipResult = true });
+                }
+                if (!string.IsNullOrEmpty(listAtt.Url))
+                {
+                    return List<TListItem>(new SpQueryArgs<ISpEntryDataContext>(this, null, listAtt.Url, default, null) { SkipResult = true });
+                }
+            }
+            return Enumerable.Empty<TListItem>().AsQueryable();
         }
 
         public IQueryable<TListItem> Query<TListItem>(string listTitle, string query = null)

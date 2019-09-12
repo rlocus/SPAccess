@@ -44,7 +44,11 @@ namespace SP.Client.Linq.Query.ExpressionVisitors
 
         public override void VisitMainFromClause(MainFromClause fromClause, QueryModel queryModel)
         {
-            if (fromClause.FromExpression is IncludeExpression<TContext>)
+            if (fromClause.FromExpression is SubQueryExpression)
+            {
+                this.VisitQueryModel((fromClause.FromExpression as SubQueryExpression).QueryModel);
+            }
+            else if (fromClause.FromExpression is IncludeExpression<TContext>)
             {
                 VisitIncludeClause(fromClause.FromExpression as IncludeExpression<TContext>, queryModel);
             }

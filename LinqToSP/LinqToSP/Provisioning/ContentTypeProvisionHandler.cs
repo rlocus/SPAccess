@@ -78,19 +78,37 @@ namespace SP.Client.Linq.Provisioning
                     }
                 }
 
-                if (webContentType != null)
+                if (list != null)
                 {
-                    contentType = list.ContentTypes.AddExistingContentType(webContentType);
+                    if (webContentType != null)
+                    {
+                        contentType = list.ContentTypes.AddExistingContentType(webContentType);
+                    }
+                    else
+                    {
+                        OnProvisioning?.Invoke(newContentType);
+                        contentType = list.ContentTypes.Add(newContentType);
+                    }
                 }
                 else
                 {
-                    OnProvisioning?.Invoke(newContentType);
-                    contentType = list.ContentTypes.Add(newContentType);
+                    if (webContentType != null)
+                    {
+                        OnProvisioned?.Invoke(webContentType);
+                        return;
+                    }
+                    else
+                    {
+                        OnProvisioning?.Invoke(newContentType);
+                        contentType = web.AvailableContentTypes.Add(newContentType);
+                    }
                 }
-
-                context.Load(contentType);
-                context.ExecuteQuery();
-                OnProvisioned?.Invoke(contentType);
+                if (contentType != null)
+                {
+                    context.Load(contentType);
+                    context.ExecuteQuery();
+                    OnProvisioned?.Invoke(contentType);
+                }
             }
         }
     }

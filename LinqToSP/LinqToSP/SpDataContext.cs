@@ -3,6 +3,7 @@ using Microsoft.SharePoint.Client;
 using SP.Client.Extensions;
 using SP.Client.Linq.Attributes;
 using SP.Client.Linq.Infrastructure;
+using SP.Client.Linq.Provisioning;
 using SP.Client.Linq.Query;
 using System;
 using System.Collections.Generic;
@@ -69,7 +70,7 @@ namespace SP.Client.Linq
         public IQueryable<TListItem> View<TListItem>(string query)
             where TListItem : class, IListItemEntity
         {
-            var listAtt = AttributeHelper.GetCustomAttribute<TListItem, ListAttribute>();
+            var listAtt = AttributeHelper.GetCustomAttributes<TListItem, ListAttribute>(false).FirstOrDefault();
             if (listAtt != null)
             {
                 if (!string.IsNullOrEmpty(listAtt.Title))
@@ -148,7 +149,7 @@ namespace SP.Client.Linq
           where TListItem : class, IListItemEntity
         {
             return new SpEntityQueryable<TListItem>(args);
-        }     
+        }
 
         /// <summary>
         /// SP Query (Caml)
@@ -170,7 +171,7 @@ namespace SP.Client.Linq
         public IQueryable<TListItem> Query<TListItem>()
         where TListItem : class, IListItemEntity
         {
-            var listAtt = AttributeHelper.GetCustomAttribute<TListItem, ListAttribute>();
+            var listAtt = AttributeHelper.GetCustomAttributes<TListItem, ListAttribute>(false).FirstOrDefault();
             if (listAtt != null)
             {
                 if (!string.IsNullOrEmpty(listAtt.Title))
@@ -247,6 +248,13 @@ namespace SP.Client.Linq
                 catch { }
                 Context = null;
             }
+        }
+        public virtual TProvisionModel CreateModel<TProvisionModel, TDataContext, TEntity>()
+          where TProvisionModel : SpProvisionModel<TDataContext, TEntity>
+          where TDataContext : class, ISpEntryDataContext
+          where TEntity : class, IListItemEntity
+        {
+            return (TProvisionModel)Activator.CreateInstance(typeof(TProvisionModel), new object[] { this });
         }
 
         #endregion

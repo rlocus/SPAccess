@@ -6,23 +6,22 @@ using System.Linq;
 
 namespace SP.Client.Linq.Provisioning
 {
-    public class ContentTypeProvisionHandler<TContext, TEntity> : ProvisionHandler<TContext, TEntity>
+    public sealed class ContentTypeProvisionHandler<TContext, TEntity> : SpProvisionHandler<TContext, TEntity>
         where TContext : class, ISpEntryDataContext
         where TEntity : class, IListItemEntity
     {
         private readonly ContentTypeAttribute _contentType;
         private readonly ListAttribute _list;
 
-        public event Action<ContentTypeCreationInformation> OnProvisioning;
+        public event Action<ContentTypeProvisionHandler<TContext, TEntity>, ContentType> OnProvisioning;
 
-        public event Action<ContentType> OnProvisioned;
+        public event Action<ContentTypeProvisionHandler<TContext, TEntity>, ContentType> OnProvisioned;
 
-        public ContentTypeProvisionHandler(ContentTypeAttribute contentType, ProvisionModel<TContext, TEntity> model) : this(contentType, null, model)
+        public ContentTypeProvisionHandler(ContentTypeAttribute contentType, SpProvisionModel<TContext, TEntity> model) : this(contentType, null, model)
         {
-            _contentType = contentType;
         }
 
-        public ContentTypeProvisionHandler(ContentTypeAttribute contentType, ListAttribute list, ProvisionModel<TContext, TEntity> model) : base(model)
+        public ContentTypeProvisionHandler(ContentTypeAttribute contentType, ListAttribute list, SpProvisionModel<TContext, TEntity> model) : base(model)
         {
             _contentType = contentType;
             _list = list;
@@ -58,24 +57,56 @@ namespace SP.Client.Linq.Provisioning
                     ParentContentType = parentContentType
                 };
 
-                IEnumerable<ContentType> webContentTypes = context.LoadQuery(web.AvailableContentTypes.Where(ct => ct.Name == _contentType.Name));
-                IEnumerable<ContentType> listContentTypes = null;
-                if (list != null)
+                ContentType webContentType = null;
+                ContentType listContentType = null;
+                string ctName = _contentType.Name;
+                if (string.IsNullOrEmpty(ctName))
                 {
-                    listContentTypes = context.LoadQuery(list.ContentTypes.Where(ct => ct.Name == _contentType.Name));
-                }
-
-                context.ExecuteQuery();
-                ContentType webContentType = webContentTypes.FirstOrDefault();
-
-                if (listContentTypes != null)
-                {
-                    ContentType listContentType = listContentTypes.FirstOrDefault();
-                    if (listContentType != null)
+                    string ctId = _contentType.Id;
+                    if (!string.IsNullOrEmpty(ctId))
                     {
-                        OnProvisioned?.Invoke(listContentType);
+                        IEnumerable<ContentType> webContentTypes = context.LoadQuery(web.AvailableContentTypes.Where(ct => ct.Id.StringValue == ctId));
+                        IEnumerable<ContentType> listContentTypes = null;
+                        if (list != null)
+                        {
+                            listContentTypes = context.LoadQuery(list.ContentTypes.Where(ct => ct.Id.StringValue == ctId || ct.Parent.Id.StringValue == ctId));
+                        }
+
+                        context.ExecuteQuery();
+
+                        webContentType = webContentTypes.FirstOrDefault();
+                        if (listContentTypes != null)
+                        {
+                            listContentType = listContentTypes.FirstOrDefault();
+                        }
+                    }
+                    else
+                    {
                         return;
                     }
+                }
+                else
+                {
+                    IEnumerable<ContentType> webContentTypes = context.LoadQuery(web.AvailableContentTypes.Where(ct => ct.Name == ctName));
+                    IEnumerable<ContentType> listContentTypes = null;
+                    if (list != null)
+                    {
+                        listContentTypes = context.LoadQuery(list.ContentTypes.Where(ct => ct.Name == ctName));
+                    }
+
+                    context.ExecuteQuery();
+
+                    webContentType = webContentTypes.FirstOrDefault();
+                    if (listContentTypes != null)
+                    {
+                        listContentType = listContentTypes.FirstOrDefault();
+                    }
+                }
+
+                if (listContentType != null)
+                {
+                    OnProvisioned?.Invoke(this, listContentType);
+                    return;
                 }
 
                 if (list != null)
@@ -86,28 +117,30 @@ namespace SP.Client.Linq.Provisioning
                     }
                     else
                     {
-                        OnProvisioning?.Invoke(newContentType);
                         contentType = list.ContentTypes.Add(newContentType);
+                        OnProvisioning?.Invoke(this, contentType);
+                        contentType.Update(false);
                     }
                 }
                 else
                 {
                     if (webContentType != null)
                     {
-                        OnProvisioned?.Invoke(webContentType);
+                        OnProvisioned?.Invoke(this, webContentType);
                         return;
                     }
                     else
                     {
-                        OnProvisioning?.Invoke(newContentType);
-                        contentType = web.AvailableContentTypes.Add(newContentType);
+                        contentType = web.ContentTypes.Add(newContentType);
+                        OnProvisioning?.Invoke(this, contentType);
+                        contentType.Update(false);
                     }
                 }
                 if (contentType != null)
                 {
                     context.Load(contentType);
                     context.ExecuteQuery();
-                    OnProvisioned?.Invoke(contentType);
+                    OnProvisioned?.Invoke(this, contentType);
                 }
             }
         }

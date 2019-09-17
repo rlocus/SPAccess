@@ -3,7 +3,7 @@ using System;
 
 namespace SP.Client.Linq.Attributes
 {
-    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Class, Inherited = true, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Class | AttributeTargets.Interface, Inherited = true, AllowMultiple = false)]
     public class ListAttribute : Attribute
     {
         public ListAttribute() : this(ListTemplateType.GenericList)
@@ -20,6 +20,6 @@ namespace SP.Client.Linq.Attributes
 
         public virtual string Url { get; set; }
 
-        public ListTemplateType Type { get; set; }
+        public virtual ListTemplateType Type { get; set; }
     }
 }

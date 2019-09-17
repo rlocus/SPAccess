@@ -98,9 +98,11 @@
     <Compile Include="EventItemEntity.cs" />
     <Compile Include="IEventItemEntity.cs" />
     <Compile Include="Infrastructure\ISpChangeTrackable.cs" />
+    <Compile Include="Provisioning\FieldProvisionHandler.cs" />
+    <Compile Include="Provisioning\ListProvisionHandler.cs" />
     <Compile Include="Provisioning\ContentTypeProvisionHandler.cs" />
-    <Compile Include="Provisioning\ProvisionHandler.cs" />
-    <Compile Include="Provisioning\ProvisionModel.cs" />
+    <Compile Include="Provisioning\SpProvisionHandler.cs" />
+    <Compile Include="Provisioning\SpProvisionModel.cs" />
     <Compile Include="SpEntityLookup.cs" />
     <Compile Include="ISpEntityLookup.cs" />
     <Compile Include="SpEntityLookupCollection.cs" />

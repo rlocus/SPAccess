@@ -133,7 +133,7 @@ namespace SP.Client.Linq.Infrastructure
         private static IEnumerable<KeyValuePair<string, object>> GetValues(TEntity entity)
         {
             return AttributeHelper.GetFieldValues<TEntity, FieldAttribute>(entity)
-              .Concat(AttributeHelper.GetPropertyValues<TEntity, FieldAttribute>(entity));
+              .Concat(AttributeHelper.GetPropertyValues<TEntity, FieldAttribute>(entity)).Select(val => new KeyValuePair<string, object>(val.Key.Name, val.Value));
         }
 
         public bool DetectChanges()

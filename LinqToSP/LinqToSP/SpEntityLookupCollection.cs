@@ -11,6 +11,8 @@ namespace SP.Client.Linq
         SpQueryArgs<ISpEntryDataContext> SpQueryArgs { get; }
 
         int[] EntityIds { get; set; }
+
+        Type EntityType { get; }
     }
 
     public interface ISpEntityLookupCollection<TEntityLookup, TEntity> : IEnumerable<ISpEntityLookup<TEntity>>, ISpEntityLookupCollection
@@ -26,6 +28,8 @@ namespace SP.Client.Linq
         public SpQueryArgs<ISpEntryDataContext> SpQueryArgs { get; }
 
         public int[] EntityIds { get; set; }
+
+        public Type EntityType => typeof(TEntity);
 
         internal SpEntityLookupCollection(SpQueryArgs<ISpEntryDataContext> args)
         {

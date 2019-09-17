@@ -78,7 +78,8 @@ namespace SP.Client.Linq.Infrastructure
         private static IEnumerable<KeyValuePair<string, FieldAttribute>> GetFieldAttributes()
         {
             return AttributeHelper.GetFieldAttributes<TEntity, FieldAttribute>()
-              .Concat(AttributeHelper.GetPropertyAttributes<TEntity, FieldAttribute>());
+              .Concat(AttributeHelper.GetPropertyAttributes<TEntity, FieldAttribute>())
+              .Select(f => new KeyValuePair<string, FieldAttribute>(f.Key.Name, f.Value));
         }
 
         public string GetQuery(bool disableFormatting)

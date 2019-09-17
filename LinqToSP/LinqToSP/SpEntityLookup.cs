@@ -11,6 +11,8 @@ namespace SP.Client.Linq
 
         public int EntityId { get; set; }
 
+        public Type EntityType => typeof(TEntity);
+
         public SpEntityLookup(string listTitle)
                   : this(0, null, listTitle)
         {

@@ -1,19 +1,40 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace SP.Client.Linq.Attributes
 {
     internal static class AttributeHelper
     {
-        public static TAttribute GetCustomAttribute<TEntity, TAttribute>()
+        public static IEnumerable<TAttribute> GetCustomAttributes<TEntity, TAttribute>(bool inherit)
           where TAttribute : Attribute
-            where TEntity : class, IListItemEntity
+          where TEntity : class, IListItemEntity
         {
-            return (TAttribute)(typeof(TEntity)).GetCustomAttributes(typeof(TAttribute), true).FirstOrDefault();
+            return GetCustomAttributes<TAttribute>(typeof(TEntity), inherit);
         }
 
-        public static IEnumerable<KeyValuePair<string, TAttribute>> GetFieldAttributes<TEntity, TAttribute>()
+        public static IEnumerable<TAttribute> GetCustomAttributes<TAttribute>(Type entityType, bool inherit)
+          where TAttribute : Attribute
+        {
+            if (typeof(IListItemEntity).IsAssignableFrom(entityType))
+            {
+                var attributes = (IEnumerable<TAttribute>)entityType.GetCustomAttributes(typeof(TAttribute), inherit);
+                if (attributes == null)
+                {
+                    attributes = Enumerable.Empty<TAttribute>();
+                }
+                foreach (var vInterface in entityType.GetInterfaces())
+                {
+                    attributes = attributes.Concat((IEnumerable<TAttribute>)vInterface.GetCustomAttributes(typeof(TAttribute), inherit));
+                }
+
+                return attributes;
+            }
+            return null;
+        }
+
+        public static IEnumerable<KeyValuePair<MemberInfo, TAttribute>> GetFieldAttributes<TEntity, TAttribute>()
           where TAttribute : Attribute
           where TEntity : class, IListItemEntity
 
@@ -23,7 +44,7 @@ namespace SP.Client.Linq.Attributes
                 var att = (TAttribute)Attribute.GetCustomAttribute(field, typeof(TAttribute), true);
                 if (att != null)
                 {
-                    yield return new KeyValuePair<string, TAttribute>(field.Name, att);
+                    yield return new KeyValuePair<MemberInfo, TAttribute>(field, att);
                 }
                 else
                 {
@@ -34,7 +55,7 @@ namespace SP.Client.Linq.Attributes
                             att = (TAttribute)Attribute.GetCustomAttribute(f, typeof(TAttribute), true);
                             if (att != null)
                             {
-                                yield return new KeyValuePair<string, TAttribute>(f.Name, att);
+                                yield return new KeyValuePair<MemberInfo, TAttribute>(f, att);
                             }
                         }
                     }
@@ -42,7 +63,7 @@ namespace SP.Client.Linq.Attributes
             }
         }
 
-        public static IEnumerable<KeyValuePair<string, TAttribute>> GetPropertyAttributes<TEntity, TAttribute>()
+        public static IEnumerable<KeyValuePair<MemberInfo, TAttribute>> GetPropertyAttributes<TEntity, TAttribute>()
           where TAttribute : Attribute
           where TEntity : class, IListItemEntity
         {
@@ -51,7 +72,7 @@ namespace SP.Client.Linq.Attributes
                 var att = (TAttribute)Attribute.GetCustomAttribute(property, typeof(TAttribute), true);
                 if (att != null)
                 {
-                    yield return new KeyValuePair<string, TAttribute>(property.Name, att);
+                    yield return new KeyValuePair<MemberInfo, TAttribute>(property, att);
                 }
                 else
                 {
@@ -62,7 +83,7 @@ namespace SP.Client.Linq.Attributes
                             att = (TAttribute)Attribute.GetCustomAttribute(p, typeof(TAttribute), true);
                             if (att != null)
                             {
-                                yield return new KeyValuePair<string, TAttribute>(p.Name, att);
+                                yield return new KeyValuePair<MemberInfo, TAttribute>(p, att);
                             }
                         }
                     }
@@ -70,7 +91,7 @@ namespace SP.Client.Linq.Attributes
             }
         }
 
-        public static IEnumerable<KeyValuePair<string, object>> GetPropertyValues<TEntity, TAttribute>(TEntity entity)
+        public static IEnumerable<KeyValuePair<MemberInfo, object>> GetPropertyValues<TEntity, TAttribute>(TEntity entity)
             where TAttribute : Attribute
             where TEntity : class, IListItemEntity
         {
@@ -80,7 +101,7 @@ namespace SP.Client.Linq.Attributes
                     var att = (TAttribute)Attribute.GetCustomAttribute(property, typeof(TAttribute), true);
                     if (att != null)
                     {
-                        yield return new KeyValuePair<string, object>(property.Name, property.GetValue(entity));
+                        yield return new KeyValuePair<MemberInfo, object>(property, property.GetValue(entity));
                     }
                     else
                     {
@@ -91,7 +112,7 @@ namespace SP.Client.Linq.Attributes
                                 att = (TAttribute)Attribute.GetCustomAttribute(p, typeof(TAttribute), true);
                                 if (att != null)
                                 {
-                                    yield return new KeyValuePair<string, object>(p.Name, property.GetValue(entity));
+                                    yield return new KeyValuePair<MemberInfo, object>(p, property.GetValue(entity));
                                 }
                             }
                         }
@@ -99,7 +120,7 @@ namespace SP.Client.Linq.Attributes
                 }
         }
 
-        public static IEnumerable<KeyValuePair<string, object>> GetFieldValues<TEntity, TAttribute>(TEntity entity)
+        public static IEnumerable<KeyValuePair<MemberInfo, object>> GetFieldValues<TEntity, TAttribute>(TEntity entity)
             where TAttribute : Attribute
             where TEntity : class, IListItemEntity
         {
@@ -109,7 +130,7 @@ namespace SP.Client.Linq.Attributes
                     var att = (TAttribute)Attribute.GetCustomAttribute(field, typeof(TAttribute), true);
                     if (att != null)
                     {
-                        yield return new KeyValuePair<string, object>(field.Name, field.GetValue(entity));
+                        yield return new KeyValuePair<MemberInfo, object>(field, field.GetValue(entity));
                     }
                     else
                     {
@@ -120,7 +141,7 @@ namespace SP.Client.Linq.Attributes
                                 att = (TAttribute)Attribute.GetCustomAttribute(f, typeof(TAttribute), true);
                                 if (att != null)
                                 {
-                                    yield return new KeyValuePair<string, object>(f.Name, field.GetValue(entity));
+                                    yield return new KeyValuePair<MemberInfo, object>(f, field.GetValue(entity));
                                 }
                             }
                         }
@@ -128,7 +149,7 @@ namespace SP.Client.Linq.Attributes
                 }
         }
 
-        public static IEnumerable<KeyValuePair<string, object>> GetPropertyValuesOfType<TEntity, TValueType>(TEntity entity)
+        public static IEnumerable<KeyValuePair<MemberInfo, object>> GetPropertyValuesOfType<TEntity, TValueType>(TEntity entity)
          where TEntity : class, IListItemEntity
         {
             if (entity != null)
@@ -137,12 +158,12 @@ namespace SP.Client.Linq.Attributes
                     var value = property.GetValue(entity);
                     if (value != null && value is TValueType)
                     {
-                        yield return new KeyValuePair<string, object>(property.Name, value);
+                        yield return new KeyValuePair<MemberInfo, object>(property, value);
                     }
                 }
         }
 
-        public static IEnumerable<KeyValuePair<string, object>> GetFieldValuesOfType<TEntity, TValueType>(TEntity entity)
+        public static IEnumerable<KeyValuePair<MemberInfo, object>> GetFieldValuesOfType<TEntity, TValueType>(TEntity entity)
           where TEntity : class, IListItemEntity
 
         {
@@ -152,7 +173,7 @@ namespace SP.Client.Linq.Attributes
                     var value = field.GetValue(entity);
                     if (value != null && value is TValueType)
                     {
-                        yield return new KeyValuePair<string, object>(field.Name, value);
+                        yield return new KeyValuePair<MemberInfo, object>(field, value);
                     }
                 }
         }

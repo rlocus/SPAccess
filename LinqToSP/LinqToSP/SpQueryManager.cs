@@ -319,9 +319,9 @@ namespace SP.Client.Linq
 
         public IEnumerable<ISpEntitySet> GetEntitySets(TEntity entity)
         {
-            return AttributeHelper.GetFieldValuesOfType<TEntity, ISpEntitySet>(entity)
-                .Concat(AttributeHelper.GetPropertyValuesOfType<TEntity, ISpEntitySet>(entity))
-                .Distinct().Select(val => val.Value).Cast<ISpEntitySet>();
+            return AttributeHelper.GetFieldValuesOfType<TEntity, ISpEntitySet>(entity).Select(val => val.Value)
+                .Concat(AttributeHelper.GetPropertyValuesOfType<TEntity, ISpEntitySet>(entity).Select(val => val.Value))
+                .Cast<ISpEntitySet>();
         }
 
         public IEnumerable<TEntity> MapEntities(ListItemCollection items, Type type)

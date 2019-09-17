@@ -20,6 +20,8 @@ namespace SP.Client.Linq.Attributes
             DataType = dataType;
         }
 
+        public virtual string Title { get; set; }
+
         public virtual string Name { get; set; }
 
         public virtual bool Required { get; set; }

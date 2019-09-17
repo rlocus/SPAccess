@@ -149,9 +149,16 @@ namespace SP.Client.Linq.Query.ExpressionVisitors
             {
                 var source = (resultOperator as ConcatResultOperator).Source2 as SubQueryExpression;
                 if (source != null)
+                {
                     this.VisitQueryModel(source.QueryModel);
+                }
+                else if ((resultOperator as ConcatResultOperator).Source2 is ConstantExpression)
+                {
+                }
                 else
+                {
                     throw new NotSupportedException("Method Concat() is not supported in LinqToSp.");
+                }
             }
             base.VisitResultOperator(resultOperator, queryModel, index);
         }

@@ -1,6 +1,8 @@
-﻿using SP.Client.Linq.Infrastructure;
+﻿using SP.Client.Linq.Attributes;
+using SP.Client.Linq.Infrastructure;
 using SP.Client.Linq.Query;
 using System;
+using System.Linq;
 
 namespace SP.Client.Linq
 {
@@ -12,6 +14,33 @@ namespace SP.Client.Linq
         public int EntityId { get; set; }
 
         public Type EntityType => typeof(TEntity);
+
+        public SpEntityLookup()
+               : this(0, (ISpEntryDataContext)null)
+        {
+        }
+
+        public SpEntityLookup(ISpEntryDataContext context)
+                : this(0, context)
+        {
+        }
+
+        public SpEntityLookup(int entityId, ISpEntryDataContext context)
+        {
+            EntityId = entityId;
+            var listAtt = AttributeHelper.GetCustomAttributes<TEntity, ListAttribute>(false).FirstOrDefault();
+            if (listAtt != null)
+            {
+                if (!string.IsNullOrEmpty(listAtt.Title))
+                {
+                    SpQueryArgs = new SpQueryArgs<ISpEntryDataContext>(context, listAtt.Title, "", default, null);
+                }
+                if (!string.IsNullOrEmpty(listAtt.Url))
+                {
+                    SpQueryArgs = new SpQueryArgs<ISpEntryDataContext>(context, null, listAtt.Url, default, null);
+                }
+            }
+        }
 
         public SpEntityLookup(string listTitle)
                   : this(0, null, listTitle)

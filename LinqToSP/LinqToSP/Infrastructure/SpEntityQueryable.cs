@@ -14,7 +14,7 @@ namespace SP.Client.Linq.Infrastructure
 {
     public class SpEntityQueryable<TEntity> : SpEntityQueryable<TEntity, ISpEntryDataContext>
     where TEntity : class, IListItemEntity
-    {
+    {       
         public SpEntityQueryable(SpQueryArgs<ISpEntryDataContext> args)
             : base(args)
         {

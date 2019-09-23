@@ -77,5 +77,15 @@ namespace SP.Client.Linq
             }
             return null;
         }
+        public static string Query<TEntity>(this IQueryable<TEntity> source, bool disableFormatting = false)
+          where TEntity : class, IListItemEntity
+        {
+            Check.NotNull(source, nameof(source));
+            if (source is SpEntityQueryable<TEntity, ISpEntryDataContext>)
+            {
+                return (source as SpEntityQueryable<TEntity>).GetQueryInternal(disableFormatting);
+            }
+            return null;
+        }
     }
 }

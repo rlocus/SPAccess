@@ -1,4 +1,5 @@
 ﻿using JetBrains.Annotations;
+using SP.Client.Linq.Attributes;
 using SP.Client.Linq.Infrastructure;
 using SP.Client.Linq.Query;
 using System;
@@ -12,33 +13,48 @@ namespace SP.Client.Linq
     {
         public SpQueryArgs<ISpEntryDataContext> SpQueryArgs { get; }
 
-        public SpEntitySet(string listTitle)
-            : this(null, listTitle)
+        public SpEntitySet()
+          : this(GetQueryArgs(null, null))
         {
         }
 
-        public SpEntitySet(Uri listUrl)
-         : this(null, listUrl)
+        public SpEntitySet(string query)
+           : this(GetQueryArgs(null, query))
         {
         }
 
-        public SpEntitySet(Guid listId)
-          : this(null, listId)
+        public SpEntitySet(ISpEntryDataContext context, string query)
+          : this(GetQueryArgs(context, query))
         {
         }
 
-        public SpEntitySet(ISpEntryDataContext context, string listTitle)
-           : this(new SpQueryArgs<ISpEntryDataContext>(context, listTitle, null, default, null))
+        public SpEntitySet(string listTitle, string query)
+            : this(null, listTitle, query)
         {
         }
 
-        public SpEntitySet(ISpEntryDataContext context, Uri listUrl)
-         : this(new SpQueryArgs<ISpEntryDataContext>(context, null, Convert.ToString(listUrl), default, null))
+        public SpEntitySet(Uri listUrl, string query)
+         : this(null, listUrl, query)
         {
         }
 
-        public SpEntitySet(ISpEntryDataContext context, Guid listId)
-          : this(new SpQueryArgs<ISpEntryDataContext>(context, null, null, listId, null))
+        public SpEntitySet(Guid listId, string query)
+          : this(null, listId, query)
+        {
+        }
+
+        public SpEntitySet(ISpEntryDataContext context, string listTitle, string query)
+           : this(new SpQueryArgs<ISpEntryDataContext>(context, listTitle, null, default, query))
+        {
+        }
+
+        public SpEntitySet(ISpEntryDataContext context, Uri listUrl, string query)
+         : this(new SpQueryArgs<ISpEntryDataContext>(context, null, Convert.ToString(listUrl), default, query))
+        {
+        }
+
+        public SpEntitySet(ISpEntryDataContext context, Guid listId, string query)
+          : this(new SpQueryArgs<ISpEntryDataContext>(context, null, null, listId, query))
         {
         }
 
@@ -46,6 +62,23 @@ namespace SP.Client.Linq
              : base(args)
         {
             SpQueryArgs = args;
+        }
+
+        private static SpQueryArgs<ISpEntryDataContext> GetQueryArgs(ISpEntryDataContext context, string query)
+        {
+            var listAtt = AttributeHelper.GetCustomAttributes<TEntity, ListAttribute>(false).FirstOrDefault();
+            if (listAtt != null)
+            {
+                if (!string.IsNullOrEmpty(listAtt.Title))
+                {
+                    return new SpQueryArgs<ISpEntryDataContext>(context, listAtt.Title, "", default, query);
+                }
+                if (!string.IsNullOrEmpty(listAtt.Url))
+                {
+                    return new SpQueryArgs<ISpEntryDataContext>(context, null, listAtt.Url, default, query);
+                }
+            }
+            return null;
         }
 
         public override TEntity Add([NotNull] TEntity entity)

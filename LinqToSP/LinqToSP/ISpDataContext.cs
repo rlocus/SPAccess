@@ -33,7 +33,5 @@ namespace SP.Client.Linq
         IQueryable<TListItem> Query<TListItem>(Uri listUrl, string query) where TListItem : class, IListItemEntity;
 
         IQueryable<TListItem> Query<TListItem>(Guid listId, string query) where TListItem : class, IListItemEntity;
-
-        string Query<TListItem>(IQueryable<TListItem> items, bool disableFormatting = false) where TListItem : class, IListItemEntity;
     }
 }

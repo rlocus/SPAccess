@@ -53,9 +53,9 @@ namespace SP.Client.Linq.Provisioning
                     continue;
                 }
 
-                if (typeof(LookupFieldAttribute).IsAssignableFrom(field.Value.GetType()))
-                {
-                }
+                //if (typeof(LookupFieldAttribute).IsAssignableFrom(field.Value.GetType()))
+                //{
+                //}
 
                 Type valueType = null;
                 if (field.Key is PropertyInfo)
@@ -70,8 +70,6 @@ namespace SP.Client.Linq.Provisioning
                     AttributeHelper.GetCustomAttributes<TEntity, ContentTypeAttribute>(false).FirstOrDefault(), list, this, valueType);
                 fieldHandler.OnProvisioned += FieldHandler_OnProvisioned;
                 fieldHandler.OnProvisioning += FieldHandler_OnProvisioning;
-
-
 
                 ProvisionHandlers.Add(fieldHandler);
             }

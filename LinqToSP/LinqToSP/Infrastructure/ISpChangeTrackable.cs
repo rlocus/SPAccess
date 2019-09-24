@@ -6,7 +6,7 @@ namespace SP.Client.Linq.Infrastructure
     where TEntity : class, IListItemEntity
      where TContext : class, ISpEntryDataContext
     {
-        IEnumerable<SpEntityEntry<TEntity, TContext>> Entries();
+        //IEnumerable<SpEntityEntry<TEntity, TContext>> Entries();
     }
 }
 

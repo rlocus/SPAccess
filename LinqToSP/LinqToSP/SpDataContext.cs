@@ -11,252 +11,229 @@ using System.Linq;
 
 namespace SP.Client.Linq
 {
+  /// <summary>
+  /// SharePoint context
+  /// IDisposable
+  /// ******************************************************************************************************************
+  /// Usage: var spContext = new SpDataContext("https://sp-site")
+  /// spContext.Context.Credentials = new SharePointOnlineCredentials("user@domain", ConvertToSecureString("password"));
+  /// ******************************************************************************************************************
+  /// Examples:
+  /// var items = spContext.List<Email>("Emails")
+  ///        .Where(i => (i.Title.Contains("Test") || i.Title.StartsWith("Test")) &&
+  ///                    (i.Includes(x => x.Account, 1, 2)) &&
+  ///                    (i.LookupIdIncludes(x => x.Contact, 1)) &&
+  ///                    (i.Created > DateTime.Today || (i.Id > 1 && i.Id < 100)) ||                           
+  ///                    (i.Account == null && i.Contact != null) &&
+  ///                     i.IsMembership(x => x.AssignedTo, SP.Client.Caml.Operators.MembershipType.AllUsers))
+  ///        .Include(i => i.Id, i=> i.Title).GroupBy<Email>(i => i.Title).OrderBy(i => i.Id);
+  /// --------------------------------------------------------------------------------------------------------       
+  /// var events = spContext.List<Event>("Calendar")
+  ///                    .Where(e => e.StartTime < DateTime.Today.AddMonths(-1) &&
+  ///                                e.DateRangesOverlap(x => x.StartTime, x => x.EndTime, x => x.RecurrenceId, CamlValue.Month));
+  ///</summary>
+  public class SpDataContext : ISpEntryDataContext
+  {
+    #region Properties
+    /// <summary>
+    /// Site Url.
+    /// </summary>
+    public string SiteUrl { get; private set; }
+
+    /// <summary>
+    /// CSOM context
+    /// </summary>
+    public ClientContext Context { get; private set; }
+
+    #endregion
+
+    #region Constructor
     /// <summary>
     /// SharePoint context
-    /// IDisposable
-    /// ******************************************************************************************************************
-    /// Usage: var spContext = new SpDataContext("https://sp-site")
-    /// spContext.Context.Credentials = new SharePointOnlineCredentials("user@domain", ConvertToSecureString("password"));
-    /// ******************************************************************************************************************
-    /// Examples:
-    /// var items = spContext.List<Email>("Emails")
-    ///        .Where(i => (i.Title.Contains("Test") || i.Title.StartsWith("Test")) &&
-    ///                    (i.Includes(x => x.Account, 1, 2)) &&
-    ///                    (i.LookupIdIncludes(x => x.Contact, 1)) &&
-    ///                    (i.Created > DateTime.Today || (i.Id > 1 && i.Id < 100)) ||                           
-    ///                    (i.Account == null && i.Contact != null) &&
-    ///                     i.IsMembership(x => x.AssignedTo, SP.Client.Caml.Operators.MembershipType.AllUsers))
-    ///        .Include(i => i.Id, i=> i.Title).GroupBy<Email>(i => i.Title).OrderBy(i => i.Id);
-    /// --------------------------------------------------------------------------------------------------------       
-    /// var events = spContext.List<Event>("Calendar")
-    ///                    .Where(e => e.StartTime < DateTime.Today.AddMonths(-1) &&
-    ///                                e.DateRangesOverlap(x => x.StartTime, x => x.EndTime, x => x.RecurrenceId, CamlValue.Month));
-    ///</summary>
-    public class SpDataContext : ISpEntryDataContext
+    /// </summary>
+    /// <param name="siteUrl">Site Url: https://sp-site
+    /// </param>
+    public SpDataContext([NotNull]string siteUrl)
     {
-        #region Properties
-        /// <summary>
-        /// Site Url.
-        /// </summary>
-        public string SiteUrl { get; private set; }
-
-        /// <summary>
-        /// CSOM context
-        /// </summary>
-        public ClientContext Context { get; private set; }
-
-        #endregion
-
-        #region Constructor
-        /// <summary>
-        /// SharePoint context
-        /// </summary>
-        /// <param name="siteUrl">Site Url: https://sp-site
-        /// </param>
-        public SpDataContext([NotNull]string siteUrl)
-        {
-            Check.NotNull(siteUrl, nameof(siteUrl));
-            SiteUrl = siteUrl;
-            Context = new ClientContext(siteUrl);
-        }
-
-        public event Action<SpSaveArgs> OnBeforeSaveChanges;
-        public event Action<SpSaveArgs> OnAfterSaveChanges;
-
-        #endregion
-
-        #region Methods
-
-        public IQueryable<TListItem> View<TListItem>(string query)
-            where TListItem : class, IListItemEntity
-        {
-            var listAtt = AttributeHelper.GetCustomAttributes<TListItem, ListAttribute>(false).FirstOrDefault();
-            if (listAtt != null)
-            {
-                if (!string.IsNullOrEmpty(listAtt.Title))
-                {
-                    return List<TListItem>(new SpQueryArgs<ISpEntryDataContext>(this, listAtt.Title, "", default, query));
-                }
-                if (!string.IsNullOrEmpty(listAtt.Url))
-                {
-                    return List<TListItem>(new SpQueryArgs<ISpEntryDataContext>(this, null, listAtt.Url, default, query));
-                }
-            }
-            return Enumerable.Empty<TListItem>().AsQueryable();
-        }
-
-        public IQueryable<TListItem> View<TListItem>(string listTitle, string query)
-          where TListItem : class, IListItemEntity
-        {
-            return List<TListItem>(new SpQueryArgs<ISpEntryDataContext>(this, listTitle, "", default, query));
-        }
-
-        public IQueryable<TListItem> View<TListItem>(Uri listUrl, string query)
-            where TListItem : class, IListItemEntity
-        {
-            return List<TListItem>(new SpQueryArgs<ISpEntryDataContext>(this, null, Convert.ToString(listUrl), default, query));
-        }
-
-        public IQueryable<TListItem> View<TListItem>(Guid listId, string query)
-          where TListItem : class, IListItemEntity
-        {
-            return List<TListItem>(new SpQueryArgs<ISpEntryDataContext>(this, null, null, listId, query));
-        }
-
-        public IQueryable<TListItem> List<TListItem>()
-            where TListItem : class, IListItemEntity
-        {
-            return View<TListItem>(null);
-        }
-
-        /// <summary>
-        /// SP List
-        /// </summary>
-        /// <typeparam name="TListItem"></typeparam>
-        /// <param name="listTitle">List title</param>
-        /// <returns></returns>
-        public IQueryable<TListItem> List<TListItem>(string listTitle)
-            where TListItem : class, IListItemEntity
-        {
-            return View<TListItem>(listTitle, null);
-        }
-
-        /// <summary>
-        /// SP List
-        /// </summary>
-        /// <typeparam name="TListItem"></typeparam>
-        /// <param name="listUrl">List url</param>
-        /// <returns></returns>
-        public IQueryable<TListItem> List<TListItem>(Uri listUrl)
-           where TListItem : class, IListItemEntity
-        {
-            return View<TListItem>(listUrl, null);
-        }
-
-        /// <summary>
-        /// SP List
-        /// </summary>
-        /// <typeparam name="TListItem"></typeparam>
-        /// <param name="listId">List id</param>
-        /// <returns></returns>
-        public IQueryable<TListItem> List<TListItem>(Guid listId)
-          where TListItem : class, IListItemEntity
-        {
-            return View<TListItem>(listId, null);
-        }
-
-        public IQueryable<TListItem> List<TListItem>(SpQueryArgs<ISpEntryDataContext> args)
-          where TListItem : class, IListItemEntity
-        {
-            return new SpEntityQueryable<TListItem>(args);
-        }
-
-        /// <summary>
-        /// SP Query (Caml)
-        /// </summary>
-        /// <typeparam name="TListItem"></typeparam>
-        /// <param name="items">Linq query</param>
-        /// <param name="disableFormatting">Disable formatting</param>
-        /// <returns></returns>
-        public virtual string Query<TListItem>(IQueryable<TListItem> items, bool disableFormatting = false)
-               where TListItem : class, IListItemEntity
-        {
-            if (items is SpEntityQueryable<TListItem>)
-            {
-                return GenerateQuery(items as SpEntityQueryable<TListItem>, disableFormatting);
-            }
-            return null;
-        }
-
-        public IQueryable<TListItem> Query<TListItem>()
-        where TListItem : class, IListItemEntity
-        {
-            var listAtt = AttributeHelper.GetCustomAttributes<TListItem, ListAttribute>(false).FirstOrDefault();
-            if (listAtt != null)
-            {
-                if (!string.IsNullOrEmpty(listAtt.Title))
-                {
-                    return List<TListItem>(new SpQueryArgs<ISpEntryDataContext>(this, listAtt.Title, "", default, null) { SkipResult = true });
-                }
-                if (!string.IsNullOrEmpty(listAtt.Url))
-                {
-                    return List<TListItem>(new SpQueryArgs<ISpEntryDataContext>(this, null, listAtt.Url, default, null) { SkipResult = true });
-                }
-            }
-            return Enumerable.Empty<TListItem>().AsQueryable();
-        }
-
-        public IQueryable<TListItem> Query<TListItem>(string listTitle, string query = null)
-          where TListItem : class, IListItemEntity
-        {
-            return List<TListItem>(new SpQueryArgs<ISpEntryDataContext>(this, listTitle, "", default, query) { SkipResult = true });
-        }
-
-        public IQueryable<TListItem> Query<TListItem>(Uri listUrl, string query = null)
-         where TListItem : class, IListItemEntity
-        {
-            return List<TListItem>(new SpQueryArgs<ISpEntryDataContext>(this, null, listUrl.ToString(), default, query) { SkipResult = true });
-        }
-
-        public IQueryable<TListItem> Query<TListItem>(Guid listId, string query = null)
-          where TListItem : class, IListItemEntity
-        {
-            return List<TListItem>(new SpQueryArgs<ISpEntryDataContext>(this, null, null, listId, query) { SkipResult = true });
-        }
-
-        protected virtual string GenerateQuery<TListItem>(SpEntityQueryable<TListItem> items, bool disableFormatting = false)
-            where TListItem : class, IListItemEntity
-        {
-            return items.GetQueryInternal(disableFormatting);
-        }
-
-        public virtual bool SaveChanges()
-        {
-            var args = new SpSaveArgs() { Items = new List<ListItem>() };
-            OnBeforeSaveChanges?.Invoke(args);
-            if (args.HasChanges)
-            {
-                Context.ExecuteQuery();
-                OnAfterSaveChanges?.Invoke(args);
-            }
-            return args.HasChanges;
-        }
-
-        #endregion
-
-        #region IDisposable Methods
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        ~SpDataContext()
-        {
-            Dispose(false);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (Context != null)
-            {
-                try
-                {
-                    Context.Dispose();
-                }
-                catch { }
-                Context = null;
-            }
-        }
-        public virtual TProvisionModel CreateModel<TProvisionModel, TDataContext, TEntity>()
-          where TProvisionModel : SpProvisionModel<TDataContext, TEntity>
-          where TDataContext : class, ISpEntryDataContext
-          where TEntity : class, IListItemEntity
-        {
-            return (TProvisionModel)Activator.CreateInstance(typeof(TProvisionModel), new object[] { this });
-        }
-
-        #endregion
+      Check.NotNull(siteUrl, nameof(siteUrl));
+      SiteUrl = siteUrl;
+      Context = new ClientContext(siteUrl);
     }
+
+    public event Action<SpSaveArgs> OnBeforeSaveChanges;
+    public event Action<SpSaveArgs> OnAfterSaveChanges;
+
+    #endregion
+
+    #region Methods
+
+    public IQueryable<TListItem> View<TListItem>(string query)
+        where TListItem : class, IListItemEntity
+    {
+      var listAtt = AttributeHelper.GetCustomAttributes<TListItem, ListAttribute>(false).FirstOrDefault();
+      if (listAtt != null)
+      {
+        if (!string.IsNullOrEmpty(listAtt.Title))
+        {
+          return List<TListItem>(new SpQueryArgs<ISpEntryDataContext>(this, listAtt.Title, "", default, query));
+        }
+        if (!string.IsNullOrEmpty(listAtt.Url))
+        {
+          return List<TListItem>(new SpQueryArgs<ISpEntryDataContext>(this, null, listAtt.Url, default, query));
+        }
+      }
+      return Enumerable.Empty<TListItem>().AsQueryable();
+    }
+
+    public IQueryable<TListItem> View<TListItem>(string listTitle, string query)
+      where TListItem : class, IListItemEntity
+    {
+      return List<TListItem>(new SpQueryArgs<ISpEntryDataContext>(this, listTitle, "", default, query));
+    }
+
+    public IQueryable<TListItem> View<TListItem>(Uri listUrl, string query)
+        where TListItem : class, IListItemEntity
+    {
+      return List<TListItem>(new SpQueryArgs<ISpEntryDataContext>(this, null, Convert.ToString(listUrl), default, query));
+    }
+
+    public IQueryable<TListItem> View<TListItem>(Guid listId, string query)
+      where TListItem : class, IListItemEntity
+    {
+      return List<TListItem>(new SpQueryArgs<ISpEntryDataContext>(this, null, null, listId, query));
+    }
+
+    public IQueryable<TListItem> List<TListItem>()
+        where TListItem : class, IListItemEntity
+    {
+      return View<TListItem>(null);
+    }
+
+    /// <summary>
+    /// SP List
+    /// </summary>
+    /// <typeparam name="TListItem"></typeparam>
+    /// <param name="listTitle">List title</param>
+    /// <returns></returns>
+    public IQueryable<TListItem> List<TListItem>(string listTitle)
+        where TListItem : class, IListItemEntity
+    {
+      return View<TListItem>(listTitle, null);
+    }
+
+    /// <summary>
+    /// SP List
+    /// </summary>
+    /// <typeparam name="TListItem"></typeparam>
+    /// <param name="listUrl">List url</param>
+    /// <returns></returns>
+    public IQueryable<TListItem> List<TListItem>(Uri listUrl)
+       where TListItem : class, IListItemEntity
+    {
+      return View<TListItem>(listUrl, null);
+    }
+
+    /// <summary>
+    /// SP List
+    /// </summary>
+    /// <typeparam name="TListItem"></typeparam>
+    /// <param name="listId">List id</param>
+    /// <returns></returns>
+    public IQueryable<TListItem> List<TListItem>(Guid listId)
+      where TListItem : class, IListItemEntity
+    {
+      return View<TListItem>(listId, null);
+    }
+
+    public IQueryable<TListItem> List<TListItem>(SpQueryArgs<ISpEntryDataContext> args)
+      where TListItem : class, IListItemEntity
+    {
+      return new SpEntityQueryable<TListItem>(args);
+    }
+
+    public IQueryable<TListItem> Query<TListItem>()
+    where TListItem : class, IListItemEntity
+    {
+      var listAtt = AttributeHelper.GetCustomAttributes<TListItem, ListAttribute>(false).FirstOrDefault();
+      if (listAtt != null)
+      {
+        if (!string.IsNullOrEmpty(listAtt.Title))
+        {
+          return List<TListItem>(new SpQueryArgs<ISpEntryDataContext>(this, listAtt.Title, "", default, null) { SkipResult = true });
+        }
+        if (!string.IsNullOrEmpty(listAtt.Url))
+        {
+          return List<TListItem>(new SpQueryArgs<ISpEntryDataContext>(this, null, listAtt.Url, default, null) { SkipResult = true });
+        }
+      }
+      return Enumerable.Empty<TListItem>().AsQueryable();
+    }
+
+    public IQueryable<TListItem> Query<TListItem>(string listTitle, string query = null)
+      where TListItem : class, IListItemEntity
+    {
+      return List<TListItem>(new SpQueryArgs<ISpEntryDataContext>(this, listTitle, "", default, query) { SkipResult = true });
+    }
+
+    public IQueryable<TListItem> Query<TListItem>(Uri listUrl, string query = null)
+     where TListItem : class, IListItemEntity
+    {
+      return List<TListItem>(new SpQueryArgs<ISpEntryDataContext>(this, null, listUrl.ToString(), default, query) { SkipResult = true });
+    }
+
+    public IQueryable<TListItem> Query<TListItem>(Guid listId, string query = null)
+      where TListItem : class, IListItemEntity
+    {
+      return List<TListItem>(new SpQueryArgs<ISpEntryDataContext>(this, null, null, listId, query) { SkipResult = true });
+    }
+
+    public virtual bool SaveChanges()
+    {
+      var args = new SpSaveArgs() { Items = new List<ListItem>() };
+      OnBeforeSaveChanges?.Invoke(args);
+      if (args.HasChanges)
+      {
+        Context.ExecuteQuery();
+        OnAfterSaveChanges?.Invoke(args);
+      }
+      return args.HasChanges;
+    }
+
+    #endregion
+
+    #region IDisposable Methods
+
+    public void Dispose()
+    {
+      Dispose(true);
+      GC.SuppressFinalize(this);
+    }
+
+    ~SpDataContext()
+    {
+      Dispose(false);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+      if (Context != null)
+      {
+        try
+        {
+          Context.Dispose();
+        }
+        catch { }
+        Context = null;
+      }
+    }
+    public virtual TProvisionModel CreateModel<TProvisionModel, TDataContext, TEntity>()
+      where TProvisionModel : SpProvisionModel<TDataContext, TEntity>
+      where TDataContext : class, ISpEntryDataContext
+      where TEntity : class, IListItemEntity
+    {
+      return (TProvisionModel)Activator.CreateInstance(typeof(TProvisionModel), new object[] { this });
+    }
+
+    #endregion
+  }
 }

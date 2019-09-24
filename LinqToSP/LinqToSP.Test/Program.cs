@@ -36,21 +36,34 @@ namespace LinqToSP.Test
       {
         var clientContext = ctx.Context;
         clientContext.Credentials = new SharePointOnlineCredentials(userLogin, string.IsNullOrWhiteSpace(userPassword) ? GetPassword() : ConvertToSecureString(userPassword));
-        //Deploy(ctx);
+        Deploy(ctx);
 
-        //while (ctx.List<Employee>().Take(100).DeleteAll())
-        //{
-        //  ctx.SaveChanges();
-        //}
+        while (ctx.List<Employee>().Take(100).DeleteAll())
+        {
+          ctx.SaveChanges();
+        }
 
-        //ctx.List<Employee>().AddOrUpdate(new Employee()
-        //{
-        //  FirstName = "FirstName 1",
-        //  LastName = "LastName 1",
-        //  Position = EmployeePosition.Specialist
-        //}, 1);
+        ctx.List<Employee>().AddOrUpdate(new Employee()
+        {
+          Title = "Manager 1",
+          FirstName = "FirstName 1",
+          LastName = "LastName 1",
+          Position = EmployeePosition.Manager
+        }, 1);
 
-        //ctx.SaveChanges();
+        var specialist = new Employee()
+        {
+          Title = "Specialist 1",
+          FirstName = "FirstName 2",
+          LastName = "LastName 2",
+          Position = EmployeePosition.Specialist,
+        };
+
+        specialist.Manager.EntityId = 1;
+
+        ctx.List<Employee>().AddOrUpdate(specialist, 2);
+
+        ctx.SaveChanges();
 
         var employee = ctx.List<Employee>().FirstOrDefault();
 

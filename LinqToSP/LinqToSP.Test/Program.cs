@@ -43,16 +43,16 @@ namespace LinqToSP.Test
         //  ctx.SaveChanges();
         //}
 
-        ctx.List<Employee>().AddOrUpdate(new Employee()
-        {
-          FirstName = "FirstName 1",
-          LastName = "LastName 1",
-          Position = EmployeePosition.Specialist
-        }, 1);
+        //ctx.List<Employee>().AddOrUpdate(new Employee()
+        //{
+        //  FirstName = "FirstName 1",
+        //  LastName = "LastName 1",
+        //  Position = EmployeePosition.Specialist
+        //}, 1);
 
-        ctx.SaveChanges();
+        //ctx.SaveChanges();
 
-        var employees = ctx.List<Employee>().ToList();
+        var employee = ctx.List<Employee>().FirstOrDefault();
 
         Console.ForegroundColor = ConsoleColor.Green;
         Console.WriteLine("Done!");

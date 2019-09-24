@@ -12,6 +12,8 @@ namespace LinqToSP.Test.Model
     {
       Manager = new SpEntityLookup<Employee>();
       string query = new SpEntitySet<Employee>().Where(employee => employee.Position == EmployeePosition.Manager).Caml(true, true);
+
+      //string query = new SpEntitySet<Employee>().Where(employee => Equals(employee.Position, EmployeePosition.Manager)).Caml(true, true);
       Managers = new SpEntitySet<Employee>(query);
     }
 

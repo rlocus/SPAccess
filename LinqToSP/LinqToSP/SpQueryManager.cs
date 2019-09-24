@@ -37,33 +37,13 @@ namespace SP.Client.Linq
       }
     }
 
-    private static string GetChoiceValue(Type valueType, object value)
-    {
-      if (value != null && valueType.IsEnum)
-      {
-        var choices = AttributeHelper.GetFieldAttributes<ChoiceAttribute>(valueType);
-        foreach (var choice in choices)
-        {
-          if (string.Equals(choice.Value.Value, value.ToString(), StringComparison.OrdinalIgnoreCase))
-          {
-            return choice.Key.Name;
-          }
-        }
-      }
-      return null;
-    }
-
     private static object GetFieldValue(FieldAttribute fieldAttr, Type valueType, object value)
     {
       if (value != null)
       {
         if (fieldAttr.DataType == FieldType.Choice || fieldAttr.DataType == FieldType.MultiChoice)
         {
-          value = GetChoiceValue(valueType, value);
-          if (value != null)
-          {
-            value = Enum.Parse(valueType, (string)value);
-          }
+          value = EnumExtensions.ParseChoiceValue(valueType, value.ToString());
         }
         else if (fieldAttr.DataType == FieldType.Lookup && (typeof(LookupFieldAttribute).IsAssignableFrom(fieldAttr.GetType()) || fieldAttr.GetType().IsSubclassOf(typeof(LookupFieldAttribute))))
         {
@@ -401,7 +381,7 @@ namespace SP.Client.Linq
             if (fieldMapping.DataType == FieldType.Choice || fieldMapping.DataType == FieldType.MultiChoice)
             {
               Type valueType = value.GetType();
-              value = GetChoiceValue(valueType, value);
+              value = EnumExtensions.GetChoiceValue(valueType, value);
             }
           }
           listItem[fieldMapping.Name] = value;

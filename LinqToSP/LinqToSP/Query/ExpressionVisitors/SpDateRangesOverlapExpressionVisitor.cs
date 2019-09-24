@@ -33,7 +33,7 @@ namespace SP.Client.Linq.Query.ExpressionVisitors
                 CamlFieldRef startTimeFieldRef = GetFieldRef(StartTimeFieldName, out dataType);
                 CamlFieldRef endTimeFieldRef = GetFieldRef(EndTimeFieldName, out dataType);
                 CamlFieldRef recurrenceDataFieldRef = GetFieldRef(RecurrenceDataFieldName, out dataType);
-                CamlValue value = GetValue(FieldType.DateTime);
+                CamlValue value = GetValue(Microsoft.SharePoint.Client.FieldType.DateTime);
                 value.IncludeTimeValue = null;
 
                 if (startTimeFieldRef == null || endTimeFieldRef == null || recurrenceDataFieldRef == null || value == null)

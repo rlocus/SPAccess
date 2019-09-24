@@ -129,7 +129,7 @@ namespace SP.Client.Linq.Infrastructure
           {
             if (view.Query != null)
             {
-              view.Query.ToString(disableFormatting);
+             return view.Query.ToString(disableFormatting);
             }
           }
           else

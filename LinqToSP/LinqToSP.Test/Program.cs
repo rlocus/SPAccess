@@ -38,10 +38,11 @@ namespace LinqToSP.Test
         clientContext.Credentials = new SharePointOnlineCredentials(userLogin, string.IsNullOrWhiteSpace(userPassword) ? GetPassword() : ConvertToSecureString(userPassword));
         Deploy(ctx);
 
-        while (ctx.List<Employee>().Take(100).DeleteAll())
-        {
-          ctx.SaveChanges();
-        }
+        // delete all items.
+        //while (ctx.List<Employee>().Take(100).DeleteAll())
+        //{
+        //  ctx.SaveChanges();
+        //}
 
         ctx.List<Employee>().AddOrUpdate(new Employee()
         {
@@ -65,10 +66,10 @@ namespace LinqToSP.Test
 
         ctx.SaveChanges();
 
-        var employee = ctx.List<Employee>().FirstOrDefault();
+        var employees = ctx.List<Employee>().ToArray();
 
         Console.ForegroundColor = ConsoleColor.Green;
-        Console.WriteLine("Done!");
+        //Console.WriteLine("Done!");
         Console.ResetColor();
       }
 

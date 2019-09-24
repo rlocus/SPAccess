@@ -161,6 +161,14 @@ namespace SP.Client.Linq.Infrastructure
           var fieldMapping = SpQueryArgs.FieldMappings[value.Key];
           if (fieldMapping.IsReadOnly) continue;
 
+          if(Entity.Id <= 0)
+          {
+            if (!OriginalValues.ContainsKey(value.Key) || Equals(default, value.Value))
+            {
+              continue;
+            }
+          }
+
           if (value.Value is ISpEntityLookup)
           {
             if (EntityId <= 0 || (!OriginalValues.ContainsKey(value.Key) || !Equals(OriginalValues[value.Key], (value.Value as ISpEntityLookup).EntityId)))
@@ -168,11 +176,18 @@ namespace SP.Client.Linq.Infrastructure
               if (EntityId > 0)
               {
                 if (!OriginalValues.ContainsKey(value.Key) && Equals(default, value.Value)) continue;
-                CurrentValues[value.Key] = (value.Value as ISpEntityLookup).EntityId;
+
+                if (OriginalValues[value.Key] == null || !Equals((OriginalValues[value.Key] as ISpEntityLookup).EntityId, (value.Value as ISpEntityLookup).EntityId))
+                {
+                  CurrentValues[value.Key] = (value.Value as ISpEntityLookup).EntityId;
+                }
               }
               else
               {
-                CurrentValues[value.Key] = (value.Value as ISpEntityLookup).EntityId;
+                if ((value.Value as ISpEntityLookup).EntityId > 0)
+                {
+                  CurrentValues[value.Key] = (value.Value as ISpEntityLookup).EntityId;
+                }
               }
             }
           }
@@ -183,7 +198,10 @@ namespace SP.Client.Linq.Infrastructure
               if (EntityId > 0)
               {
                 if (!OriginalValues.ContainsKey(value.Key) && Equals(default, value.Value)) continue;
-                CurrentValues[value.Key] = (value.Value as ISpEntityLookupCollection).EntityIds;
+                if (OriginalValues[value.Key] == null || !Equals((OriginalValues[value.Key] as ISpEntityLookupCollection).EntityIds, (value.Value as ISpEntityLookupCollection).EntityIds))
+                {
+                  CurrentValues[value.Key] = (value.Value as ISpEntityLookupCollection).EntityIds;
+                }
               }
               else
               {
@@ -224,7 +242,7 @@ namespace SP.Client.Linq.Infrastructure
         lock (_lock)
         {
           var originalEntity = Entity;
-          if(originalEntity != null && originalEntity.Id > 0 && EntityId != originalEntity.Id)
+          if (originalEntity != null && originalEntity.Id > 0 && EntityId != originalEntity.Id)
           {
             EntityId = originalEntity.Id;
           }

@@ -56,6 +56,7 @@ namespace LinqToSP.Test.Model
     public ISpEntityLookup<Employee> Manager
     {
       get;
+      //set;
     }
 
     public ISpEntitySet<Employee> Managers

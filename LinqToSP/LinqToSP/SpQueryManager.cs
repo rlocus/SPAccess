@@ -272,27 +272,19 @@ namespace SP.Client.Linq
       foreach (var fieldMap in _args.FieldMappings)
       {
         PropertyInfo prop = entity.GetType().GetProperty(fieldMap.Key, BindingFlags.Public | BindingFlags.Instance);
-        if (null != prop && prop.CanWrite)
+        if (null != prop)
         {
           if (item.FieldValues.ContainsKey(fieldMap.Value.Name))
           {
             object value = item[fieldMap.Value.Name];
             if (!SetEntityLookup(prop.PropertyType, prop.GetValue(entity), value))
             {
-              value = GetFieldValue(fieldMap.Value, prop.PropertyType, value);
-
-              //if (typeof(ISpEntityLookup).IsAssignableFrom(prop.PropertyType) && value != null)
-              //{
-              //    var entitySet = (ISpEntityLookup)prop.GetValue(entity);
-              //    if (entitySet != null)
-              //    {
-              //        int entityId = ((FieldLookupValue)GetFieldValue(fieldMap.Value, typeof(FieldLookupValue), value)).LookupId;
-              //        entitySet.EntityId = entityId;
-              //    }
-              //}
-
-              value = SpConverter.ConvertValue(value, prop.PropertyType);
-              prop.SetValue(entity, value);
+              if (prop.CanWrite)
+              {
+                value = GetFieldValue(fieldMap.Value, prop.PropertyType, value);
+                value = SpConverter.ConvertValue(value, prop.PropertyType);
+                prop.SetValue(entity, value);
+              }
             }
           }
         }

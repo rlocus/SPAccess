@@ -30,6 +30,8 @@ namespace SP.Client.Linq.Attributes
 
         public virtual FieldType DataType { get; set; }
 
+        public int Order { get; set; }
+
         public override string ToString()
         {
             if (!string.IsNullOrWhiteSpace(Name))

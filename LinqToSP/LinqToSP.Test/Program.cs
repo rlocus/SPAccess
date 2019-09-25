@@ -12,124 +12,125 @@ using System.Threading.Tasks;
 
 namespace LinqToSP.Test
 {
-  class Program
-  {
-    static void Main(string[] args)
+    class Program
     {
-      string siteUrl = ConfigurationManager.AppSettings["siteUrl"];
-      while (string.IsNullOrWhiteSpace(siteUrl))
-      {
-        Console.WriteLine("Enter Site Url: ");
-        siteUrl = Console.ReadLine();
-      }
-
-      string userLogin = ConfigurationManager.AppSettings["userLogin"];
-      while (string.IsNullOrWhiteSpace(userLogin))
-      {
-        Console.WriteLine("Enter User Login: ");
-        userLogin = Console.ReadLine();
-      }
-
-      string userPassword = ConfigurationManager.AppSettings["userPassword"];
-
-      using (var ctx = new SpDataContext(siteUrl))
-      {
-        var clientContext = ctx.Context;
-        clientContext.Credentials = new SharePointOnlineCredentials(userLogin, string.IsNullOrWhiteSpace(userPassword) ? GetPassword() : ConvertToSecureString(userPassword));
-        Deploy(ctx);
-
-        // delete all items.
-        //while (ctx.List<Employee>().Take(100).DeleteAll())
-        //{
-        //  ctx.SaveChanges();
-        //}
-
-        ctx.List<Employee>().AddOrUpdate(new Employee()
+        static void Main(string[] args)
         {
-          Title = "Manager 1",
-          FirstName = "FirstName 1",
-          LastName = "LastName 1",
-          Position = EmployeePosition.Manager
-        }, 1);
-
-        var specialist = new Employee()
-        {
-          Title = "Specialist 1",
-          FirstName = "FirstName 2",
-          LastName = "LastName 2",
-          Position = EmployeePosition.Specialist,
-        };
-
-        specialist.Manager.EntityId = 1;
-
-        ctx.List<Employee>().AddOrUpdate(specialist, 2);
-
-        ctx.SaveChanges();
-
-        var employees = ctx.List<Employee>().ToArray();
-
-        Console.ForegroundColor = ConsoleColor.Green;
-        //Console.WriteLine("Done!");
-        Console.ResetColor();
-      }
-
-      Console.ReadKey();
-    }
-
-    private static void Deploy(SpDataContext spContext)
-    {
-      Console.WriteLine("Deploying...");
-      var model = spContext.CreateModel<EmployeeProvisionModel<SpDataContext>, SpDataContext, Employee>();
-      model.Provision();
-      Console.ForegroundColor = ConsoleColor.Green;
-      Console.WriteLine("Done!");
-      Console.ResetColor();
-    }
-
-    private static SecureString GetPassword()
-    {
-      Console.WriteLine("Enter Password: ");
-
-      ConsoleKeyInfo info;
-      //Get the user's password as a SecureString  
-      SecureString securePassword = new SecureString();
-      do
-      {
-        info = Console.ReadKey(true);
-        if (info.Key != ConsoleKey.Enter && info.Key != ConsoleKey.LeftArrow && info.Key != ConsoleKey.RightArrow)
-        {
-          if (info.Key == ConsoleKey.Backspace || info.Key == ConsoleKey.Delete)
-          {
-            if (securePassword.Length > 0)
+            string siteUrl = ConfigurationManager.AppSettings["siteUrl"];
+            while (string.IsNullOrWhiteSpace(siteUrl))
             {
-              securePassword.RemoveAt(securePassword.Length - 1);
+                Console.WriteLine("Enter Site Url: ");
+                siteUrl = Console.ReadLine();
             }
-            Console.Write("\b \b");
-          }
-          else
-          {
-            securePassword.AppendChar(info.KeyChar);
-            Console.Write("*");
-          }
+
+            string userLogin = ConfigurationManager.AppSettings["userLogin"];
+            while (string.IsNullOrWhiteSpace(userLogin))
+            {
+                Console.WriteLine("Enter User Login: ");
+                userLogin = Console.ReadLine();
+            }
+
+            string userPassword = ConfigurationManager.AppSettings["userPassword"];
+
+            using (var ctx = new SpDataContext(siteUrl))
+            {
+                var clientContext = ctx.Context;
+                clientContext.Credentials = new SharePointOnlineCredentials(userLogin, string.IsNullOrWhiteSpace(userPassword) ? GetPassword() : ConvertToSecureString(userPassword));
+
+                Deploy(ctx);
+
+                // delete all items.
+                //while (ctx.List<Employee>().Take(100).DeleteAll())
+                //{
+                //  ctx.SaveChanges();
+                //}
+
+                ctx.List<Employee>().AddOrUpdate(new Employee()
+                {
+                    Title = "Manager 1",
+                    FirstName = "Sophia",
+                    LastName = "LastName 1",
+                    Position = EmployeePosition.Manager
+                }, 1);
+
+                var specialist = new Employee()
+                {
+                    Title = "Specialist 1",
+                    FirstName = "FirstName 2",
+                    LastName = "LastName 2",
+                    Position = EmployeePosition.Specialist,
+                };
+
+                specialist.Manager.EntityId = 1;
+
+                ctx.List<Employee>().AddOrUpdate(specialist, 2);
+
+                ctx.SaveChanges();
+
+                var employees = ctx.List<Employee>().ToArray();
+
+                Console.ForegroundColor = ConsoleColor.Green;
+                //Console.WriteLine("Done!");
+                Console.ResetColor();
+            }
+
+            Console.ReadKey();
         }
-      }
-      while (info.Key != ConsoleKey.Enter);
-      return securePassword;
+
+        private static void Deploy(SpDataContext spContext)
+        {
+            Console.WriteLine("Deploying...");
+            var model = spContext.CreateModel<EmployeeProvisionModel<SpDataContext>, SpDataContext, Employee>();
+            model.Provision();
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("Done!");
+            Console.ResetColor();
+        }
+
+        private static SecureString GetPassword()
+        {
+            Console.WriteLine("Enter Password: ");
+
+            ConsoleKeyInfo info;
+            //Get the user's password as a SecureString  
+            SecureString securePassword = new SecureString();
+            do
+            {
+                info = Console.ReadKey(true);
+                if (info.Key != ConsoleKey.Enter && info.Key != ConsoleKey.LeftArrow && info.Key != ConsoleKey.RightArrow)
+                {
+                    if (info.Key == ConsoleKey.Backspace || info.Key == ConsoleKey.Delete)
+                    {
+                        if (securePassword.Length > 0)
+                        {
+                            securePassword.RemoveAt(securePassword.Length - 1);
+                        }
+                        Console.Write("\b \b");
+                    }
+                    else
+                    {
+                        securePassword.AppendChar(info.KeyChar);
+                        Console.Write("*");
+                    }
+                }
+            }
+            while (info.Key != ConsoleKey.Enter);
+            return securePassword;
+        }
+
+        private static SecureString ConvertToSecureString(string password)
+        {
+            if (password == null)
+                throw new ArgumentNullException("password");
+
+            var securePassword = new SecureString();
+
+            foreach (char c in password)
+                securePassword.AppendChar(c);
+
+            securePassword.MakeReadOnly();
+            return securePassword;
+        }
+
     }
-
-    private static SecureString ConvertToSecureString(string password)
-    {
-      if (password == null)
-        throw new ArgumentNullException("password");
-
-      var securePassword = new SecureString();
-
-      foreach (char c in password)
-        securePassword.AppendChar(c);
-
-      securePassword.MakeReadOnly();
-      return securePassword;
-    }
-
-  }
 }

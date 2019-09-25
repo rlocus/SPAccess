@@ -13,6 +13,12 @@ namespace SP.Client.Linq.Provisioning
     {
         public TContext Context { get; }
 
+        private List _list;
+
+        private Dictionary<ContentType, ContentTypeProvisionHandler<TContext, TEntity>> _contentTypes;
+
+        private Dictionary<Field, FieldProvisionHandler<TContext, TEntity>> _fields;
+
         private List<SpProvisionHandler<TContext, TEntity>> ProvisionHandlers { get; set; }
 
         public SpProvisionModel(TContext context)
@@ -26,7 +32,7 @@ namespace SP.Client.Linq.Provisioning
             ProvisionHandlers = new List<SpProvisionHandler<TContext, TEntity>>();
             var contentTypes = AttributeHelper.GetCustomAttributes<TEntity, ContentTypeAttribute>(true);
             var list = AttributeHelper.GetCustomAttributes<TEntity, ListAttribute>(false).FirstOrDefault();
-            var fields = AttributeHelper.GetFieldAttributes<TEntity, FieldAttribute>().Concat(AttributeHelper.GetPropertyAttributes<TEntity, FieldAttribute>());
+            var fields = AttributeHelper.GetFieldAttributes<TEntity, FieldAttribute>().Concat(AttributeHelper.GetPropertyAttributes<TEntity, FieldAttribute>()).OrderBy(f => f.Value.Order);
 
             if (list != null)
             {
@@ -46,7 +52,7 @@ namespace SP.Client.Linq.Provisioning
                 }
             }
 
-            foreach (var field in fields)
+            foreach (var field in fields.OrderBy(f => typeof(CalculatedFieldAttribute).IsAssignableFrom(f.Value.GetType()) ? 1 : 0))
             {
                 if (typeof(DependentLookupFieldAttribute).IsAssignableFrom(field.Value.GetType()))
                 {
@@ -75,14 +81,6 @@ namespace SP.Client.Linq.Provisioning
             }
         }
 
-        protected virtual void FieldHandler_OnProvisioning(FieldProvisionHandler<TContext, TEntity> handler, Field field)
-        {
-        }
-
-        protected virtual void FieldHandler_OnProvisioned(FieldProvisionHandler<TContext, TEntity> handler, Field field)
-        {
-        }
-
         protected virtual void ListHandler_OnProvisioning(ListProvisionHandler<TContext, TEntity> handler, List list)
         {
             if (ProvisionHandlers != null && ProvisionHandlers.Any(h => typeof(ContentTypeProvisionHandler<TContext, TEntity>).IsAssignableFrom(h.GetType())))
@@ -93,6 +91,7 @@ namespace SP.Client.Linq.Provisioning
 
         protected virtual void ListHandler_OnProvisioned(ListProvisionHandler<TContext, TEntity> handler, List list)
         {
+            _list = list;
         }
 
         protected virtual void ContentTypeHandler_OnProvisioning(ContentTypeProvisionHandler<TContext, TEntity> handler, ContentType contentType)
@@ -101,16 +100,91 @@ namespace SP.Client.Linq.Provisioning
 
         protected virtual void ContentTypeHandler_OnProvisioned(ContentTypeProvisionHandler<TContext, TEntity> handler, ContentType contentType)
         {
+            _contentTypes.Add(contentType, handler);
+        }
+
+        protected virtual void FieldHandler_OnProvisioning(FieldProvisionHandler<TContext, TEntity> handler, Field field)
+        {
+        }
+
+        protected virtual void FieldHandler_OnProvisioned(FieldProvisionHandler<TContext, TEntity> handler, Field field)
+        {
+            _fields.Add(field, handler);
         }
 
         public void Provision()
         {
             if (ProvisionHandlers != null)
             {
+                _list = null;
+                _contentTypes = new Dictionary<ContentType, ContentTypeProvisionHandler<TContext, TEntity>>();
+                _fields = new Dictionary<Field, FieldProvisionHandler<TContext, TEntity>>();
+
                 foreach (var provisionHandler in ProvisionHandlers)
                 {
                     if (provisionHandler != null)
                         provisionHandler.Provision();
+                }
+
+                if (_list != null)
+                {
+                    var fieldOrdered = _fields.Keys.ToArray();
+                    Array.Sort(fieldOrdered, new Comparison<Field>(
+                        (f1, f2) => _fields[f1].Field.Order.CompareTo(_fields[f2].Field.Order)));
+
+                    string[] fieldNames = fieldOrdered.Select(f => f.InternalName).ToArray();
+                    if (fieldNames.Length > 0)
+                    {
+                        var contentTypes = _list.ContentTypes;
+                        _list.Context.Load(contentTypes);
+                        _list.Context.ExecuteQuery();
+                        foreach (ContentType contentType in contentTypes)
+                        {
+                            if (contentType.Sealed) continue;
+
+                            var fieldLinks = contentType.FieldLinks;
+                            contentType.Context.Load(fieldLinks);
+                            contentType.Context.ExecuteQuery();
+
+                            var fieldLinkNames = fieldLinks.Select(f => f.Name).ToList();
+                            foreach(string fieldName in fieldNames)
+                            {
+                                fieldLinkNames.Remove(fieldName);
+                            }
+                            foreach (string fieldName in fieldNames)
+                            {
+                                fieldLinkNames.Add(fieldName);
+                            }
+
+                            contentType.FieldLinks.Reorder(fieldLinkNames.ToArray());
+                            contentType.Update(false);
+                        }
+                        _list.Context.ExecuteQuery();
+
+                        View view = _list.DefaultView;
+                        view.Context.Load(view.ViewFields);
+                        view.Context.ExecuteQuery();
+                        var viewFields = view.ViewFields.ToList();
+                        view.ViewFields.RemoveAll();
+
+                        foreach (string viewField in fieldNames)
+                        {
+                            viewFields.Remove(viewField);
+                        }
+
+                        foreach (string viewField in fieldNames)
+                        {
+                            viewFields.Add(viewField);
+                        }
+
+                        foreach (string viewField in viewFields)
+                        {
+                            view.ViewFields.Add(viewField);
+                        }
+
+                        view.Update();
+                        view.Context.ExecuteQuery();
+                    }
                 }
             }
         }

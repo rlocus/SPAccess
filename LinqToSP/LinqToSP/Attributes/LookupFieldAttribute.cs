@@ -21,6 +21,8 @@ namespace SP.Client.Linq.Attributes
         {
         }
 
+        public override FieldType DataType { get => FieldType.Lookup; set => base.DataType = value; }
+
         public LookupItemResult Result { get; set; }
 
         public bool IsMultiple { get; set; }

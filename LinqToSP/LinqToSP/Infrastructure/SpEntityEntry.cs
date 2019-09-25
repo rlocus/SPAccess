@@ -163,7 +163,7 @@ namespace SP.Client.Linq.Infrastructure
 
           if(Entity.Id <= 0)
           {
-            if (!OriginalValues.ContainsKey(value.Key) || Equals(default, value.Value))
+            if (Equals(default, value.Value))
             {
               continue;
             }

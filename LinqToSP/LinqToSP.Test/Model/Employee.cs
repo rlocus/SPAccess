@@ -11,10 +11,22 @@ namespace LinqToSP.Test.Model
         public Employee()
         {
             Manager = new SpEntityLookup<Employee>();
+            Department = new SpEntityLookup<Department>();
             string query = new SpEntitySet<Employee>().Where(employee => employee.Position == EmployeePosition.Manager).Caml(true, true);
-
-            //string query = new SpEntitySet<Employee>().Where(employee => Equals(employee.Position, EmployeePosition.Manager)).Caml(true, true);
             Managers = new SpEntitySet<Employee>(query);
+        }
+
+        public override string Title
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(base.Title))
+                {
+                    base.Title = string.Join(" ", new[] { FirstName, LastName });
+                }
+                return base.Title;
+            }
+            set => base.Title = value;
         }
 
         [CalculatedField(Name = "FullName", Title = "Full Name", Order = 0, Formula = "=CONCATENATE([FirstName], \" \", [LastName])", FieldRefs = new[] { "FirstName", "LastName" })]
@@ -36,7 +48,7 @@ namespace LinqToSP.Test.Model
         {
             get;
             set;
-        }     
+        }
 
         [Field(Name = "Position", Title = "Position", Order = 3, DataType = FieldType.Choice)]
         public EmployeePosition Position
@@ -63,12 +75,25 @@ namespace LinqToSP.Test.Model
         public ISpEntityLookup<Employee> Manager
         {
             get;
-            //set;
+
         }
 
         public ISpEntitySet<Employee> Managers
         {
             get;
+        }
+
+        [Field(Name = "Department", Title = "Department", DataType = FieldType.Lookup, Order = 7)]
+        public ISpEntityLookup<Department> Department
+        {
+            get;
+        }
+
+        [LookupField(Name = "Department", Result = LookupItemResult.Id)]
+        public int DepartmentId
+        {
+            get;
+            set;
         }
     }
 

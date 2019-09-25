@@ -40,13 +40,14 @@ namespace SP.Client.Linq.Provisioning
 
         private List GetLookupList(Type lookupEntityType)
         {
-            var listAtt = AttributeHelper.GetCustomAttributes<ListAttribute>(lookupEntityType, false).FirstOrDefault();
-            if (listAtt != null)
+            var lookupList = AttributeHelper.GetCustomAttributes<ListAttribute>(lookupEntityType, false).FirstOrDefault();
+            if (lookupList != null)
             {
                 var context = Model.Context.Context;
-                var list = listAtt.Title != null
-                           ? context.Web.Lists.GetByTitle(listAtt.Title)
-                           : (listAtt.Url != null ? context.Web.GetList($"{ Model.Context.SiteUrl.TrimEnd('/')}/{listAtt.Url.TrimStart('/')}") : null);
+                List list = !string.IsNullOrEmpty(lookupList.Url)
+                        ? context.Web.GetList($"{ Model.Context.SiteUrl.TrimEnd('/')}/{lookupList.Url.TrimStart('/')}")
+                        : (!string.IsNullOrEmpty(lookupList.Title) ? context.Web.Lists.GetByTitle(lookupList.Title) : null);
+
                 if (list != null)
                 {
                     context.Load(list);
@@ -69,9 +70,9 @@ namespace SP.Client.Linq.Provisioning
 
                 if (_list != null)
                 {
-                    list = _list.Title != null
-                        ? context.Web.Lists.GetByTitle(_list.Title)
-                        : (_list.Url != null ? context.Web.GetList($"{ Model.Context.SiteUrl.TrimEnd('/')}/{_list.Url.TrimStart('/')}") : null);
+                    list = _list.Url != null
+                      ? context.Web.GetList($"{ Model.Context.SiteUrl.TrimEnd('/')}/{_list.Url.TrimStart('/')}")
+                      : (_list.Title != null ? context.Web.Lists.GetByTitle(_list.Title) : null);
                 }
 
                 if (_contentType != null)
@@ -159,6 +160,7 @@ namespace SP.Client.Linq.Provisioning
                                     formula = formula.Replace($"[{refField.InternalName}]", $"[{refField.Title}]");
                                 }
                             }
+
                             fieldXml = string.Format(fieldXml, System.Security.SecurityElement.Escape(formula), fieldRefs, (_field as CalculatedFieldAttribute).ResultType);
                             field = fields.AddFieldAsXml(fieldXml, true, AddFieldOptions.AddFieldInternalNameHint);
                             field.FieldTypeKind = _field.DataType;
@@ -171,21 +173,21 @@ namespace SP.Client.Linq.Provisioning
                     }
                     else
                     {
-                        field = fields.AddFieldAsXml(fieldXml, true, AddFieldOptions.AddFieldInternalNameHint);
-                        field.FieldTypeKind = _field.DataType;
-                        field.Required = _field.Required;
-                        field.ReadOnlyField = _field.IsReadOnly;
-
                         if (_field.DataType == FieldType.Lookup)
                         {
-                            var lookupField = context.CastTo<FieldLookup>(field);
-                            if (typeof(LookupFieldAttribute).IsAssignableFrom(_field.GetType()))
-                            {
-                                lookupField.AllowMultipleValues = (_field as LookupFieldAttribute).IsMultiple;
-                            }
-
                             if (_valueType != null && typeof(ISpEntityLookup).IsAssignableFrom(_valueType) || typeof(ISpEntityLookupCollection).IsAssignableFrom(_valueType))
                             {
+                                field = fields.AddFieldAsXml(fieldXml, true, AddFieldOptions.AddFieldInternalNameHint);
+                                field.FieldTypeKind = _field.DataType;
+                                field.Required = _field.Required;
+                                field.ReadOnlyField = _field.IsReadOnly;
+
+                                var lookupField = context.CastTo<FieldLookup>(field);
+                                if (typeof(LookupFieldAttribute).IsAssignableFrom(_field.GetType()))
+                                {
+                                    lookupField.AllowMultipleValues = (_field as LookupFieldAttribute).IsMultiple;
+                                }
+
                                 Type lookupEntityType = _valueType.GenericTypeArguments.FirstOrDefault();
                                 var lookupList = GetLookupList(lookupEntityType);
                                 if (lookupList != null)
@@ -193,31 +195,50 @@ namespace SP.Client.Linq.Provisioning
                                     lookupField.LookupList = lookupList.Id.ToString();
                                     lookupField.LookupField = "Title";
                                 }
+
+                                OnProvisioning?.Invoke(this, lookupField);
                             }
-                            OnProvisioning?.Invoke(this, lookupField);
+                            else
+                            {
+                                field = null;
+                            }
                         }
                         else if ((_field.DataType == FieldType.Choice || _field.DataType == FieldType.MultiChoice) && _valueType.IsEnum)
                         {
+                            field = fields.AddFieldAsXml(fieldXml, true, AddFieldOptions.AddFieldInternalNameHint);
+                            field.FieldTypeKind = _field.DataType;
+                            field.Required = _field.Required;
+                            field.ReadOnlyField = _field.IsReadOnly;
+
                             var choiceField = context.CastTo<FieldChoice>(field);
                             var choices = AttributeHelper.GetFieldAttributes<ChoiceAttribute>(_valueType).Select(choice => choice.Value);
                             choiceField.Choices = choices.OrderBy(choice => choice.Index).Select(choice => choice.Value).ToArray();
+
                             OnProvisioning?.Invoke(this, choiceField);
                         }
                         else
                         {
+                            field = fields.AddFieldAsXml(fieldXml, true, AddFieldOptions.AddFieldInternalNameHint);
+                            field.FieldTypeKind = _field.DataType;
+                            field.Required = _field.Required;
+                            field.ReadOnlyField = _field.IsReadOnly;
+
                             OnProvisioning?.Invoke(this, field);
                         }
                     }
-                    field.Update();
-                    context.Load(field);
-                    context.ExecuteQuery();
+                    if (field != null)
+                    {
+                        field.Update();
+                        context.Load(field);
+                        context.ExecuteQuery();
 
-                    OnProvisioned?.Invoke(this, field);
+                        OnProvisioned?.Invoke(this, field);
+                    }
                 }
 
                 //OnProvisioned?.Invoke(this, field);
 
-                if (contentType != null)
+                if (contentType != null && field != null)
                 {
                     Guid fieldId = field.Id;
                     var fieldLink = contentType.FieldLinks.GetById(fieldId);

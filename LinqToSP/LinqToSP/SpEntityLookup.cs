@@ -31,14 +31,7 @@ namespace SP.Client.Linq
             var listAtt = AttributeHelper.GetCustomAttributes<TEntity, ListAttribute>(false).FirstOrDefault();
             if (listAtt != null)
             {
-                if (!string.IsNullOrEmpty(listAtt.Title))
-                {
-                    SpQueryArgs = new SpQueryArgs<ISpEntryDataContext>(context, listAtt.Title, "", default, null);
-                }
-                if (!string.IsNullOrEmpty(listAtt.Url))
-                {
-                    SpQueryArgs = new SpQueryArgs<ISpEntryDataContext>(context, null, listAtt.Url, default, null);
-                }
+                SpQueryArgs = new SpQueryArgs<ISpEntryDataContext>(context, listAtt.Title, listAtt.Url, default, null);
             }
         }
 

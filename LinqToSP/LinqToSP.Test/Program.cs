@@ -4,6 +4,7 @@ using SP.Client.Linq;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Diagnostics;
 using System.Linq;
 using System.Security;
 using System.Text;
@@ -39,36 +40,20 @@ namespace LinqToSP.Test
 
                 Deploy(ctx);
 
-                // delete all items.
-                //while (ctx.List<Employee>().Take(100).DeleteAll())
-                //{
-                //  ctx.SaveChanges();
-                //}
+                ImportData(ctx, false);
 
-                ctx.List<Employee>().AddOrUpdate(new Employee()
+                var departments = ctx.List<Department>().ToArray();
+
+                var employees = departments.First().Employees.ToArray();
+
+                if (!employees.Any())
                 {
-                    Title = "Manager 1",
-                    FirstName = "Sophia",
-                    LastName = "LastName 1",
-                    Position = EmployeePosition.Manager
-                }, 1);
+                    employees = ctx.List<Employee>().ToArray();
+                }
 
-                var specialist = new Employee()
-                {
-                    Title = "Specialist 1",
-                    FirstName = "FirstName 2",
-                    LastName = "LastName 2",
-                    Position = EmployeePosition.Specialist,
-                };
+                var managers = employees.First().Managers.ToArray();
 
-                specialist.Manager.EntityId = 1;
-
-                ctx.List<Employee>().AddOrUpdate(specialist, 2);
-
-                ctx.SaveChanges();
-
-                var employees = ctx.List<Employee>().ToArray();
-
+                Debugger.Break();
                 Console.ForegroundColor = ConsoleColor.Green;
                 //Console.WriteLine("Done!");
                 Console.ResetColor();
@@ -85,6 +70,53 @@ namespace LinqToSP.Test
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("Done!");
             Console.ResetColor();
+        }
+
+        private static void ImportData(SpDataContext spContext, bool clear)
+        {
+            if (clear)
+            {
+                //delete all items.
+                while (spContext.List<Department>().Take(100).DeleteAll())
+                {
+                    spContext.SaveChanges();
+                }
+                while (spContext.List<Employee>().Take(100).DeleteAll())
+                {
+                    spContext.SaveChanges();
+                }
+            }
+
+            spContext.List<Department>().AddOrUpdate(new Department()
+            {
+                Title = "Warner Brothers"
+            }, 1);
+
+            spContext.List<Employee>().AddOrUpdate(new Employee()
+            {
+                FirstName = "Emma",
+                LastName = "Stone",
+                Phone = "11-1111-111",
+                Email = "emma.stone@people.com",
+                Position = EmployeePosition.Manager
+            }, 1);
+
+            var specialist = new Employee()
+            {
+                FirstName = "Will",
+                LastName = "Smith",
+                Phone = "11-1143-222",
+                Email = "will.smith@people.com",
+                Position = EmployeePosition.Specialist,
+                DepartmentId = 1
+            };
+
+            specialist.Manager.EntityId = 1;
+            //specialist.Department.EntityId = 1;
+
+            spContext.List<Employee>().AddOrUpdate(specialist, 2);
+
+            spContext.SaveChanges();
         }
 
         private static SecureString GetPassword()

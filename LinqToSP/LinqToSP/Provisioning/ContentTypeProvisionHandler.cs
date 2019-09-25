@@ -44,9 +44,9 @@ namespace SP.Client.Linq.Provisioning
 
                 if (_list != null)
                 {
-                    list = _list.Title != null
-                        ? context.Web.Lists.GetByTitle(_list.Title)
-                        : (_list.Url != null ? context.Web.GetList($"{ Model.Context.SiteUrl.TrimEnd('/')}/{_list.Url.TrimStart('/')}") : null);
+                    list = _list.Url != null
+                                         ? context.Web.GetList($"{ Model.Context.SiteUrl.TrimEnd('/')}/{_list.Url.TrimStart('/')}")
+                                         : (_list.Title != null ? context.Web.Lists.GetByTitle(_list.Title) : null);
                 }
 
                 var newContentType = new ContentTypeCreationInformation()

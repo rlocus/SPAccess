@@ -25,9 +25,9 @@ namespace SP.Client.Linq.Provisioning
             {
                 var context = Model.Context.Context;
                 Web web = context.Web;
-                List list = _list.Title != null
-                        ? context.Web.Lists.GetByTitle(_list.Title)
-                        : (_list.Url != null ? context.Web.GetList($"{ Model.Context.SiteUrl.TrimEnd('/')}/{_list.Url.TrimStart('/')}") : null);
+                List list = _list.Url != null
+                        ? context.Web.GetList($"{ Model.Context.SiteUrl.TrimEnd('/')}/{_list.Url.TrimStart('/')}")
+                        : (_list.Title != null ? context.Web.Lists.GetByTitle(_list.Title) : null);
 
                 context.Load(list);
                 try

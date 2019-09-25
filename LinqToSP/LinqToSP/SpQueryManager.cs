@@ -155,9 +155,9 @@ namespace SP.Client.Linq
                 var clientContext = _args.Context.Context;
                 if (clientContext != null)
                 {
-                    return _args.ListTitle != null ? clientContext.Web.Lists.GetByTitle(_args.ListTitle) :
-                        (_args.ListUrl != null ? clientContext.Web.GetList($"{_args.Context.SiteUrl.TrimEnd('/')}/{_args.ListUrl.TrimStart('/')}")
-                        : clientContext.Web.Lists.GetById(_args.ListId));
+                    return !string.IsNullOrEmpty(_args.ListUrl) ? clientContext.Web.GetList($"{_args.Context.SiteUrl.TrimEnd('/')}/{_args.ListUrl.TrimStart('/')}") :
+                           (_args.ListId != default ? clientContext.Web.Lists.GetById(_args.ListId) :
+                           (!string.IsNullOrEmpty(_args.ListTitle) ? clientContext.Web.Lists.GetByTitle(_args.ListTitle) : null));
                 }
             }
             return null;
@@ -380,6 +380,20 @@ namespace SP.Client.Linq
                         {
                             Type valueType = value.GetType();
                             value = EnumExtensions.GetChoiceValue(valueType, value);
+                        }
+                        else if (fieldMapping.DataType == FieldType.Lookup)
+                        {
+                            if (typeof(LookupFieldAttribute).IsAssignableFrom(fieldMapping.GetType()))
+                            {
+                                if ((fieldMapping as LookupFieldAttribute).Result == LookupItemResult.Value)
+                                {
+                                    continue;
+                                }
+                                else if((fieldMapping as LookupFieldAttribute).IsMultiple)
+                                {
+                                    //TODO: update lookup field with multiple values.
+                                }
+                            }
                         }
                     }
                     listItem[fieldMapping.Name] = value;

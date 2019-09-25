@@ -11,7 +11,7 @@ namespace SP.Client.Linq.Query
         public string ListTitle { get; }
         public string ListUrl { get; }
         public Guid ListId { get; }
-        public string Query { get; }
+        public string Query { get; set; }
         public int BatchSize { get; set; }
         public bool IncludeItemPermissions { get; set; }
         internal Dictionary<string, FieldAttribute> FieldMappings { get; }

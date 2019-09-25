@@ -26,7 +26,7 @@ namespace SP.Client.Linq
 
         IQueryable<TListItem> List<TListItem>(Guid listId) where TListItem : class, IListItemEntity;
         
-        IQueryable<TListItem> Query<TListItem>() where TListItem : class, IListItemEntity;
+        IQueryable<TListItem> Query<TListItem>(string query) where TListItem : class, IListItemEntity;
 
         IQueryable<TListItem> Query<TListItem>(string listName, string query) where TListItem : class, IListItemEntity;
 

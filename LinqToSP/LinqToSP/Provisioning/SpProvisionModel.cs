@@ -112,7 +112,7 @@ namespace SP.Client.Linq.Provisioning
             _fields.Add(field, handler);
         }
 
-        public void Provision()
+        public virtual void Provision()
         {
             if (ProvisionHandlers != null)
             {
